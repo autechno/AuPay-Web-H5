@@ -3,13 +3,10 @@ const timestamp = Date.now()
 export default defineNuxtConfig({
   devtools: { enabled: true },
   srcDir: 'themes',
-  target: 'static',
   devServer: {
     port: process.env.PORT
   },
-  router: {
-    middleware: ['refresh']
-  },
+  ssr: true,
   app: {
     head: {
       meta: [
@@ -36,23 +33,22 @@ export default defineNuxtConfig({
   pinia: {
     autoImports: ['defineStore', 'storeToRefs']
   },
-  elementPlus:{
-    defaultLocale:'zh-cn'
-  },
   css: ['element-plus/dist/index.css'],
   nitro: {
     devProxy: {
       '/app/v1': {
-        target: 'http://192.168.1.131:9000',
+        target: 'http://127.0.0.1:8090',
         changeOrigin: true,
         prependPath: true
       }
     },
+    // 该配置用于服务端请求转发
     routeRules: {
       '/app/v1/**': {
-        proxy: 'http://192.168.1.131:9000/**'
+        proxy: 'http://127.0.0.1:8090/**'
       }
     }
   },
+
   compatibilityDate: '2025-01-01'
 })

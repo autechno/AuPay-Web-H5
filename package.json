@@ -3,11 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nuxt dev --dotenv .env.development",
-    "test": "nuxt build --dotenv .env.test",
-    "prod": "nuxt build --dotenv .env.production",
+    "dev": "nuxt dev --dotenv ./env.development",
+    "prod": "nuxt build --dotenv ./env.production",
     "build": "nuxt build",
-    "generate": "nuxt generate --dotenv .env.test",
+    "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
@@ -16,8 +15,6 @@
     "@nuxtjs/i18n": "^8.0.0-rc.5",
     "@pinia-plugin-persistedstate/nuxt": "^1.2.0",
     "@pinia/nuxt": "^0.5.1",
-    "less": "^4.2.2",
-    "less-loader": "^12.2.0",
     "nuxt": "^3.15.0",
     "pinia": "^2.1.7",
     "vue": "latest",
@@ -36,8 +33,6 @@
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-vue": "^9.18.1",
     "prettier": "^3.0.3",
-    "qrcode-generator": "^1.4.4",
-    "typescript": "^5.3.2",
-    "vue-i18n": "^11.1.0"
+    "typescript": "^5.3.2"
   }
 }
