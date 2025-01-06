@@ -1,12 +1,5 @@
 <template>
-  <el-tabs v-model="activeTab" class="demo-tabs" @tab-click="handleClick">
-    <el-tab-pane
-        v-for="(currency, index) in currencies"
-        :key="index"
-        :label="currency.name"
-    >
-    </el-tab-pane>
-  </el-tabs>
+  <CurrencyTabs :initialKey="activeIndex" />
   <el-row v-for="(item, index) in assets" :key="index" class="asset-item">
     <el-col :span="12">{{ item.name }}</el-col>
     <el-col :span="12" style="text-align: right;">{{ item.amount }}</el-col>
@@ -26,7 +19,7 @@
     <el-table-column prop="transactionStatus" label="交易状态" />
     <el-table-column label="操作" width="100">
       <template #default="scope">
-        <a href="">查看详情</a>
+        <a href="/property/detail/1">查看详情</a>
       </template>
     </el-table-column>
   </el-table>
@@ -34,21 +27,14 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import type { TabsPaneContext } from 'element-plus'
-const activeTab = ref('0')
-const handleClick = (tab: TabsPaneContext, event: Event) => {
-  console.log(tab, event)
-}
-// Dynamic data for balance summary
-const currencies = ref([
-  { name: '余额总揽'}, { name: 'OZC' }, { name: 'TOTO'}, { name: 'ETH'},  { name: 'BTC'},
-]);
+import CurrencyTabs from '@/composables/CurrencyTabs.vue'
+const activeIndex = ref(0)
 
 const assets = ref([
-  { name: 'OZC', amount: '1,000,000.00' },
-  { name: 'TOTO', amount: '1,000,000.00' },
-  { name: 'ETH', amount: '1,200,000.00' },
-  { name: 'BTC', amount: '1,200,000.00' },
+  { index: 1, name: 'OZC', amount: '1,000,000.00' },
+  { index: 2, name: 'TOTO', amount: '1,000,000.00' },
+  { index: 3, name: 'ETH', amount: '1,200,000.00' },
+  { index: 4, name: 'BTC', amount: '1,200,000.00' },
 ]);
 
 // Calculate total assets
@@ -84,14 +70,18 @@ const orders = ref([
 </script>
 
 <style>
-  .demo-tabs > .el-tabs__content {
-    padding: 32px;
-    color: #6b778c;
-    font-size: 32px;
-    font-weight: 600;
+  .tabs-container {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 10px; /* Space between buttons */
   }
   .asset-item {
     width: 80%;
+    background: #f1f1f1;
     margin-bottom: 10px;
   }
 </style>

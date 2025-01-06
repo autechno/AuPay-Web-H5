@@ -1,76 +1,59 @@
 <template>
   <div class="tabs-container">
-    <el-tabs v-model="activeStepId" type="card" @tab-click="handleClick" class="tabs">
+    <el-tabs v-model="activeIndex" type="card" @tab-click="handleClick" class="tabs">
       <el-tab-pane
-          v-for="(item, index) in currencyTabs"
-          :key="item.currencyId"
-          :name="item.currencyId"
-          :label="item.name"
+          v-for="(currency, index) in currencies"
+          :key="index"
+          :label="currency.name"
       >
       </el-tab-pane>
     </el-tabs>
     <div class="button-group">
-      <el-button type="primary" :icon="View" @click="setConfigShow">隐藏</el-button>
-      <el-button type="primary" :icon="TrendCharts" @click="goToMarket">行情</el-button>
+      <el-button type="primary" :icon="View">隐藏</el-button>
+      <el-button type="primary" :icon="TrendCharts"  @click="goToMarket">行情</el-button>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {ref, defineEmits, defineProps, onMounted} from 'vue';
-import type { TabsPaneContext } from "element-plus";
-import { TrendCharts, View } from "@element-plus/icons-vue";
-import {getHeader} from "@/utils/storageUtils";
-const activeStepId = ref('0');
-const emit = defineEmits(['currency-changed', 'show-currency-changed']);
-const handleClick = (tab: TabsPaneContext) => {
-  const currencyId = tab.props.name;
-  emit('currency-changed', currencyId);
-};
-const headers = getHeader();
-const { userApi } = useServer()
-const  showCurrency = ref(false);
+import { ref, defineProps } from 'vue';
+import { View, TrendCharts } from '@element-plus/icons-vue';
+import type { TabsPaneContext } from 'element-plus';
+import { useRouter } from 'vue-router';
 
-defineProps({
-  currencyTabs: {
-    type: Array,
+const props = defineProps({
+  initialKey: {
+    type: Number,
     required: true,
-  }
+  },
 });
 
-const getConfigShow = async () => {
-  try {
-    const res = await userApi.getUserSystemConfig({}, headers);
-    if (res.code === 200) {
-      showCurrency.value = res.data.showHide == 1?true:false;
-      emit('show-currency-changed', showCurrency.value);
-    } else {
-      ElMessage.error(res.message || '查询失败')
-    }
-  } catch (error) {
-    ElMessage.error('请求失败，请重试')
-  } finally {
-  }
-}
-
-const setConfigShow = async () => {
-  try {
-    showCurrency.value = !showCurrency.value;
-    emit('show-currency-changed', showCurrency.value);
-  } catch (error) {
-    ElMessage.error('请求失败，请重试')
-  } finally {
-  }
-}
-
-onMounted(() => {
-  getConfigShow()
-})
+const router = useRouter();
+const activeIndex = ref(props.initialKey);
 
 const goToMarket = () => {
-  window.location.href="/assets-account/market";
+  router.push('/property/market');
 };
 
+// Dynamic data for balance summary
+const currencies = ref([
+  { index: 0, name: '余额总揽' },
+  { index: 1, name: 'OZC' },
+  { index: 2, name: 'TOTO' },
+  { index: 3, name: 'ETH' },
+  { index: 4, name: 'BTC' },
+]);
+
+const handleClick = (tab: TabsPaneContext) => {
+  const key = tab.index;
+  if (key == '0') {
+    // router.push(`/property`);
+    window.location.href = '/property'
+  }else{
+    // router.push(`/property/netcoin/${key}`);
+    window.location.href = '/property/netcoin/' + key
+  }
+};
 </script>
 
 <style scoped>

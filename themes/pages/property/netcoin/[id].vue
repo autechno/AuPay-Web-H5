@@ -1,0 +1,168 @@
+<template>
+  <div>
+    <div v-for="(item, index) in data" class="container list-wrap" :key="index">
+      <el-row :gutter="20">
+        <el-col :span="18">
+          <div class="h1">{{ item.name }}</div>
+          <div>{{ item.type }}</div>
+          <div @click="copyText(item.details)" class="copyable-text">
+            {{ item.details }}
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <el-row class="right-column" type="flex" justify="end" align="middle">
+            <el-col :span="12">
+              <div class="right-content">
+                <p class="left-width">{{ item.value }}</p>
+                <p>{{ item.change }}</p>
+              </div>
+            </el-col>
+            <el-col :span="12">
+              <div class="right-content">
+                <p class="left-width">{{ item.currency }}</p>
+                <p>{{ item.amount }}</p>
+              </div>
+            </el-col>
+          </el-row>
+        </el-col>
+      </el-row>
+    </div>
+
+    <div class="button-group">
+      <el-button type="primary" @click="openDialog('transfer', 1)">转账</el-button>
+      <el-button type="primary" @click="openDialog('recharge', 2)">充值</el-button>
+      <el-button type="primary" @click="openDialog('withdraw', 3)">提现</el-button>
+    </div>
+
+    <el-dialog
+        v-model="dialogVisible"
+        :title="dialogTitle"
+        width="500"
+    >
+      <div v-if="step === 1">
+        <el-select v-model="selectedProtocol" placeholder="请选择代币协议">
+          <el-option
+              v-for="protocol in protocols"
+              :key="protocol.value"
+              :label="protocol.label"
+              :value="protocol.value"
+          />
+        </el-select>
+        <div class="dialog-footer">
+          <el-button @click="nextStep">下一步</el-button>
+        </div>
+      </div>
+      <div v-else-if="step === 2">
+        <div v-if="action === 'recharge'">
+          <p>二维码:</p>
+          <img :src="qrCodeSrc" alt="QR Code" />
+          <p @click="copyText(url)" class="copyable-text"> {{ url }} </p>
+        </div>
+        <div v-else>
+          <p>成功</p>
+        </div>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { ref } from 'vue';
+import { ElNotification } from 'element-plus';
+
+const dialogTitle = ref("充值");
+const data = ref([
+  {
+    name: 'Ozcoin',
+    type: 'ERC-20',
+    details: 'ANOTHER_LONG_TEXT_EXAMPLE',
+    value: '20,000.00',
+    change: '-/2%',
+    currency: 'OZC',
+    amount: '20,000.00$',
+  },
+  {
+    name: 'Another Coin',
+    type: 'ERC-20',
+    details: 'ADDITIONAL_DATA_TEXT',
+    value: '15,000.00',
+    change: '+1%',
+    currency: 'ANC',
+    amount: '15,000.00$',
+  }
+]);
+
+const copyText = (text: string) => {
+  navigator.clipboard.writeText(text).then(() => {
+    ElNotification({
+      title: '成功',
+      message: '链接已复制到剪贴板!',
+      type: 'success',
+      duration: 2000,
+    });
+  }).catch(err => {
+    console.error('Error copying text: ', err);
+  });
+};
+
+const protocols = ref([
+  { label: 'Ethereum', value: 'ethereum' },
+  { label: 'Binance Smart Chain', value: 'bsc' },
+  { label: 'Polygon', value: 'polygon' },
+]);
+
+const dialogVisible = ref(false);
+const selectedProtocol = ref('');
+const step = ref(1);
+const action = ref('');
+const url = ref('https://example.com/qr-code-link');
+const qrCodeSrc = ref('https://via.placeholder.com/150');
+
+const openDialog = (selectedAction: string, type: number) => {
+  action.value = selectedAction;
+  dialogVisible.value = true;
+  step.value = 1;
+};
+
+const nextStep = () => {
+  if (!selectedProtocol.value) {
+    ElNotification({
+      title: '警告',
+      message: '请选择代币协议',
+      type: 'warning',
+    });
+    return;
+  }
+  step.value = 2;
+};
+
+</script>
+
+<style scoped>
+.copyable-text {
+  cursor: pointer;
+  color: blue;
+  text-decoration: underline;
+  margin-bottom: 5px;
+}
+.right-column {
+  display: flex;
+  justify-content: flex-end;
+}
+.right-content {
+  text-align: right;
+}
+.list-wrap {
+  background: #dcdcdc;
+  margin-bottom: 20px;
+}
+.left-width {
+  width: 100%;
+}
+.button-group {
+  text-align: right;
+}
+.dialog-footer {
+  margin-top: 20px;
+}
+</style>
