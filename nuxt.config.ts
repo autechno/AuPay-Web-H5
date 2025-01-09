@@ -20,7 +20,8 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      API_HOST: process.env.BASE_URL,
+      API_HOST: '/app/v1',
+      // API_HOST: process.env.BASE_URL,
       timestamp
     }
   },
@@ -37,17 +38,11 @@ export default defineNuxtConfig({
   nitro: {
     devProxy: {
       '/app/v1': {
-        target: 'http://127.0.0.1:8090',
+        target: 'http://192.168.1.253:9000',
         changeOrigin: true,
         prependPath: true
       }
     },
-    // 该配置用于服务端请求转发
-    routeRules: {
-      '/app/v1/**': {
-        proxy: 'http://127.0.0.1:8090/**'
-      }
-    }
   },
 
   compatibilityDate: '2025-01-01'

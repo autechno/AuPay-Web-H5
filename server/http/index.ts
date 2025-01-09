@@ -45,27 +45,20 @@ const customFetch = async (url: string, options?: any, headers?: any) => {
 }
 
 export default class Http {
+
     get(url: string, params?: any, headers?: any) {
         return customFetch(url, { method: 'get', params }, headers)
     }
+
     post(url: string, body?: any, headers?: any) {
         return customFetch(url, { method: 'post', body }, headers)
     }
+
     put(url: string, body?: any, headers?: any) {
         return customFetch(url, { method: 'put', body }, headers)
     }
+
     delete(url: string, body?: any, headers?: any) {
         return customFetch(url, { method: 'delete', body }, headers)
-    }
-    postFormData(url: string, body?: any, headers?: any, type?: any) {
-        const formBody = new URLSearchParams()
-        for (const key in body) {
-            formBody.append(key, body[key])
-        }
-        headers['Content-Type'] = 'application/x-www-form-urlencoded';
-        return customFetch(url, {
-            method: type,
-            body: formBody.toString()
-        }, headers)
     }
 }

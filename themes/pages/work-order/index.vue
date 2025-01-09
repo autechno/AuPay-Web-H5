@@ -11,24 +11,20 @@
         </template>
       </el-table-column>
       <el-table-column prop="content" label="问题"></el-table-column>
-      <el-table-column label="时间" >
+      <el-table-column prop="createTime" label="时间" width="180"></el-table-column>
+      <el-table-column label="对话状态" width="200">
         <template #default="scope">
-          {{ formatDate(scope.row.createTime) }}
+          {{ getConversationStatusText(scope.row.conversationStatus) }}
         </template>
       </el-table-column>
-      <el-table-column label="对话状态" >
+      <el-table-column prop="replyStatus" label="客服回复状态" width="140">
         <template #default="scope">
-          {{ getStatusText(scope.row.conversationStatus, 'WORK') }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="replyStatus" label="客服回复状态" >
-        <template #default="scope">
-          {{ getStatusText(scope.row.staffReplyStatus, 'WORK') }}
+          {{ getStaffReplyStatusText(scope.row.staffReplyStatus) }}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="140">
         <template #default="scope">
-          <el-link :href="`/work-order/detail?id=${scope.row.id}`">{{ getStatusText(scope.row.status, 'WORK') }}</el-link>
+          <el-link :href="`/work-order/detail/${scope.row.id}`">{{ getStatusText(scope.row.status) }}</el-link>
         </template>
       </el-table-column>
     </el-table>
@@ -58,10 +54,10 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
-import { getStatusText, formatDate} from "~/utils/configUtils";
+import { getStatusText, getConversationStatusText, getStaffReplyStatusText } from "@/utils/formatUtils";
 
 const headers = getHeader();
-const { messageApi } = useServer();
+const { systemApi } = useServer();
 
 // 表单数据
 const form = ref({
@@ -86,7 +82,7 @@ const openDialog = () => {
 // 创建工单
 const createTicket = async () => {
   try {
-    const res = await messageApi.ticketCreate({ content: newTicketContent.value }, headers);
+    const res = await systemApi.ticketCreate({ content: newTicketContent.value }, headers);
     if (res.code === 200) {
       ElMessage.success('工单创建成功');
       dialogVisible.value = false; // 关闭对话框
@@ -102,7 +98,7 @@ const createTicket = async () => {
 // 获取消息数据
 const fetchData = async () => {
   try {
-    const res = await messageApi.ticketList(form.value, headers);
+    const res = await systemApi.ticketList(form.value, headers);
     if (res.code === 200) {
       workList.value = res.data.records;
       totalWork.value = res.data.total;

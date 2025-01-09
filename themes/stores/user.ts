@@ -1,45 +1,67 @@
-import {getHeader} from "@/utils/storageUtils";
-const { userApi } = useServer();
+
+type UserInfo = {
+    id: number;
+    username: string;
+    headPortrait: string;
+    nickname: string;
+    email: string;
+    birthday: string;
+    state: number;
+    country: string;
+    sex: number;
+    sign: string;
+    userType: number;
+    createTime: string;
+    loginTime: string;
+    userLevel: number;
+    transferQR: string;
+    bindGoogleAuth: boolean;
+    setAssetsPassword: boolean;
+    bindGoogleLogin: boolean;
+    bindFacebookLogin: boolean;
+    bindAppleLogin: boolean;
+    currencyUnit: string;
+};
+
+const initialUserInfo: UserInfo = {
+    id: 0,
+    username: '',
+    headPortrait: '',
+    nickname: '',
+    email: '',
+    birthday: '',
+    state: 0,
+    country: '',
+    sex: 0,
+    sign: '',
+    userType: 0,
+    createTime: '',
+    loginTime: '',
+    userLevel: 0,
+    transferQR: '',
+    bindGoogleAuth: false,
+    setAssetsPassword: false,
+    bindGoogleLogin: false,
+    bindAppleLogin: false,
+    bindFacebookLogin: false,
+    currencyUnit: '',
+};
+
 export const UseUserStore = defineStore('user', {
     state: () => ({
         appToken: '',
-        userInfo: {},
+        userInfo: { ...initialUserInfo },
     }),
     actions: {
         setTokenState(token: string) {
             this.appToken = token
         },
-        setUserInfo(user: any) {
+        setUserInfo(user: UserInfo) {
             this.userInfo = user
         },
         clearUserState() {
             this.appToken = ''
-            this.userInfo = {}
-        },
-        async fetchUserInfo() {
-            const headers = getHeader();
-            try {
-                const [infoRes, configRes] = await Promise.all([
-                    userApi.getUserInfo({}, headers),
-                    userApi.getUserSystemConfig({}, headers)
-                ]);
-                if (infoRes.code === 200) {
-                    const combinedData = {
-                        ...infoRes.data,
-                        currencyUnit: configRes.data.currencyUnit,
-                        showHide: configRes.data.showHide,
-                        systemLanguage: configRes.data.systemLanguage
-                    };
-                    this.setUserInfo(combinedData);
-                    return true;
-                } else {
-                    console.error('获取用户信息失败:', infoRes.message);
-                    return false;
-                }
-            } catch (error) {
-                console.error('请求失败:', error);
-                return false;
-            }
+            this.userInfo = { ...initialUserInfo }
         }
     },
     persist: true
