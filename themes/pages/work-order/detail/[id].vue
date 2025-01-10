@@ -33,12 +33,11 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
-import { useRoute } from 'vue-router';
 import { getConversationStatusText, getStaffReplyStatusText } from "@/utils/formatUtils";
-
+import { useRoute } from 'vue-router';
+const route = useRoute();
 const headers = getHeader();
 const { systemApi } = useServer();
-const route = useRoute();
 const dialogVisible = ref(false);
 
 // 消息数据

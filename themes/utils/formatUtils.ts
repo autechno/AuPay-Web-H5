@@ -4,8 +4,8 @@
 const storeData = {
     coin: [
         { name: 'BTC', title: 'BTC', code: 0 },
-        { name: 'ERC20', title: 'ERC20', code: 2 },
-        { name: 'TRC20', title: 'TRC20', code: 3 },
+        { name: 'ERC-20', title: 'ERC-20', code: 2 },
+        { name: 'TRC-20', title: 'TRC-20', code: 3 },
     ],
     cryptocurrencies: [
         { name: 'BTC', title: 'Bitcoin', code: 1 },
@@ -125,15 +125,20 @@ export const getCoinInfo = (currencyChain: number) => {
 };
 
 /**
- * 将 ISO 8601 日期字符串转换为可读格式
+ * 将 ISO 8601 日期字符串转换为自定义格式
  * @param {string} isoDate - ISO 8601 日期字符串
- * @param {string} [locale='en-US'] - 可选，区域设置，默认为 'en-US'
- * @param {string} [options] - 可选，日期格式选项
  * @returns {string} 格式化后的日期字符串
  */
-export const formatDate = (isoDate: string, locale: string = 'en-US', options?: Intl.DateTimeFormatOptions): string => {
+export const formatDate = (isoDate: string) => {
     const date = new Date(isoDate);
-    return new Intl.DateTimeFormat(locale, options).format(date);
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // 月份从 0 开始
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
 /**

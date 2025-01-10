@@ -1,211 +1,333 @@
 <template>
-  <div class="exchange-container">
-    <h2>闪兑</h2>
-    <div class="select-container">
-      <div class="selects">
-        <el-select v-model="selectedOut" placeholder="选择兑出币种" @change="updateValues">
-          <el-option
-              v-for="currency in outCurrencies"
-              :key="currency.id"
-              :label="currency.label"
-              :value="currency.value">
-          </el-option>
-        </el-select>
-        <el-select style="margin-top:20px;" v-model="selectedIn" placeholder="选择兑入币种" @change="updateValues">
-          <el-option
-              v-for="currency in inCurrencies"
-              :key="currency.id"
-              :label="currency.label"
-              :value="currency.value">
-          </el-option>
-        </el-select>
+  <div class="exchange-container exchange-container-wrap">
+    <p>闪兑</p>
+    <div class="exchange-wrapper">
+      <div class="exchange-container">
+        <div class="select-container">
+          <el-select
+              style="margin-bottom: 20px;"
+              id="currency-select"
+              v-model="form.selectedCurrency"
+              placeholder="请选择货币"
+              @change="updateCurrencyChains('form')">
+            <el-option
+                v-for="currency in currencyMergedData"
+                :key="currency.currencyId"
+                :label="currency.currency[0].name"
+                :value="currency.currencyId"
+            />
+          </el-select>
+          <el-select
+              id="chain-select"
+              style="margin-bottom: 20px;"
+              v-model="form.selectedChain"
+              placeholder="请选择链">
+            <el-option
+                v-for="chain in form.selectedCurrencyChains"
+                :key="chain.id"
+                :label="chain.name"
+                :value="chain.id"
+            />
+          </el-select>
+          <!-- 输入框部分 -->
+          <div class="input-container">
+            <el-input
+                v-model="form.inputAmount"
+                placeholder="请输入金额"
+                type="number"
+                @input="syncInputAmount"
+            />
+            <span style="padding-left: 20px;">{{ selectedCurrencyNameForm }}</span>
+          </div>
+          <!-- 显示余额 -->
+          <div class="balance-display">
+            <span>可兑换余额: {{ selectedCurrencyBalanceForm }}</span>
+          </div>
+        </div>
       </div>
-      <el-button type="primary" @click="swapCurrencies" class="swap-button">切换</el-button>
-    </div>
-    <div class="amount-display">
-      <div class="amount">
-        <span>{{ amount }}</span>
+      <div class="button-container">
+        <el-button @click="swapCurrencies">交换</el-button>
       </div>
-      <div class="currency-label">
-        {{ selectedIn.label }}
+      <div class="exchange-container">
+        <div class="select-container">
+          <el-select
+              style="margin-bottom: 20px;"
+              id="currency-select-to"
+              v-model="form.selectedCurrencyTo"
+              placeholder="请选择货币"
+              @change="updateCurrencyChains('to')">
+            <el-option
+                v-for="currency in currencyMergedData"
+                :key="currency.currencyId"
+                :label="currency.currency[0].name"
+                :value="currency.currencyId"
+            />
+          </el-select>
+          <el-select
+              id="chain-select-to"
+              style="margin-bottom: 20px;"
+              v-model="form.selectedChainTo"
+              placeholder="请选择链">
+            <el-option
+                v-for="chain in form.selectedCurrencyChainsTo"
+                :key="chain.id"
+                :label="chain.name"
+                :value="chain.id"
+            />
+          </el-select>
+          <!-- 输入框部分 -->
+          <div class="input-container">
+            <el-input
+                v-model="form.inputAmountTo"
+                placeholder="请输入金额"
+                type="number"
+                @input="syncInputAmountTo"
+            />
+            <span style="padding-left: 20px;">{{ selectedCurrencyNameTo }}</span>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="flex" style="text-align: right">
-      可兑换余额：{{ balance }} USDT
-    </div>
-    <el-button type="primary">确认兑换</el-button>
   </div>
-  <div class="container" style="margin-top: 20px">
-    <h2>闪兑记录</h2>
-    <el-button type="primary" @click="openFilterDialog" class="swap-button">筛选</el-button>
-    <el-dialog  width="500px" title="筛选条件" v-model="dialogVisible">
-        <el-select v-model="filterOutCurrency" placeholder="选择兑出币种">
-          <el-option
-              v-for="currency in outCurrencies"
-              :key="currency.id"
-              :label="currency.label"
-              :value="currency.value">
-          </el-option>
-        </el-select>
-        <el-select v-model="filterOutProtocol" placeholder="选择兑出币种协议">
-          <el-option label="ERC-20" value="ERC-20"></el-option>
-          <el-option label="OZC" value="OZC"></el-option>
-        </el-select>
-        <el-input v-model="filterOutAmount" placeholder="兑出数量" style="width: 200px;"></el-input>
-        <el-select v-model="filterInCurrency" placeholder="选择兑入币种">
-          <el-option
-              v-for="currency in inCurrencies"
-              :key="currency.id"
-              :label="currency.label"
-              :value="currency.value">
-          </el-option>
-        </el-select>
-        <el-select v-model="filterInProtocol" placeholder="选择兑入币种协议">
-          <el-option label="ERC-20" value="ERC-20"></el-option>
-          <el-option label="OZC" value="OZC"></el-option>
-        </el-select>
-        <el-input v-model="filterInAmount" placeholder="兑入数量" style="width: 200px;"></el-input>
-        <el-button type="primary" class="swap-button">筛选</el-button>
-    </el-dialog>
 
-    <el-table :data="exchangeData" style="width: 100%">
-      <el-table-column prop="index" label="序号" width="80"></el-table-column>
-      <el-table-column prop="exchangeId" label="闪兑单ID" width="150"></el-table-column>
-      <el-table-column prop="initTime" label="发起时间" width="180"></el-table-column>
-      <el-table-column prop="completeTime" label="完成时间" width="180"></el-table-column>
-      <el-table-column prop="outCurrency" label="兑出币种" width="150"></el-table-column>
-      <el-table-column prop="outProtocol" label="兑出币种协议" width="150"></el-table-column>
-      <el-table-column prop="outAmount" label="兑出量" width="120"></el-table-column>
-      <el-table-column prop="inCurrency" label="兑入币种" width="150"></el-table-column>
-      <el-table-column prop="inProtocol" label="兑入币种协议" width="150"></el-table-column>
-      <el-table-column prop="inAmount" label="兑入量" width="120"></el-table-column>
-      <el-table-column prop="status" label="状态" width="100"></el-table-column>
-      <el-table-column prop="action" label="操作" width="100"></el-table-column>
-    </el-table>
-  </div>
+  <el-button @click="dialogVisible = true" type="primary" >确认兑换</el-button>
+  <!-- 创建工单对话框 -->
+  <el-dialog title="兑换验证" v-model="dialogVisible">
+    <el-form :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleSubmit">
+      <el-form-item  v-if="activeStepId == 1" label="设置支付密码" prop="paymentPassword">
+        <el-input v-model="form.paymentPassword" placeholder="设置支付密码" />
+      </el-form-item>
+      <el-form-item v-if="activeStepId == 2" label="身份验证器APP验证码" prop="googleCode" >
+        <el-input v-model="form.googleCode" placeholder="请输入6位验证码" />
+      </el-form-item>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" native-type="submit">确 定</el-button>
+      </span>
+    </el-form>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { ElMessage } from 'element-plus';
+import { ref, onMounted, computed } from 'vue';
+import { getHeader } from "@/utils/storageUtils";
+import {ElForm, ElMessage} from "element-plus";
+const headers = getHeader();
+const { assetsApi, systemApi } = useServer();
+const currencyMergedData = ref([]); // 合并后的货币数据
 
-const outCurrencies = ref([
-  { id: 1, label: 'USDT', value: 'usdt' },
-  { id: 2, label: 'USDT', value: 'usdt2' }
-]);
-
-const inCurrencies = ref([
-  { id: 1, label: 'OZC', value: 'ozc' },
-  { id: 2, label: 'OZC', value: 'ozc2' }
-]);
-
-const selectedOut = ref(outCurrencies.value[0]);
-const selectedIn = ref(inCurrencies.value[0]);
-const amount = ref(2000);
-const balance = ref(3008.00);
-
-// 筛选条件
-const filterOutCurrency = ref('');
-const filterOutProtocol = ref('');
-const filterOutAmount = ref('');
-const filterInCurrency = ref('');
-const filterInProtocol = ref('');
-const filterInAmount = ref('');
-const dialogVisible = ref(false);
-
-const openFilterDialog = () => {
-  dialogVisible.value = true; // 打开对话框
+// 表单验证规则
+const rules = {
+  paymentPassword: [
+    { required: true, message: '密码不能为空', trigger: 'blur' },
+    { min: 6, message: '密码长度至少为6位', trigger: 'blur' }
+  ],
+  googleCode: [
+    { required: true, message: 'google验证码不能为空', trigger: 'blur' },
+  ],
 };
-
-
-const exchangeData = ref([
-  {
-    index: 1,
-    exchangeId: '123456',
-    initTime: '2023-01-01 10:00:00',
-    completeTime: '2023-01-01 10:05:00',
-    outCurrency: 'USDT',
-    outProtocol: 'ERC-20',
-    outAmount: 2000,
-    inCurrency: 'OZC',
-    inProtocol: 'OZC',
-    inAmount: 1950,
-    status: '完成',
-    action: '查看'
-  },
-  {
-    index: 2,
-    exchangeId: '123457',
-    initTime: '2023-01-02 11:00:00',
-    completeTime: '2023-01-02 11:05:00',
-    outCurrency: 'USDT',
-    outProtocol: 'ERC-20',
-    outAmount: 2000,
-    inCurrency: 'OZC',
-    inProtocol: 'OZC',
-    inAmount: 1950,
-    status: '完成',
-    action: '查看'
+const  dialogVisible = ref(false);
+const  activeStepId = ref(1);
+// 状态合并到一个对象中
+const form = ref({
+  selectedCurrency: null,
+  selectedChain: null,
+  selectedCurrencyChains: [],
+  inputAmount: '',
+  selectedCurrencyTo: null,
+  selectedChainTo: null,
+  selectedCurrencyChainsTo: [],
+  inputAmountTo: '',
+  googleCode: '',
+  paymentPassword: '',
+  passwordToken: '',
+  googleToken: '',
+  optToken: '',
+});
+// 计算属性，获取左部分选中货币的名称
+const selectedCurrencyNameForm = computed(() => {
+  const selectedData = currencyMergedData.value.find(currency => currency.currencyId === form.value.selectedCurrency);
+  return selectedData ? selectedData.currency[0].name : '';
+});
+// 计算属性，获取左部分选中货币的余额
+const selectedCurrencyBalanceForm = computed(() => {
+  const selectedData = currencyMergedData.value.find(currency => currency.currencyId === form.value.selectedCurrency);
+  return selectedData ? selectedData.balance : 0;
+});
+// 计算属性，获取右部分选中货币的名称
+const selectedCurrencyNameTo = computed(() => {
+  const selectedData = currencyMergedData.value.find(currency => currency.currencyId === form.value.selectedCurrencyTo);
+  return selectedData ? selectedData.currency[0].name : '';
+});
+// 获取数据的函数
+const fetchData = async () => {
+  try {
+    const [rateResponse, assetsResponse] = await Promise.all([
+      systemApi.getRate({ currency: 'CNY' }, headers),
+      assetsApi.accountAssets({}, headers)
+    ]);
+    if (assetsResponse.code === 200) {
+      const mergedData = new Map();
+      const dataList = assetsResponse.data;
+      if (dataList?.length) {
+        dataList.forEach(item => {
+          const { currencyId, currencyChain, balance, totalBalanceUsdt } = item;
+          // 检查是否已存在该货币数据
+          if (!mergedData.has(currencyId)) {
+            mergedData.set(currencyId, {
+              balance,
+              totalBalanceUsdt,
+              currencyId,
+              currencyChain: [{ id: currencyChain, name: getCoinInfo(currencyChain)?.name }],
+              currency: [{ id: currencyId, name: getCurrencyInfo(currencyId)?.name }],
+            });
+          } else {
+            const existingData = mergedData.get(currencyId);
+            if (!existingData.currencyChain.some(chain => chain.id === currencyChain)) {
+              existingData.currencyChain.push({ id: currencyChain, name: getCoinInfo(currencyChain)?.name });
+            }
+            existingData.balance += balance;
+            existingData.totalBalanceUsdt += totalBalanceUsdt;
+          }
+        });
+        currencyMergedData.value = Array.from(mergedData.values());
+        // 如果有可用的货币，自动选择第一个
+        if (currencyMergedData.value.length > 0) {
+          form.value.selectedCurrency = currencyMergedData.value[0].currencyId;
+          updateCurrencyChains('form');
+          form.value.selectedCurrencyTo = currencyMergedData.value[0].currencyId;
+          updateCurrencyChains('to');
+        }
+      }
+    } else {
+      ElMessage.error(assetsResponse.message || '查询失败');
+    }
+  } catch (error) {
+    ElMessage.error('请求失败，请重试');
   }
-]);
+};
+// 更新链数据的函数
+const updateCurrencyChains = (formType) => {
+  const selectedCurrencyData = formType === 'form'
+      ? currencyMergedData.value.find(currency => currency.currencyId === form.value.selectedCurrency)
+      : currencyMergedData.value.find(currency => currency.currencyId === form.value.selectedCurrencyTo);
 
-const updateValues = () => {
-  if (selectedIn.value.label === 'OZC') {
-    amount.value = 2000; // 根据逻辑设置值
+  if (formType === 'form') {
+    form.value.selectedCurrencyChains = selectedCurrencyData ? selectedCurrencyData.currencyChain : [];
+    form.value.selectedChain = form.value.selectedCurrencyChains.length > 0 ? form.value.selectedCurrencyChains[0].id : null;
   } else {
-    amount.value = 1000; // 其他币种逻辑
+    form.value.selectedCurrencyChainsTo = selectedCurrencyData ? selectedCurrencyData.currencyChain : [];
+    form.value.selectedChainTo = form.value.selectedCurrencyChainsTo.length > 0 ? form.value.selectedCurrencyChainsTo[0].id : null;
   }
 };
-
-const swapCurrencies = () => {
-  const temp = selectedOut.value;
-  selectedOut.value = selectedIn.value;
-  selectedIn.value = temp;
-
-  // 更新值
-  updateValues();
+// 输入框同步金额的函数
+const syncInputAmount = () => {
+  form.value.inputAmountTo = form.value.inputAmount;
 };
+const syncInputAmountTo = () => {
+  form.value.inputAmount = form.value.inputAmountTo;
+};
+// 初始化数据
+onMounted(() => {
+  fetchData();
+});
+const swapCurrencies = () => {
+  // 交换货币和链的逻辑
+  const tempCurrency = form.value.selectedCurrency;
+  const tempChain = form.value.selectedChain;
+  form.value.selectedCurrency = form.value.selectedCurrencyTo;
+  form.value.selectedChain = form.value.selectedChainTo;
+  form.value.selectedCurrencyTo = tempCurrency;
+  form.value.selectedChainTo = tempChain;
+  const tempAmount = form.value.inputAmount;
+  form.value.inputAmount = form.value.inputAmountTo;
+  form.value.inputAmountTo = tempAmount;
+};
+// 提交
+const handleSubmit = async () => {
+  console.log(form.value);
+  try {
+    if(activeStepId.value == 1){
+      let flashRes = await systemApi.assetsFlashPermission({permissionId: 6}, headers);
+      if(flashRes.code == 200) {
+         form.value.optToken = flashRes.data.optToken;
+         let passRes = await systemApi.verifyAssetsPassword({
+            assetsPassword: form.value.paymentPassword,
+            optToken: flashRes.data.optToken
+          }, headers);
+         if(passRes.code == 200) {
+           activeStepId.value = 2;
+          form.value.passwordToken = passRes.data;
+         }
+      }
+    }else{
+      let googleRes = await systemApi.verifyAssetsGoogle({
+        googleCode: form.value.googleCode,
+        optToken: form.value.optToken
+      }, headers);
+      if(googleRes.code == 200) {
+        headers['Assets-Password-Token'] = form.value.passwordToken;
+        let falshRes = await assetsApi.fastSwapApply({
+          optToken: form.value.optToken,
+          outCurrencyId: form.value.selectedCurrencyTo,
+          outChain: form.value.selectedChainTo,
+          inCurrencyId: form.value.selectedCurrency,
+          inChain: form.value.selectedChain,
+          transOutAmount: form.value.inputAmountTo,
+          transInAmount: form.value.inputAmount,
+        }, headers);
+        if(falshRes.code == 200) {
+          ElMessage.success("闪兑成功，")
+          dialogVisible.value = false;
+        }
+      }
+    }
+  } catch (error) {
+    ElMessage.error('请求失败，请重试')
+  } finally {
+
+  }
+
+
+}
+
+
 </script>
 
 <style scoped>
+.exchange-wrapper {
+  display: flex;
+  align-items: center; /* 垂直居中对齐 */
+}
+.exchange-container-wrap{
+  width: 800px !important;;
+  height:300px !important;
+  margin-bottom: 20px !important;
+}
 .exchange-container {
-  width: 640px;
+  height: 180px;
+  width: 340px;
   border: 1px solid #ccc;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   background-color: white;
   padding: 30px;
-
+  margin: 0 10px; /* 添加左右间距 */
 }
-
+.button-container {
+  display: flex;
+  align-items: center; /* 垂直居中对齐 */
+}
 .select-container {
   display: flex;
-  align-items: flex-start; /* 对齐选择框和按钮 */
+  flex-direction: column; /* 垂直排列 */
 }
-
-.selects {
-  flex: 1;
-  margin-right: 20px;
-}
-
-.swap-button {
-  width: 20%;
-}
-
-.amount-display {
+.input-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 10px 0;
-  font-size: 18px;
+  align-items: center; /* 垂直居中对齐 */
 }
-
-.amount {
-  flex: 4;
-  border-bottom: #dcdcdc 1px solid;
-}
-
-.currency-label {
-  flex: 1;
+.balance-display {
+  text-align: right;
+  padding-top: 5px;
 }
 </style>

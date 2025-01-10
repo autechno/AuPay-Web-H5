@@ -21,6 +21,7 @@ type UserInfo = {
     bindFacebookLogin: boolean;
     bindAppleLogin: boolean;
     currencyUnit: string;
+    showHide: number;
 };
 
 const initialUserInfo: UserInfo = {
@@ -45,6 +46,7 @@ const initialUserInfo: UserInfo = {
     bindAppleLogin: false,
     bindFacebookLogin: false,
     currencyUnit: '',
+    showHide: 0
 };
 
 export const UseUserStore = defineStore('user', {

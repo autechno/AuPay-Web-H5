@@ -1,12 +1,12 @@
 <template>
-  <CurrencyTabs :currency-tabs="currencyTabData" @currency-changed="handleCurrencyChange" />
+  <CurrencyTabs :currency-tabs="currencyTabData" @currency-changed="handleCurrencyChange" @show-currency-changed="handleShowCurrencyChanged" />
   <div v-if="selectedCurrencyId == 0">
     <el-row v-for="(item, index) in currencyMergedData" :key="index" class="asset-item">
       <el-col :span="12">{{ item.currencyJson.name }}</el-col>
-      <el-col :span="12" style="text-align: right;">{{ formatCurrency(item.balance) }}</el-col>
+      <el-col :span="12" style="text-align: right;">{{ !isShowCurrency?'******':formatCurrency(item.balance) }}</el-col>
     </el-row>
     <div style="text-align: right; margin-top: 20px; font-weight: bold;">
-      总资产：{{ formatCurrency(totalAssets) }}{{currencySign}}
+      总资产：{{!isShowCurrency?'******':formatCurrency(totalAssets) }}{{currencySign}}
     </div>
     <el-table :data="accountAssetsList" style="width: 100%">
       <el-table-column label="序号" width="60">
@@ -76,14 +76,14 @@
             <el-row class="right-column" type="flex" justify="end" align="middle">
               <el-col :span="12">
                 <div class="right-content">
-                  <p class="left-width">{{ formatCurrency(item.totalBalance) }}</p>
+                  <p class="left-width">{{ !isShowCurrency?'******':formatCurrency(item.balance) }}</p>
                   <p> 1%</p>
                 </div>
               </el-col>
               <el-col :span="12">
                 <div class="right-content">
                   <p class="left-width">{{ item.currencyJson.name }}</p>
-                  <p>{{ formatCurrency(item.totalBalanceUsdt) }}{{currencySign}}</p>
+                  <p>{{ !isShowCurrency?'******':formatCurrency(item.totalBalanceUsdt) }}{{currencySign}}</p>
                 </div>
               </el-col>
             </el-row>
@@ -120,6 +120,7 @@ const accountAssetsTotal= ref(0);
 const currencyItemData = ref([]);
 const currencyMergedData = ref([]);
 const totalAssets = ref(0);
+const isShowCurrency = ref(false);
 
 // 切换tabs
 const handleCurrencyChange = (currencyId: number) => {
@@ -130,6 +131,12 @@ const handleCurrencyChange = (currencyId: number) => {
     console.log(currencyItemData.value);
   }
   console.log('Selected Currency ID:', currencyId);
+};
+
+// 金额是否显示
+const handleShowCurrencyChanged = (value) => {
+  isShowCurrency.value = value;
+  console.log('Show Currency:', isShowCurrency.value);
 };
 
 // 复制方法
@@ -188,7 +195,6 @@ const fetchData = async () => {
       return;
     }
     const exchangeRate = rateResponse.data || 1;
-
     // 处理资产响应
     if (assetsResponse.code == 200) {
       const mergedData = {};
