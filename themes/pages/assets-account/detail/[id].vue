@@ -12,7 +12,7 @@
         <td>发起人: </td><td>{{assets.toAccountName}}</td>
       </tr>
       <tr>
-        <td>当前状态: </td><td>{{getStatusName(assets.status)}}</td>
+        <td>当前状态: </td><td>{{getStatusText(assets.status, 'ACCOUNT')}}</td>
       </tr>
       <tr>
         <td>发起时间: </td><td>{{formatDate(assets.finishTime)}}</td>
@@ -51,7 +51,7 @@ const headers = getHeader();
 const { assetsApi } = useServer()
 const assets = ref({})
 const recordId = ref(0)
-import { formatCurrency, getCurrencyInfo, getCoinInfo, formatDate, getStatusName, getTransactionTypeName, getCurrencyByCode, getLanguageByCode } from "@/utils/formatUtils";
+import {formatDate, getStatusText, getTransactionTypeName} from "@/utils/formatUtils";
 
 const fetchData = async () => {
   try {

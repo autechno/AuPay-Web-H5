@@ -43,7 +43,7 @@
       <el-table-column prop="amount" label="数量" sortable />
       <el-table-column label="交易状态" sortable>
         <template #default="scope">
-          {{ getStatusName(scope.row.status) || '' }}
+          {{ getStatusText(scope.row.status, 'ACCOUNT') || '' }}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="100">
@@ -102,7 +102,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { getHeader } from "@/utils/storageUtils";
-import { formatCurrency, getCurrencyInfo, getCoinInfo, formatDate, getStatusName, getTransactionTypeName, getCurrencyByCode, getLanguageByCode } from "@/utils/formatUtils";
+import { formatCurrency, getCurrencyInfo, getCoinInfo, formatDate, getStatusText, getTransactionTypeName, getCurrencyByCode } from "@/utils/formatUtils";
 import CurrencyTabs from "@/composables/CurrencyTabs.vue";
 import {ElMessage, ElNotification} from "element-plus";
 

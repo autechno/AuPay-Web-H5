@@ -40,7 +40,6 @@
       </div>
     </div>
   </div>
-
   <!-- 真人验证弹窗 -->
   <el-dialog
       title="真人验证"
@@ -77,7 +76,7 @@ const sliderValue = ref(0);
 // 表单数据
 const form = ref({
   username: 'yoney.zhang@autech.one',
-  password: 'qwer12',
+  password: 'cook1234',
   validateKey: '',
   emailCode: '',
 });

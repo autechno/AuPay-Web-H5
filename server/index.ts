@@ -141,10 +141,10 @@ class SystemApi extends Http {
         return this.get('/aupay-operate/rate/usdt2currency', params, headers)
     }
     /**
-     * 获取汇率
+     * 获取币种兑换汇率
      */
-    public getRate(params: any, headers: any): Promise<any> {
-        return this.get('/aupay-operate/rate/usdt2currency', params, headers)
+    public getRateCoin2Coin(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-operate/rate/coin2coin', params, headers)
     }
     /**
      * 获取基础配置信息
@@ -214,6 +214,20 @@ class AssetsApi extends Http {
         return this.post('/aupay-trade/fastSwap/apply/'+params.optToken, params, headers)
     }
     /**
+     * 兑换账户资金列表
+     */
+    public fastSwapApplyList(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-trade/fastSwap/queryFastSwaps', params, headers);
+    }
+    /**
+     * 兑换账户资金详情
+     */
+    public fastSwapApplyDetail(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-trade/fastSwap/getFastSwapDetail', params, headers);
+    }
+
+
+    /**
      * 账户发起对换
      * {
      *   "accountId": 0,
@@ -225,7 +239,7 @@ class AssetsApi extends Http {
      * }
      */
     public transferApply(params: any, headers: any): Promise<any> {
-        return this.post('/aupay-trade//transfer/apply/'+params.optToken, params, headers)
+        return this.post('/aupay-trade/fastSwap/queryFastSwaps'+params.optToken, params, headers)
     }
 }
 

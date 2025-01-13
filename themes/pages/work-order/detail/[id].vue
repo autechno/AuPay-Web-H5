@@ -1,6 +1,6 @@
 <template>
   <div>
-    对话ID：{{ ticket.id }}   创建时间：{{ ticket.createTime }}  对话状态：{{ getConversationStatusText(ticket.conversationStatus) }}  客服回复状态：{{ getStaffReplyStatusText(ticket.staffReplyStatus) }}
+    对话ID：{{ ticket.id }}   创建时间：{{ ticket.createTime }}  对话状态：{{ getStatusText(ticket.conversationStatus, 'WORK') }}  客服回复状态：{{ getStatusText(ticket.staffReplyStatus, '') }}
     <!-- 消息表格 -->
     <el-table :data="workList" style="width: 100%">
       <el-table-column prop="createTime" label="本人（我)" width="180"></el-table-column>
@@ -33,7 +33,7 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
-import { getConversationStatusText, getStaffReplyStatusText } from "@/utils/formatUtils";
+import { getStatusText } from "@/utils/formatUtils";
 import { useRoute } from 'vue-router';
 const route = useRoute();
 const headers = getHeader();

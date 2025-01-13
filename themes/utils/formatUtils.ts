@@ -41,13 +41,30 @@ const storeData = {
 
 // 状态常量
 export const Status = {
-    CREATED: 0,    // 已提交 待处理
-    WAITING: 1,    // 处理中 中间状态
-    SUCCESS: 2,    // 成功
-    FAILED: 3,     // 失败
-    EXCEPTION: 4,  // 处理异常
-    SUSPEND: 5,    // 挂起
-    APPLY: 10,     // 发起申请 待审批
+    ACCOUNT: {
+        CREATED: 0,    // 已提交 待处理
+        WAITING: 1,    // 处理中 中间状态
+        SUCCESS: 2,    // 成功
+        FAILED: 3,     // 失败
+        EXCEPTION: 4,  // 处理异常
+        SUSPEND: 5,    // 挂起
+        APPLY: 10,     // 发起申请 待审批
+    },
+    WORK:{
+        OPEN: '未解决',
+        IN_PROGRESS: '进行中',
+        RESOLVED: '已解决',
+        CLOSED: '已关闭',
+        ACTIVE: '进行中',
+        INACTIVE: '已结束',
+        PENDING: '待回复',
+        REPLIED: '已回复',
+    },
+    FLASH:{
+        1: '兑换中',
+        2: '兑换成功',
+        3: '兑换失败',
+    }
 };
 
 // 类型常量
@@ -67,21 +84,12 @@ export const TransactionType = {
     PLATFORM_IN: { id: 101, name: "平台注资" },
 };
 
-export const StatusEnum = {
-    OPEN: '未解决',
-    IN_PROGRESS: '进行中',
-    RESOLVED: '已解决',
-    CLOSED: '已关闭',
-};
-
 export const ConversationStatusEnum = {
-    ACTIVE: '进行中',
-    INACTIVE: '已结束',
+
 };
 
 export const StaffReplyStatusEnum = {
-    PENDING: '待回复',
-    REPLIED: '已回复',
+
 };
 
 /**
@@ -105,26 +113,6 @@ export const formatCurrency = (
 };
 
 /**
- * 获取货币信息
- * @param {number} currencyId - 货币ID
- * @returns {Object} 包含货币信息
- */
-export const getCurrencyInfo = (currencyId: number) => {
-    const currencyKeyValue = storeData.cryptocurrencies.find(c => c.code === currencyId) || null;
-    return currencyKeyValue;
-};
-
-/**
- * 获取链信息
- * @param {number} currencyChain - 货币链ID
- * @returns {Object} 包含链信息
- */
-export const getCoinInfo = (currencyChain: number) => {
-    const coinKeyValue = storeData.coin.find(c => c.code === currencyChain) || null;
-    return coinKeyValue;
-};
-
-/**
  * 将 ISO 8601 日期字符串转换为自定义格式
  * @param {string} isoDate - ISO 8601 日期字符串
  * @returns {string} 格式化后的日期字符串
@@ -139,16 +127,6 @@ export const formatDate = (isoDate: string) => {
     const seconds = String(date.getUTCSeconds()).padStart(2, '0');
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
-
-/**
- * 获取状态名称
- * @param {number} statusId - 状态ID
- * @returns {string} 状态名称
- */
-export const getStatusName = (statusId: number): string => {
-    const status = Object.entries(Status).find(([key, value]) => value === statusId);
-    return status ? status[0] : '未知状态';
 };
 
 /**
@@ -175,15 +153,28 @@ export const getLanguageByCode = (code: string) => {
     return language ? language : null; // 返回找到的语言或 null
 };
 
+/**
+ * 获取货币信息
+ * @param {number} currencyId - 货币ID
+ * @returns {Object} 包含货币信息
+ */
+export const getCurrencyInfo = (currencyId: number) => {
+    const currencyKeyValue = storeData.cryptocurrencies.find(c => c.code === currencyId) || null;
+    return currencyKeyValue;
+};
+
+/**
+ * 获取链信息
+ * @param {number} currencyChain - 货币链ID
+ * @returns {Object} 包含链信息
+ */
+export const getCoinInfo = (currencyChain: number) => {
+    const coinKeyValue = storeData.coin.find(c => c.code === currencyChain) || null;
+    return coinKeyValue;
+};
+
+
 // 获取状态文本的函数
-export const getStatusText = (status: keyof typeof StatusEnum): string => {
-    return StatusEnum[status] || '未知状态';
-};
-
-export const getConversationStatusText = (status: keyof typeof ConversationStatusEnum): string => {
-    return ConversationStatusEnum[status] || '未知状态';
-};
-
-export const getStaffReplyStatusText = (status: keyof typeof StaffReplyStatusEnum): string => {
-    return StaffReplyStatusEnum[status] || '未知状态';
+export const getStatusText = (status: any, type: any): string => {
+    return Status[type][status] || '未知状态';
 };

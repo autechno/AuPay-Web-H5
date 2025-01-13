@@ -88,8 +88,11 @@
         </div>
       </div>
     </div>
+    <div style="text-align: right;">
+      <div>当前兑换汇率：1 TOTO ≈ 0.2 OZC</div>
+      <div>费用：10 USDT</div>
+    </div>
   </div>
-
   <el-button @click="dialogVisible = true" type="primary" >确认兑换</el-button>
   <!-- 创建工单对话框 -->
   <el-dialog title="兑换验证" v-model="dialogVisible">
@@ -106,12 +109,14 @@
       </span>
     </el-form>
   </el-dialog>
+  <List></List>
 </template>
-
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { getHeader } from "@/utils/storageUtils";
 import {ElForm, ElMessage} from "element-plus";
+import List from './detail/list.vue'
+
 const headers = getHeader();
 const { assetsApi, systemApi } = useServer();
 const currencyMergedData = ref([]); // 合并后的货币数据
@@ -285,10 +290,7 @@ const handleSubmit = async () => {
   } catch (error) {
     ElMessage.error('请求失败，请重试')
   } finally {
-
   }
-
-
 }
 
 
@@ -301,7 +303,7 @@ const handleSubmit = async () => {
 }
 .exchange-container-wrap{
   width: 800px !important;;
-  height:300px !important;
+  height:350px !important;
   margin-bottom: 20px !important;
 }
 .exchange-container {

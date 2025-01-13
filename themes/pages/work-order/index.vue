@@ -14,12 +14,12 @@
       <el-table-column prop="createTime" label="时间" width="180"></el-table-column>
       <el-table-column label="对话状态" width="200">
         <template #default="scope">
-          {{ getConversationStatusText(scope.row.conversationStatus) }}
+          {{ getStatusText(scope.row.conversationStatus, 'WORK') }}
         </template>
       </el-table-column>
       <el-table-column prop="replyStatus" label="客服回复状态" width="140">
         <template #default="scope">
-          {{ getStaffReplyStatusText(scope.row.staffReplyStatus) }}
+          {{ getStatusText(scope.row.staffReplyStatus, 'WORK') }}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="140">
@@ -54,7 +54,7 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
-import { getStatusText, getConversationStatusText, getStaffReplyStatusText } from "@/utils/formatUtils";
+import { getStatusText} from "@/utils/formatUtils";
 
 const headers = getHeader();
 const { systemApi } = useServer();
