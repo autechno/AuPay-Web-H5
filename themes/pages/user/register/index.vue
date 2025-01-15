@@ -94,8 +94,8 @@ const routeStr = ref("/user/register");
 
 // 表单数据
 const form = ref({
-  email: 'yoney.zhang@autech.one',
-  password: '1234qwer',
+  email: '',
+  password: '',
   paymentPassword: '',
   emailCode: '',
   type: [],

@@ -75,8 +75,8 @@ const sliderValue = ref(0);
 
 // 表单数据
 const form = ref({
-  username: 'yoney.zhang@autech.one',
-  password: '123456',
+  username: '',
+  password: '',
   validateKey: '',
   emailCode: '',
 });
