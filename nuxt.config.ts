@@ -3,6 +3,7 @@ const timestamp = Date.now()
 export default defineNuxtConfig({
   devtools: { enabled: true },
   srcDir: 'themes',
+  target: 'static',
   devServer: {
     port: process.env.PORT
   },

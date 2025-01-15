@@ -7,7 +7,7 @@
     "test": "nuxt build --dotenv .env.test",
     "prod": "nuxt build --dotenv .env.production",
     "build": "nuxt build",
-    "generate": "nuxt generate",
+    "generate": "nuxt generate --dotenv .env.test",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
