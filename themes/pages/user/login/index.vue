@@ -76,7 +76,7 @@ const sliderValue = ref(0);
 // 表单数据
 const form = ref({
   username: 'yoney.zhang@autech.one',
-  password: 'cook1234',
+  password: '123456',
   validateKey: '',
   emailCode: '',
 });
@@ -99,7 +99,6 @@ const rules = {
 const handleSubmit = async () => {
   const valid = await formRef.value.validate();
   const userStore = UseUserStore();
-  const baseStore = UseBaseStore();
   try {
     if (valid) {
         if (activeStepId.value == 1) {
@@ -116,7 +115,12 @@ const handleSubmit = async () => {
           let res = await userApi.loginValidateEmail(form.value, {});
           if (res.code === 200) {
             userStore.setTokenState(res.data);
-            dialogVisible.value = true;
+            // 获取消息数据
+              const userInfoRes = await userApi.getUserInfo({}, headers); // 使用查询字段
+              if (userInfoRes.code === 200) {
+                dialogVisible.value = true;
+                userStore.setUserInfo(userInfoRes.data);
+              }
           } else {
             ElMessage.error(res.message || '登录失败'); // 错误提示
           }

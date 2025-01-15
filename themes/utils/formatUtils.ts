@@ -1,5 +1,3 @@
-// formatCurrencyUtils.ts
-
 // 常量，存储货币和链的信息
 const storeData = {
     coin: [
@@ -15,32 +13,27 @@ const storeData = {
         { name: 'OZC', title: 'OZCoin', code: 5 },
         { name: 'TOTO', title: 'TOTO', code: 6 },
     ],
+    searchStatus: [
+        { name: 'All', title: '全部', code: '' },
+        { name: 'Y', title: '是', code: true },
+        { name: 'N', title: '否', code: false },
+    ],
+    hideBalance: [
+        { name: 'Y', title: '显示', code: 1 },
+        { name: 'N', title: '隐藏', code: 2 },
+    ],
     currency: [
-        {
-            name: '人民币',
-            code: 'CNY',
-            sign: '¥',
-        },
-       {
-            name: '美元',
-            code: 'USD',
-            sign: '$',
-        }
+        { name: '人民币',  code: 'CNY', sign: '¥' },
+        { name: '美元', code: 'USD', sign: '$' }
     ],
     language: [
-        {
-            name: '人民币',
-            code: 'EN',
-        },
-        {
-            name: '中文',
-            code: 'CN',
-        }
+        { name: '英文', code: 'EN', },
+        { name: '中文', code: 'CN',}
     ]
 };
 
 // 状态常量
-export const Status = {
+export const StatusEnum = {
     ACCOUNT: {
         CREATED: 0,    // 已提交 待处理
         WAITING: 1,    // 处理中 中间状态
@@ -82,14 +75,6 @@ export const TransactionType = {
     SYS_TRANSFER_TO_STORE: { id: 5, name: "中转钱包资产归集" },
     SYS_GAS_TO_OPERATOR: { id: 6, name: "补充gas费" },
     PLATFORM_IN: { id: 101, name: "平台注资" },
-};
-
-export const ConversationStatusEnum = {
-
-};
-
-export const StaffReplyStatusEnum = {
-
 };
 
 /**
@@ -162,7 +147,6 @@ export const getCurrencyInfo = (currencyId: number) => {
     const currencyKeyValue = storeData.cryptocurrencies.find(c => c.code === currencyId) || null;
     return currencyKeyValue;
 };
-
 /**
  * 获取链信息
  * @param {number} currencyChain - 货币链ID
@@ -173,8 +157,15 @@ export const getCoinInfo = (currencyChain: number) => {
     return coinKeyValue;
 };
 
+/**
+ * 获取数据列表
+ */
+export const getDataList = (type: string) => {
+    return storeData[type];
+};
+
 
 // 获取状态文本的函数
 export const getStatusText = (status: any, type: any): string => {
-    return Status[type][status] || '未知状态';
+    return StatusEnum[type][status] || '未知状态';
 };

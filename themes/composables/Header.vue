@@ -92,8 +92,9 @@ const route = useRoute();
 // 定义下拉菜单项
 const userItems = [
   { key: 'login', name: '登录', command: '/user/login' },
+  { key: 'user', name: '账号', command: '/user' },
   { key: 'register', name: '注册', command: '/user/register' },
-  { key: 'settings', name: '设置', command: '/user/settings' },
+  { key: 'settings', name: '设置', command: '/user/setting' },
   { key: 'logout', name: '退出', command: '/user/logout' },
 ];
 
@@ -118,9 +119,9 @@ const menuItems: MenuItem[] = [
     children: [
       { index: '5-1', label: '信息管理', path: '/user/info' },
       { index: '5-2', label: '地址管理', path: '/user/address' },
-      { index: '5-3', label: '企业商户端', path: '/user/merchant' },
-      { index: '5-4', label: '白名单', path: '/user/white-list' },
-      { index: '5-5', label: '绑定授权', path: '/user/bind-auth' },
+      { index: '5-3', label: '绑定授权', path: '/user' },
+      { index: '5-4', label: '账户管理', path: '/user' },
+      { index: '5-5', label: '用户协议', path: '/user' },
     ]
   },
 ];
@@ -168,7 +169,7 @@ const handleCommand = async (command: string) => {
       userStore.clearUserState()
       router.push("/");
     } else {
-      ElMessage.error(res.message || '登录失败'); // 错误提示
+      ElMessage.error(res.message || '退出失败'); // 错误提示
     }
   }else{
     router.push(command);

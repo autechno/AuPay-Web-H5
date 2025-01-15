@@ -57,7 +57,7 @@ import { getHeader } from "@/utils/storageUtils";
 import { getStatusText} from "@/utils/formatUtils";
 
 const headers = getHeader();
-const { systemApi } = useServer();
+const { messageApi } = useServer();
 
 // 表单数据
 const form = ref({
@@ -82,7 +82,7 @@ const openDialog = () => {
 // 创建工单
 const createTicket = async () => {
   try {
-    const res = await systemApi.ticketCreate({ content: newTicketContent.value }, headers);
+    const res = await messageApi.ticketCreate({ content: newTicketContent.value }, headers);
     if (res.code === 200) {
       ElMessage.success('工单创建成功');
       dialogVisible.value = false; // 关闭对话框
@@ -98,7 +98,7 @@ const createTicket = async () => {
 // 获取消息数据
 const fetchData = async () => {
   try {
-    const res = await systemApi.ticketList(form.value, headers);
+    const res = await messageApi.ticketList(form.value, headers);
     if (res.code === 200) {
       workList.value = res.data.records;
       totalWork.value = res.data.total;

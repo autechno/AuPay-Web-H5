@@ -186,7 +186,7 @@ const fetchData = async () => {
   try {
     // 使用 Promise.all 来并行处理两个 API 请求
     const [rateResponse, assetsResponse] = await Promise.all([
-      systemApi.getRate({ currency: currencyCode.value }, headers),
+      assetsApi.getRateU2Currency({ currency: currencyCode.value }, headers),
       assetsApi.accountAssets({}, headers)
     ]);
     // 处理汇率响应

@@ -45,19 +45,15 @@ const customFetch = async (url: string, options?: any, headers?: any) => {
 }
 
 export default class Http {
-
     get(url: string, params?: any, headers?: any) {
         return customFetch(url, { method: 'get', params }, headers)
     }
-
     post(url: string, body?: any, headers?: any) {
         return customFetch(url, { method: 'post', body }, headers)
     }
-
     put(url: string, body?: any, headers?: any) {
         return customFetch(url, { method: 'put', body }, headers)
     }
-
     delete(url: string, body?: any, headers?: any) {
         return customFetch(url, { method: 'delete', body }, headers)
     }

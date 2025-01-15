@@ -1,5 +1,5 @@
 <template>
-  <div class="sub-page">
+  <div>
     <el-button type="primary" @click="showFilterDialog">筛选</el-button>
 
     <!-- 消息表格 -->
@@ -22,23 +22,23 @@
       </el-table-column>
       <el-table-column label="兑出币种" width="150">
         <template #default="scope">
-          {{ getDataInfo(scope.row.cashOutCurrencyId, 'currencyChains').name }}
+          {{ getCurrencyInfo(scope.row.cashOutCurrencyId).name }}
         </template>
       </el-table-column>
-      <el-table-column label="兑出链" width="150">
+      <el-table-column label="兑出币种协议" width="150">
         <template #default="scope">
-          {{ getDataInfo(scope.row.cashOutChain, 'chains').name }}
+          {{ getCoinInfo(scope.row.cashOutChain).name }}
         </template>
       </el-table-column>
       <el-table-column prop="cashOutAmount" label="兑出量" width="120"></el-table-column>
-      <el-table-column label="兑入币种" width="150">
+      <el-table-column prop="cashInCurrencyId" label="兑入币种" width="150">
         <template #default="scope">
-          {{ getDataInfo(scope.row.cashInCurrencyId, 'currencyChains').name }}
+          {{ getCurrencyInfo(scope.row.cashInCurrencyId).name }}
         </template>
       </el-table-column>
-      <el-table-column label="兑入链" width="150">
+      <el-table-column label="兑入币种协议" width="150">
         <template #default="scope">
-          {{ getDataInfo(scope.row.cashInChain, 'chains').name }}
+          {{ getCoinInfo(scope.row.cashInChain).name }}
         </template>
       </el-table-column>
       <el-table-column prop="cashInAmount" label="兑入量" width="120"></el-table-column>
@@ -63,42 +63,30 @@
         :current-page="form.pageNo"
         @current-change="handlePageChange"
     />
+
     <!-- 筛选弹窗 -->
     <el-dialog title="筛选条件" v-model="filterDialogVisible">
-      <el-form :model="form.conditions">
+      <el-form :model="filterForm">
         <el-form-item label="时间">
-          <el-date-picker
-              v-model="dateRange"
-              type="daterange"
-              placeholder="选择时间范围"
-              @change="updateDateRange"
-          />
+          <el-date-picker v-model="filterForm.dateRange" type="daterange" placeholder="选择时间范围" />
         </el-form-item>
         <el-form-item label="兑出币种">
-          <el-select v-model="form.conditions.cashOutCurrencyId" placeholder="请选择兑出币种">
-            <el-option v-for="item in getDataList('currencyChains')" :key="item.code" :label="item.name" :value="item.code" />
-          </el-select>
+          <el-input v-model="filterForm.outCurrency" placeholder="请输入兑出币种" />
         </el-form-item>
-        <el-form-item label="兑出链">
-          <el-select v-model="form.conditions.cashOutCurrencyChain" placeholder="请选择链">
-            <el-option v-for="item in getDataList('chains')" :key="item.code" :label="item.name" :value="item.code" />
-          </el-select>
+        <el-form-item label="兑出币种协议">
+          <el-input v-model="filterForm.outProtocol" placeholder="请输入兑出币种协议" />
         </el-form-item>
         <el-form-item label="兑出数量">
-          <el-input v-model="form.conditions.cashOutAmount" placeholder="请输入兑出数量" type="number" />
+          <el-input v-model="filterForm.outAmount" placeholder="请输入兑出数量" type="number" />
         </el-form-item>
         <el-form-item label="兑入币种">
-          <el-select v-model="form.conditions.cashInCurrencyId" placeholder="请选择兑入币种">
-            <el-option v-for="item in getDataList('currencyChains')" :key="item.code" :label="item.name" :value="item.code" />
-          </el-select>
+          <el-input v-model="filterForm.inCurrency" placeholder="请输入兑入币种" />
         </el-form-item>
-        <el-form-item label="兑入链">
-          <el-select v-model="form.conditions.cashInCurrencyChain" placeholder="请选择兑入链">
-            <el-option v-for="item in getDataList('chains')" :key="item.code" :label="item.name" :value="item.code" />
-          </el-select>
+        <el-form-item label="兑入币种协议">
+          <el-input v-model="filterForm.inProtocol" placeholder="请输入兑入币种协议" />
         </el-form-item>
         <el-form-item label="兑入数量">
-          <el-input v-model="form.conditions.cashInAmount" placeholder="请输入兑入数量" type="number" />
+          <el-input v-model="filterForm.inAmount" placeholder="请输入兑入数量" type="number" />
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -113,7 +101,7 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
-import {getStatusText,formatDate, getDataList } from "~/utils/configUtils";
+import {getStatusText, getCoinInfo, formatDate, getCurrencyInfo} from "@/utils/formatUtils";
 
 const headers = getHeader();
 const { assetsApi } = useServer();
@@ -122,28 +110,24 @@ const { assetsApi } = useServer();
 const form = ref({
   pageNo: 1,
   pageSize: 10,
-  conditions: {
-    startTime: '',
-    endTime: '',
-    cashOutCurrencyId: '',
-    cashOutCurrencyChain: '',
-    cashOutAmount: '',
-    cashInCurrencyId: '',
-    cashInCurrencyChain: '',
-    cashInAmount: ''
-  }
+  conditions: {}
 });
 
 // 消息数据
 const recordList = ref([]);
 const totalRecord = ref(0);
+
+// 筛选弹窗状态和表单数据
 const filterDialogVisible = ref(false);
-const dateRange = ref([]);
-//转换搜索时间
-const updateDateRange = (range) => {
-  form.value.conditions.startTime = range.length > 0 ? range[0] : '';
-  form.value.conditions.endTime = range.length > 0 ? range[1] : '';
-};
+const filterForm = ref({
+  dateRange: [],
+  outCurrency: '',
+  outProtocol: '',
+  outAmount: null,
+  inCurrency: '',
+  inProtocol: '',
+  inAmount: null
+});
 
 // 获取消息数据
 const fetchData = async () => {
@@ -174,6 +158,7 @@ const showFilterDialog = () => {
 // 应用筛选条件
 const applyFilter = () => {
   // 将筛选条件应用到表单中
+  form.value.conditions = { ...filterForm.value };
   filterDialogVisible.value = false;
   fetchData(); // 重新获取数据
 };

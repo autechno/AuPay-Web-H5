@@ -43,7 +43,11 @@ export default defineNuxtConfig({
         prependPath: true
       }
     },
+    routeRules: {
+      '/app/v1/**': {
+        proxy: 'http://192.168.1.253:9000/**'
+      }
+    }
   },
-
   compatibilityDate: '2025-01-01'
 })

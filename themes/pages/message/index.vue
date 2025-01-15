@@ -57,7 +57,7 @@ import { ElMessage } from 'element-plus';
 import type { TabsPaneContext } from 'element-plus';
 import {getHeader} from "@/utils/storageUtils";
 const headers = getHeader();
-const { systemApi } = useServer()
+const { messageApi } = useServer()
 const activeTab = ref('1')
 
 // 表单数据
@@ -76,7 +76,7 @@ const totalMessages = ref(0);
 
 const fetchData = async () => {
   try {
-    const res = await systemApi.messageList(form.value, headers);
+    const res = await messageApi.messageList(form.value, headers);
     if (res.code === 200) {
       messagesList.value = res.data.records;
       totalMessages.value = res.data.total;

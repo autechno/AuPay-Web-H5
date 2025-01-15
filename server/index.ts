@@ -14,14 +14,32 @@ class UserApi extends Http {
     public logout(params: any, headers: any): Promise<any> {
         return this.post('/oz-client-auth/auth/logout', params, headers)
     }
-
     /**
      * 注册
-     * @param params
-     * @param headers
      */
     public register(params: any, headers: any): Promise<any> {
         return this.post('/oz-client-auth/auth/register', params, headers)
+    }
+    public setUserInfo(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-user/base/setUserInfo', params, headers)
+    }
+    /**
+     * 查询用户信息
+     */
+    public getUserInfo(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-user/base/getUserInfo', params, headers)
+    }
+    /**
+     * 查询基础配置信息
+     */
+    public getUserSystemConfig(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-user/config/getUserSystemConfig', params, headers)
+    }
+    /**
+     * 获取基础配置信息
+     */
+    public setUserSystemConfig(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-user/config/getUserSystemConfig', params, headers)
     }
     /**
      * 设置支付密码
@@ -39,25 +57,132 @@ class UserApi extends Http {
         return this.put('/aupay-user/password/resetPassword', params, headers)
     }
     /**
-     * 获取用户信息
+     * ，验证收款码
      * @param params
      * @param headers
      */
-    public getUserInfo(params: any, headers: any): Promise<any> {
-        return this.get('/aupay-user/base/getUserInfo', params, headers)
-    }
-    /**
-     * 获取用户信息
-     * @param params
-     * @param headers
-     */
-    public getUserTransferCode(params: any, headers: any): Promise<any> {
+    public getCheckTransferCode(params: any, headers: any): Promise<any> {
         return this.get('/aupay-user/base/check/transferCode', params, headers)
     }
+    /**
+     * ，验证收款码
+     * @param params
+     * @param headers
+     */
+    public setTransferCode(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-user/base/set/transferCode', params, headers)
+    }
+    /**
+     * 常用地址列表
+     */
+    public getFrequentlyList(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-user/address/list', params, headers)
+    }
+    /**
+     * 验证是否白名单地址
+     */
+    public getFrequentlyWhiteCheck(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-user/address/white/check', params, headers)
+    }
+    /**
+     * 删除常用地址
+     */
+    public getFrequentlyDelete(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-user/address/delete/'+ params.optToken+'?id=' + params.id, params, headers)
+    }
+    /**
+     * 编辑常用地址
+     */
+    public getFrequentlyEdit(params: any,  headers: any): Promise<any> {
+        return this.post('/aupay-user/address/edit/'+ params.optToken, params, headers)
+    }
+    /**
+     * 白名单地址状态切换
+     */
+    public getFrequentlyToggle(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-user/address/white/toggle/'+ params.optToken+'?id=' + params.id, params, headers)
+    }
+    /**
+     * 修改密码
+     */
+    public updatePassword(params: any,  headers: any): Promise<any> {
+        return this.post('/aupay-user/password/updatePassword/'+ params.optToken+'?newPassword=' + params.newPassword + '&rawPassword=' + params.newPassword, {}, headers)
+    }
+    /**
+     * 修改资金密码
+     */
+    public updateAssetsPassword(params: any,  headers: any): Promise<any> {
+        return this.post('/aupay-user/password/updateAssetsPassword/'+ params.optToken+'?newPassword=' + params.newPassword, {}, headers)
+    }
+}
 
+/**
+ * 消息服务
+ */
+class MessageApi extends Http {
+    /**
+     * 获取消息列表
+     */
+    public messageList(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-message/message/list', params, headers)
+    }
+    /**
+     * 获取工单列表
+     */
+    public ticketList(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-message/ticket/list', params, headers)
+    }
+    /**
+     * 工单详情列表
+     */
+    public ticketMessageList(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-message/ticket/message/list', params, headers)
+    }
+    /**
+     * 工单详情创建
+     */
+    public ticketMessageCreate(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-message/ticket/message/create', params, headers)
+    }
+    /**
+     * 创建工单
+     */
+    public ticketCreate(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-message/ticket/create'+ params.content, {}, headers)
+    }
+    /**
+     * 结束工单
+     */
+    public ticketFixList(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-message/ticket/fix', params, headers)
+    }
+    /**
+     * 催促工单
+     */
+    public ticketPress(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-message/ticket/press', params, headers)
+    }
 }
 
 class SystemApi extends Http {
+    /**
+     * 发送修改邮箱验证码
+     */
+    public sendUpdateEmail(params: any,  headers: any): Promise<any> {
+        return this.get('/aupay-user/email/sendEmailCode', params, headers)
+    }
+    /**
+     * 检查修改邮箱验证码
+     */
+    public sendValidateEmail(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-user/email/verifyEmail', params, headers)
+    }
+    /**
+     * 验证Google
+     */
+    public verifyValidateGoogle(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-user/verifyGoogle', params, headers)
+    }
     /**
      * 发送注册邮箱验证码
      */
@@ -93,72 +218,6 @@ class SystemApi extends Http {
         }
     }
     /**
-     * 获取消息列表
-     */
-    public messageList(params: any, headers: any): Promise<any> {
-        return this.post('/message/list', params, headers)
-    }
-    /**
-     * 获取工单列表
-     */
-    public ticketList(params: any, headers: any): Promise<any> {
-        return this.post('/ticket/list', params, headers)
-    }
-    /**
-     * 工单详情列表
-     */
-    public ticketMessageList(params: any, headers: any): Promise<any> {
-        return this.get('/ticket/message/list', params, headers)
-    }
-    /**
-     * 工单详情创建
-     */
-    public ticketMessageCreate(params: any, headers: any): Promise<any> {
-        return this.post('/ticket/message/create', params, headers)
-    }
-    /**
-     * 创建工单
-     */
-    public ticketCreate(params: any, headers: any): Promise<any> {
-        return this.post('/ticket/create'+ params.content, {}, headers)
-    }
-    /**
-     * 结束工单
-     */
-    public ticketFixList(params: any, headers: any): Promise<any> {
-        return this.get('/ticket/fix', params, headers)
-    }
-    /**
-     * 催促工单
-     */
-    public ticketPress(params: any, headers: any): Promise<any> {
-        return this.get('/ticket/press', params, headers)
-    }
-    /**
-     * 获取汇率
-     */
-    public getRate(params: any, headers: any): Promise<any> {
-        return this.get('/aupay-operate/rate/usdt2currency', params, headers)
-    }
-    /**
-     * 获取币种兑换汇率
-     */
-    public getRateCoin2Coin(params: any, headers: any): Promise<any> {
-        return this.get('/aupay-operate/rate/coin2coin', params, headers)
-    }
-    /**
-     * 获取基础配置信息
-     */
-    public getUserSystemConfig(params: any, headers: any): Promise<any> {
-        return this.get('/aupay-user/config/getUserSystemConfig', params, headers)
-    }
-    /**
-     * 保存基础配置信息
-     */
-    public setUserSystemConfig(params: any, headers: any): Promise<any> {
-        return this.post('/aupay-user/config/setUserSystemConfig', params, headers)
-    }
-    /**
      * 验证资金密码权限
      */
     public assetsFlashPermission(params: any, headers: any): Promise<any> {
@@ -169,12 +228,6 @@ class SystemApi extends Http {
      */
     public verifyAssetsPassword(params: any, headers: any): Promise<any> {
         return this.get('/aupay-user/password/verifyAssetsPassword', params, headers)
-    }
-    /**
-     * 验证资金Google
-     */
-    public verifyAssetsGoogle(params: any, headers: any): Promise<any> {
-        return this.get('/aupay-user/verifyGoogle', params, headers)
     }
 }
 
@@ -202,10 +255,10 @@ class AssetsApi extends Http {
      * 行情
      */
     public marketList(params: any, headers: any): Promise<any> {
-        return this.post('/market/query', params, headers)
+        return this.post('/aupay-operate/market/query', params, headers)
     }
     public marketFocus(params: any, headers: any): Promise<any> {
-        return this.post('/market/focus/toggle?coinId=' + params.coinId + (params.focusId ? '&focusId=' + params.focusId : ''), {}, headers)
+        return this.post('/aupay-operate/market/focus/toggle?coinId=' + params.coinId + (params.focusId ? '&focusId=' + params.focusId : ''), {}, headers)
     }
     /**
      * 兑换账户资金
@@ -223,23 +276,37 @@ class AssetsApi extends Http {
      * 兑换账户资金详情
      */
     public fastSwapApplyDetail(params: any, headers: any): Promise<any> {
-        return this.post('/aupay-trade/fastSwap/getFastSwapDetail', params, headers);
+        return this.get('/aupay-trade/fastSwap/getFastSwapDetail', params, headers);
     }
-
-
     /**
      * 账户发起对换
-     * {
-     *   "accountId": 0,
-     *   "accountType": 0,
-     *   "qrcode": "string",
-     *   "currencyId": 0,
-     *   "currencyChain": 0,
-     *   "transferAmount": 0
-     * }
      */
     public transferApply(params: any, headers: any): Promise<any> {
-        return this.post('/aupay-trade/fastSwap/queryFastSwaps'+params.optToken, params, headers)
+        return this.post('/aupay-trade/transferApply'+params.optToken, params, headers)
+    }
+    /**
+     * 获取汇率
+     */
+    public getRateU2Currency(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-operate/rate/usdt2currency', params, headers)
+    }
+    /**
+     * 获取币种兑换汇率
+     */
+    public getRateCoin2Coin(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-operate/rate/coin2coin', params, headers)
+    }
+    /**
+     * 获取币种兑换汇率
+     */
+    public getFastRateFee(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-trade/fastSwap/fee', params, headers)
+    }
+    /**
+     * 获取币种提取汇率
+     */
+    public getWithdrawRateFee(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-trade/withdraw/fee', params, headers)
     }
 }
 
@@ -247,4 +314,5 @@ export default {
     userApi: new UserApi(),
     systemApi: new SystemApi(),
     assetsApi: new AssetsApi(),
+    messageApi: new MessageApi()
 }

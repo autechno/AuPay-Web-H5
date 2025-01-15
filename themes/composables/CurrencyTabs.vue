@@ -28,7 +28,7 @@ const handleClick = (tab: TabsPaneContext) => {
   emit('currency-changed', currencyId);
 };
 const headers = getHeader();
-const { systemApi } = useServer()
+const { userApi } = useServer()
 const  showCurrency = ref(false);
 
 defineProps({
@@ -40,7 +40,7 @@ defineProps({
 
 const getConfigShow = async () => {
   try {
-    const res = await systemApi.getUserSystemConfig({}, headers);
+    const res = await userApi.getUserSystemConfig({}, headers);
     if (res.code === 200) {
       showCurrency.value = res.data.showHide == 1?true:false;
       emit('show-currency-changed', showCurrency.value);

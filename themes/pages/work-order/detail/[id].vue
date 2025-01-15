@@ -37,7 +37,7 @@ import { getStatusText } from "@/utils/formatUtils";
 import { useRoute } from 'vue-router';
 const route = useRoute();
 const headers = getHeader();
-const { systemApi } = useServer();
+const { messageApi } = useServer();
 const dialogVisible = ref(false);
 
 // 消息数据
@@ -49,7 +49,7 @@ const replyContent = ref('');
 // 获取消息数据
 const fetchData = async (ticketId: number) => {
   try {
-    const res = await systemApi.ticketMessageList({ ticketId }, headers);
+    const res = await messageApi.ticketMessageList({ ticketId }, headers);
     if (res.code === 200) {
       ticket.value = res.data.ticket;
       workList.value = res.data.messageList;
@@ -68,7 +68,7 @@ const submitReply = async () => {
     return;
   }
   try {
-    const res = await systemApi.ticketMessageCreate({ticketId: ticketId.value, messageContent: replyContent.value }, headers);
+    const res = await messageApi.ticketMessageCreate({ticketId: ticketId.value, messageContent: replyContent.value }, headers);
     if (res.code === 200) {
       ElMessage.success('回复成功');
       // 清空内容
@@ -86,7 +86,7 @@ const submitReply = async () => {
 // 催促方法
 const ticketPress = async () => {
   try {
-    const res = await systemApi.ticketPress({ ticketId: ticket.value.id }, headers);
+    const res = await messageApi.ticketPress({ ticketId: ticket.value.id }, headers);
     if (res.code === 200) {
       ElMessage.success('催促成功');
       dialogVisible.value = false;
@@ -101,7 +101,7 @@ const ticketPress = async () => {
 // 问题已解决方法
 const ticketFix = async () => {
   try {
-    const res = await systemApi.ticketFixList({ ticketId: ticket.value.id }, headers);
+    const res = await messageApi.ticketFixList({ ticketId: ticket.value.id }, headers);
     if (res.code === 200) {
       ElMessage.success('问题已解决');
     } else {

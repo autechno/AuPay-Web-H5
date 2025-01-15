@@ -35,8 +35,7 @@
 import { ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import {getHeader} from "@/utils/storageUtils";
-import { rules } from "@/utils/validationRules";
-import { getDataList } from "~/utils/configUtils";
+import { getDataList } from "@/utils/formatUtils";
 const headers = getHeader();
 const { userApi } = useServer();
 const currencyOptions = ref(getDataList('currency'));
@@ -54,6 +53,13 @@ const form = ref({
   systemLanguage: '',
 });
 
+// 表单验证规则
+const rules = {
+  currencyUnit: [{ required: true, message: '请选择货币单位', trigger: 'change' }],
+  showHide: [{ required: true, message: '请选择是否隐藏余额', trigger: 'change' }],
+  systemLanguage: [{ required: true, message: '请选择语言', trigger: 'change' }],
+};
+
 // 提交表单
 const handleSubmit = async () => {
   const valid = await formRef.value.validate();
@@ -61,12 +67,11 @@ const handleSubmit = async () => {
     if (valid) {
       let res = await userApi.setUserSystemConfig(form.value, headers);
       if(res.code == 200) {
-        const userStore = UseUserStore();
-        const result = await userStore.fetchUserInfo();
-        if(result){
-          ElMessage.success('设置成功！');
-        }
+        ElMessage.success('设置成功！');
       }
+      console.log('提交的表单数据:', form.value);
+    } else {
+      ElMessage.error('表单验证失败，请检查输入！');
     }
   } catch (error) {
     ElMessage.error('请求失败，请重试')
