@@ -1,5 +1,5 @@
 <template>
-  au-tech
+  auTech
 </template>
 <script lang="ts" setup>
 </script>
