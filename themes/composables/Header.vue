@@ -2,21 +2,21 @@
   <div class="flex items-center justify-end" style="text-align: right;">
     <!-- 刷新链接 -->
     <span style="padding-right:16px;">
-      <router-link to="/flash-exchange">
+      <a href="/flash-exchange">
         <el-icon style="font-size: 20px; position: relative; top: 4px;"><Refresh /></el-icon>闪兑
-      </router-link>
+      </a>
     </span>
     <!-- 充值/提现链接 -->
     <span style="padding-right:16px;">
-      <router-link to="/charge-withdraw?typeId=0&stepId=1">
+      <a href="/charge-withdraw">
         <el-icon style="font-size: 20px; position: relative; top: 4px;"><Money /></el-icon>充值/提现
-      </router-link>
+      </a>
     </span>
     <!-- 消息通知图标 -->
     <el-badge is-dot class="item" style="position: relative; top: -2px;">
-      <router-link to="/message">
+      <a href="/message">
         <el-avatar :size="20" class="mr-3" :icon="Message" />
-      </router-link>
+      </a>
     </el-badge>
     <!-- 用户头像 -->
     <el-dropdown style="padding-right:16px; margin-top: 5px;" @command="handleCommand">

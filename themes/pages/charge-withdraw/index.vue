@@ -2,19 +2,13 @@
   <div class="exchange-container">
     <el-tabs v-model="activeIndex" @tab-click="handleTabClick">
       <el-tab-pane label="充值">
-        <div v-if="activeIndex === '0'">
           <Recharge  />
-        </div>
       </el-tab-pane>
       <el-tab-pane label="转账">
-        <div v-if="activeIndex === '1'">
           <TransferAccounts  />
-        </div>
       </el-tab-pane>
       <el-tab-pane label="提现">
-        <div v-if="activeIndex === '2'">
           <Withdrawal  />
-        </div>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -25,7 +19,6 @@ import Recharge from '@/composables/Recharge.vue';
 import TransferAccounts from '@/composables/TransferAccounts.vue';
 import Withdrawal from '@/composables/Withdrawal.vue';
 import { ref } from 'vue';
-
 import { useRoute } from 'vue-router';
 const route = useRoute();
 
@@ -34,10 +27,10 @@ const activeIndex = ref(route.query.typeId || '0');
 
 // 处理选项卡点击事件
 const handleTabClick = (tab: any) => {
-  const index = tab.index;
+  activeIndex.value = tab.index;
   return navigateTo({
     path: `/charge-withdraw`,
-    query: { typeId: index, stepId: 1 }
+    query: { typeId: activeIndex.value }
   });
 };
 

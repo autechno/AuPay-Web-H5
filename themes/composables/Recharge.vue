@@ -1,121 +1,77 @@
 <template>
-  <div class="container">
-    <el-form :model="form" :rules="rules" ref="formRef" @submit.prevent="handleSubmit" v-if="activeStepId == 1">
-      <div style="margin: 0 auto; width: 40%;">
-        <el-form-item label="" prop="tokenProtocol">
-          <el-select v-model="form.tokenProtocol" placeholder="请选择代币协议">
-            <el-option
-                v-for="protocol in tokenProtocols"
-                :key="protocol.value"
-                :label="protocol.label"
-                :value="protocol.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="" prop="currency">
-          <el-select v-model="form.currency" placeholder="请选择币种">
-            <el-option
-                v-for="currency in currencies"
-                :key="currency.value"
-                :label="currency.label"
-                :value="currency.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-      </div>
+  <div class="exchange-container">
+    <el-form :model="form" ref="formRef" @submit.prevent="showQrDialog = true">
+      <el-select
+          style="margin-bottom: 20px;"
+          id="currency-select"
+          v-model="form.currencyId"
+          placeholder="请选择货币"
+          @change="updateCurrencyChain"
+      >
+        <el-option
+            v-for="currency in selectedCurrency"
+            :key="currency.currencyId"
+            :label="currency.currencyName"
+            :value="currency.currencyId"
+        />
+      </el-select>
+
+      <el-select
+          id="chain-select"
+          style="margin-bottom: 20px;"
+          v-model="form.currencyChainId"
+          placeholder="请选择链"
+          @change="updateWalletAddress"
+      >
+        <el-option
+            v-for="chain in selectedCurrencyChain"
+            :key="chain.currencyChainId"
+            :label="chain.currencyChainName"
+            :value="chain.currencyChainId"
+        />
+      </el-select>
       <div class="social-login">
         <el-button type="primary" native-type="submit">确认生成收款码</el-button>
       </div>
     </el-form>
-    <div v-if="activeStepId == 2">
-      <img :src="qrCodeSrc" alt="QR Code" />
-      <p @click="copyText(url)" class="copyable-text">{{ url }}</p>
-      <div class="social-login">
-        <el-button type="primary" @click="jumpUrl">生成图片</el-button>
-      </div>
-    </div>
-    <div v-if="activeStepId == 3">
-      <img :src="qrCodeSrc" alt="QR Code" />
-      <p @click="copyText(url)" class="copyable-text">{{ url }}</p>
-      <!-- Avatar Upload -->
-      <el-upload
-          class="avatar-uploader"
-          action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-          :show-file-list="false"
-          :on-success="handleAvatarSuccess('avatar')"
-          :before-upload="beforeUpload"
-      >
-        <el-avatar v-if="form.avatarUrl" :src="form.avatarUrl" :size="80" />
-        <template v-else> <el-avatar :size="80" :src="circleUrl" /> </template>
-      </el-upload>
-
-      <el-form :model="form" :rules="rules" ref="formRef" @submit.prevent="handleSubmit">
-        <div style="margin: 0 auto; width: 40%;">
-          <el-form-item label="" prop="name">
-            <el-input v-model="form.name" placeholder="请输入名称" />
-          </el-form-item>
-          <el-upload
-              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess('background')"
-              :before-upload="beforeUpload"
-          >
-            <img v-if="form.backgroupdUrl" :src="form.backgroupdUrl" class="background" />
-            <template v-else> <span>上传背景图片（800*1024）</span> <el-button >上传</el-button> </template>
-          </el-upload>
-
-          <el-form-item label="" prop="text">
-            <el-input v-model="form.text" placeholder="请输入说明文本" />
-          </el-form-item>
-          <div class="social-login">
-            <el-button type="primary" native-type="submit">确认</el-button>
-          </div>
+    <el-dialog v-model="showQrDialog" style="height: 450px; width: 400px">
+        <div style="margin: 30px 30%">
+          <img v-if="form.avatar" :src="form.avatar" class="avatar" style="margin: 20px auto" />
+          <QCcode :value="form.walletAddress" :size="150" />
+          <el-button @click="copyText(form.walletAddress)"> 复制地址 </el-button>
         </div>
-      </el-form>
-    </div>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { ElNotification, ElMessage } from 'element-plus';
-const circleUrl = ref('https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png');
-const route = useRoute();
-const formRef: any = ref(null);
-const url = ref('https://example.com/qr-code-link');
-const qrCodeSrc = ref('https://via.placeholder.com/150');
-const activeStepId = ref(route.query.stepId || 1);
-
-const form = reactive({
-  tokenProtocol: 'protocolA',
-  currency: 'BTC',
-  name: '',
-  backgroupdUrl: '',
-  avatarUrl: 'https://via.placeholder.com/150',
-  text: '',
+import { ref, onMounted } from 'vue';
+import { getHeader } from "@/utils/storageUtils";
+import { ElMessage } from "element-plus";
+import QCcode from "@/composables/QCcode.vue";
+const showQrDialog = ref(false);
+const headers = getHeader();
+const { assetsApi } = useServer();
+const form = ref({
+  currencyId: null,
+  currencyChainId: null,
+  walletAddress: '',
+  avatar: '',
 });
+const selectedCurrency = ref([]);
+const selectedCurrencyChain = ref([]);
+const formRef = ref(null);
 
-const rules = {
-  tokenProtocol: [{ required: true, message: '请选择代币协议', trigger: 'change' }],
-  currency: [{ required: true, message: '请选择币种', trigger: 'change' }],
-  name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
-  text: [{ required: true, message: '说明文本不能为空', trigger: 'blur' }],
+// 获取 URL 查询参数
+const getQueryParams = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return {
+    currencyId: urlParams.get('currencyId'),
+    currencyChainId: urlParams.get('currencyChainId'),
+  };
 };
 
-const tokenProtocols = [
-  { label: '协议A', value: 'protocolA' },
-  { label: '协议B', value: 'protocolB' },
-  { label: '协议C', value: 'protocolC' },
-];
-
-const currencies = [
-  { label: '比特币', value: 'BTC' },
-  { label: '以太坊', value: 'ETH' },
-  { label: '莱特币', value: 'LTC' },
-];
-
-// 复制二维码连接
+// 复制方法
 const copyText = (text: string) => {
   navigator.clipboard.writeText(text).then(() => {
     ElNotification({
@@ -125,75 +81,97 @@ const copyText = (text: string) => {
       duration: 2000,
     });
   }).catch(err => {
-    console.error('Error copying text: ', err);
+    console.error('复制文本时出错: ', err);
   });
 };
-
-// 表单提交
-const handleSubmit = () => {
-  formRef.value.validate((valid) => {
-    if (valid) {
-      if(activeStepId.value === 1){
-        // 成功跳转
-      }else if(activeStepId.value === 2){
-        // 成功跳转
-      }else if(activeStepId.value === 3){
-
+// 获取数据的函数
+const fetchData = async () => {
+  try {
+    let res = await assetsApi.accountAssets({}, headers);
+    if (res.code === 200) {
+      let dataList = res.data;
+      const currencyMap = new Map();
+      dataList.forEach(item => {
+        if (!currencyMap.has(item.currencyId)) {
+          currencyMap.set(item.currencyId, {
+            currencyId: item.currencyId,
+            currencyName: getCurrencyInfo(item.currencyId)?.name,
+            chains: [],
+            walletAddress: item.walletAddress,
+          });
+        }
+        currencyMap.get(item.currencyId).chains.push({
+          currencyChainId: item.currencyChain,
+          currencyChainName: getCoinInfo(item.currencyChain)?.name,
+          walletAddress: item.walletAddress,
+        });
+      });
+      selectedCurrency.value = Array.from(currencyMap.values());
+      // 查询参数
+      const { currencyId, currencyChainId } = getQueryParams();
+      if (currencyId) {
+        form.value.currencyId = currencyId;
+        updateCurrencyChain();
+        if (currencyChainId) {
+          form.value.currencyChainId = currencyChainId;
+          updateWalletAddress(); // 更新钱包地址
+        }
+      }else{
+        form.value.currencyId = selectedCurrency.value[0]?.currencyId;
+        form.value.currencyChainId = selectedCurrency.value[0]?.chains[0]?.currencyChainId;
+        form.value.walletAddress = selectedCurrency.value[0]?.walletAddress || '';
+        selectedCurrencyChain.value = selectedCurrency.value[0]?.chains || [];
       }
-      console.log(activeStepId);
-      jumpUrl();
     } else {
-      console.error('输入无效');
+      ElMessage.error(res.message || '查询失败');
     }
-  });
+  } catch (error) {
+    ElMessage.error('请求失败，请重试');
+  }
 };
 
+// 更新链选择
+const updateCurrencyChain = () => {
+  const currentCurrency = selectedCurrency.value.find(currency => currency.currencyId === form.value.currencyId);
+  if (currentCurrency) {
+    selectedCurrencyChain.value = currentCurrency.chains;
+    form.value.currencyChainId = currentCurrency.chains[0]?.currencyChainId;
+    form.value.walletAddress = currentCurrency.chains[0]?.walletAddress || '';
+  }
+};
+
+// 更新钱包地址
+const updateWalletAddress = () => {
+  const selectedChain = selectedCurrencyChain.value.find(chain => chain.currencyChainId === form.value.currencyChainId);
+  if (selectedChain) {
+    form.value.walletAddress = selectedChain.walletAddress;
+  }
+};
+
+// 初始化数据
 onMounted(() => {
-
+  const userStore = UseUserStore();
+  form.value.avatar = userStore.userInfo.headPortrait;
+  fetchData();
 });
-
-
-// 转跳当前URL
-const jumpUrl = () => {
-  const nextStepId = parseInt(activeStepId.value) + 1;
-  window.location.href = '/charge-withdraw?typeId=0&stepId=' + nextStepId;
-};
-
-// 图片上传成功处理
-const handleAvatarSuccess = (type: 'avatar' | 'background') => (response, uploadFile) => {
-  if (type === 'avatar') {
-    form.avatarUrl = URL.createObjectURL(uploadFile.raw!);
-  } else if (type === 'background') {
-    form.backgroupdUrl = URL.createObjectURL(uploadFile.raw!);
-  }
-};
-// 图片验证
-const beforeUpload = (rawFile) => {
-  if (rawFile.type !== 'image/jpeg') {
-    ElMessage.error('图片必须为 JPG 格式!');
-    return false;
-  } else if (rawFile.size / 1024 / 1024 > 2) {
-    ElMessage.error('图片大小不能超过 2MB!');
-    return false;
-  }
-  return true;
-};
 </script>
 
 <style scoped>
-.container{
-  text-align: center;
-  width: 40%;
+.exchange-container {
+  height: 180px;
+  width: 340px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  padding: 30px;
   margin: 0 auto;
 }
-.social-login {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
 .avatar {
-  width: 50px;
-  height: 50px;
-
+  width: 80px;
+  height: 80px;
+  display: block;
+  border-radius: 80px;
 }
+
 </style>

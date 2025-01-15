@@ -7,16 +7,15 @@ import { ref, watch, onMounted } from "vue";
 import QCode from 'qrcode-generator';
 
 const props = defineProps<{
-  value: string; // 接受的 QR 码内容
-  size: number;  // QR 码的大小
+  value: string;
+  size: number;
 }>();
 
 const qrCanvas = ref<HTMLCanvasElement | null>(null);
 
 const generateQRCode = () => {
-  if (!props.value || !qrCanvas.value) return; // 确保 canvas 存在
-
-  const qr = QCode(0, 'H'); // 0 表示 QR 码，'H' 表示高纠错级别
+  if (!props.value || !qrCanvas.value) return;
+  const qr = QCode(0, 'H');
   qr.addData(props.value);
   qr.make();
 
