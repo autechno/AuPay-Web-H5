@@ -35,13 +35,13 @@ const storeData = {
 // 状态常量
 export const StatusEnum = {
     ACCOUNT: {
-        CREATED: 0,    // 已提交 待处理
-        WAITING: 1,    // 处理中 中间状态
-        SUCCESS: 2,    // 成功
-        FAILED: 3,     // 失败
-        EXCEPTION: 4,  // 处理异常
-        SUSPEND: 5,    // 挂起
-        APPLY: 10,     // 发起申请 待审批
+        0: '已提交 待处理',
+        1: '处理中 中间状态',
+        2: '成功',
+        3: '失败',
+        4: '处理异常',
+        5: '挂起',
+        10: '发起申请 待审批',
     },
     WORK:{
         OPEN: '未解决',

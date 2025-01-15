@@ -115,12 +115,22 @@ const handleSubmit = async () => {
           let res = await userApi.loginValidateEmail(form.value, {});
           if (res.code === 200) {
             userStore.setTokenState(res.data);
-            // 获取消息数据
-              const userInfoRes = await userApi.getUserInfo({}, headers); // 使用查询字段
-              if (userInfoRes.code === 200) {
-                dialogVisible.value = true;
-                userStore.setUserInfo(userInfoRes.data);
-              }
+
+
+            const [infoRes, configRes] = await Promise.all([
+              userApi.getUserInfo({}, headers),
+              userApi.getUserSystemConfig({}, headers)
+            ]);
+            if (infoRes.code === 200) {
+              const combinedData = {
+                ...infoRes.data,
+                currencyUnit: configRes.data.currencyUnit,
+                showHide: configRes.data.showHide,
+                systemLanguage: configRes.data.systemLanguage
+              };
+              dialogVisible.value = true;
+              userStore.setUserInfo(combinedData);
+            }
           } else {
             ElMessage.error(res.message || '登录失败'); // 错误提示
           }

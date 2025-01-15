@@ -46,7 +46,8 @@ const initialUserInfo: UserInfo = {
     bindAppleLogin: false,
     bindFacebookLogin: false,
     currencyUnit: '',
-    showHide: 0
+    showHide: 0,
+    systemLanguage: ''
 };
 
 export const UseUserStore = defineStore('user', {

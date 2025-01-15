@@ -36,10 +36,10 @@ class UserApi extends Http {
         return this.get('/aupay-user/config/getUserSystemConfig', params, headers)
     }
     /**
-     * 获取基础配置信息
+     * 设置基础配置信息
      */
     public setUserSystemConfig(params: any, headers: any): Promise<any> {
-        return this.post('/aupay-user/config/getUserSystemConfig', params, headers)
+        return this.post('/aupay-user/config/setUserSystemConfig', params, headers)
     }
     /**
      * 设置支付密码
