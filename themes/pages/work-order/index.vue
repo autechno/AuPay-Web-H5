@@ -11,20 +11,24 @@
         </template>
       </el-table-column>
       <el-table-column prop="content" label="问题"></el-table-column>
-      <el-table-column prop="createTime" label="时间" width="180"></el-table-column>
-      <el-table-column label="对话状态" width="200">
+      <el-table-column label="时间" >
+        <template #default="scope">
+          {{ formatDate(scope.row.createTime) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="对话状态" >
         <template #default="scope">
           {{ getStatusText(scope.row.conversationStatus, 'WORK') }}
         </template>
       </el-table-column>
-      <el-table-column prop="replyStatus" label="客服回复状态" width="140">
+      <el-table-column prop="replyStatus" label="客服回复状态" >
         <template #default="scope">
           {{ getStatusText(scope.row.staffReplyStatus, 'WORK') }}
         </template>
       </el-table-column>
       <el-table-column label="操作" width="140">
         <template #default="scope">
-          <el-link :href="`/work-order/detail/${scope.row.id}`">{{ getStatusText(scope.row.status) }}</el-link>
+          <el-link :href="`/work-order/detail/${scope.row.id}`">{{ getStatusText(scope.row.status, 'WORK') }}</el-link>
         </template>
       </el-table-column>
     </el-table>
@@ -54,7 +58,7 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
-import { getStatusText} from "@/utils/formatUtils";
+import { getStatusText, formatDate} from "@/utils/formatUtils";
 
 const headers = getHeader();
 const { messageApi } = useServer();
@@ -102,6 +106,7 @@ const fetchData = async () => {
     if (res.code === 200) {
       workList.value = res.data.records;
       totalWork.value = res.data.total;
+      console.log(res.data.records);
     } else {
       ElMessage.error(res.message || '查询失败');
     }

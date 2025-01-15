@@ -1,11 +1,19 @@
 <template>
   <div>
-    对话ID：{{ ticket.id }}   创建时间：{{ ticket.createTime }}  对话状态：{{ getStatusText(ticket.conversationStatus, 'WORK') }}  客服回复状态：{{ getStatusText(ticket.staffReplyStatus, '') }}
+    对话ID：{{ ticket.id }}   创建时间：{{ formatDate(ticket.createTime) }}  对话状态：{{ getStatusText(ticket.conversationStatus, 'WORK') }}  客服回复状态：{{ getStatusText(ticket.staffReplyStatus, 'WORK') }}
     <!-- 消息表格 -->
     <el-table :data="workList" style="width: 100%">
-      <el-table-column prop="createTime" label="本人（我)" width="180"></el-table-column>
+      <el-table-column label="本人（我)" width="180">
+        <template #default="scope">
+          {{ formatDate(scope.row.createTime) }}
+        </template>
+      </el-table-column>
       <el-table-column prop="messageContent" :label="ticket.content"></el-table-column>
-      <el-table-column prop="createTime" label="客服001（comer）" width="180"></el-table-column>
+      <el-table-column prop="createTime" label="客服001（comer）" width="180">
+        <template #default="scope">
+          {{ formatDate(scope.row.createTime) }}
+        </template>
+      </el-table-column>
     </el-table>
     <div class="button-group">
       <el-button type="warning" @click="ticketPress">催促</el-button>
@@ -33,7 +41,7 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
-import { getStatusText } from "@/utils/formatUtils";
+import { getStatusText, formatDate } from "@/utils/formatUtils";
 import { useRoute } from 'vue-router';
 const route = useRoute();
 const headers = getHeader();

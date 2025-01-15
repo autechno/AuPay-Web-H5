@@ -20,7 +20,11 @@
           {{scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="时间" width="180"></el-table-column>
+      <el-table-column label="时间" width="180">
+        <template #default="scope">
+          {{ formatDate(scope.row.createTime) }}
+        </template>
+      </el-table-column>
       <el-table-column prop="type" label="消息类型" width="180">
         <template #default="scope">
           {{ scope.row.type === 1 ? '系统消息' : '业务消息' }}
@@ -56,6 +60,7 @@ import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import type { TabsPaneContext } from 'element-plus';
 import {getHeader} from "@/utils/storageUtils";
+import {formatDate} from "~/utils/formatUtils";
 const headers = getHeader();
 const { messageApi } = useServer()
 const activeTab = ref('1')
