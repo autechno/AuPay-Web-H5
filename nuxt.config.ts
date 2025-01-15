@@ -20,8 +20,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      API_HOST: '/app/v1',
-      // API_HOST: process.env.BASE_URL,
+      API_HOST: process.env.BASE_URL,
       timestamp
     }
   },
