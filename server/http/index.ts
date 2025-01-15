@@ -21,7 +21,7 @@ const customFetch = async (url: string, options?: any, headers?: any) => {
             public: { API_HOST }
         } = useRuntimeConfig()
         // 接口地址
-        const reqUrl = '/app/v1' + url
+        const reqUrl = API_HOST + url
         // 设置请求头，允许在调用函数时传入其他自定义 headers
         const defaultHeaders = {
             'Content-Type': 'application/json',
