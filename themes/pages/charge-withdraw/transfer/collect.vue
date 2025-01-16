@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import TransferForm from '@/composables/TransferForm.vue'; // 导入新组件
+import TransferForm from '@/composables/TransferForm.vue';
 import { ElNotification } from "element-plus";
 import QCcode from "@/composables/QCcode.vue";
 

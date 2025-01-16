@@ -62,7 +62,6 @@ import { ref, onMounted } from 'vue';
 import { ElForm, ElMessage } from 'element-plus';
 import {useRouter, useRoute} from 'vue-router';
 import { getHeader } from '@/utils/storageUtils';
-const headers = getHeader();
 const { userApi } = useServer();
 const route = useRoute();
 const router = useRouter();
@@ -115,22 +114,21 @@ const handleSubmit = async () => {
           let res = await userApi.loginValidateEmail(form.value, {});
           if (res.code === 200) {
             userStore.setTokenState(res.data);
-            setTimeout(async () => {
-              const [infoRes, configRes] = await Promise.all([
-                userApi.getUserInfo({}, headers),
-                userApi.getUserSystemConfig({}, headers)
-              ]);
-              if (infoRes.code === 200) {
-                const combinedData = {
-                  ...infoRes.data,
-                  currencyUnit: configRes.data.currencyUnit,
-                  showHide: configRes.data.showHide,
-                  systemLanguage: configRes.data.systemLanguage
-                };
-                dialogVisible.value = true;
-                userStore.setUserInfo(combinedData);
-              }
-            }, 100);
+            let headers = {'Authorization': 'Bearer ' + res.data}
+            const [infoRes, configRes] = await Promise.all([
+              userApi.getUserInfo({}, headers),
+              userApi.getUserSystemConfig({}, headers)
+            ]);
+            if (infoRes.code === 200) {
+              const combinedData = {
+                ...infoRes.data,
+                currencyUnit: configRes.data.currencyUnit,
+                showHide: configRes.data.showHide,
+                systemLanguage: configRes.data.systemLanguage
+              };
+              dialogVisible.value = true;
+              userStore.setUserInfo(combinedData);
+            }
           } else {
             ElMessage.error(res.message || '登录失败'); // 错误提示
           }
