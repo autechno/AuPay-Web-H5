@@ -9,7 +9,6 @@
         action="/app/v1/aupay-message/ticket/upload"
     >
       <img v-if="form.headPortrait" :src="form.headPortrait" class="avatar" />
-      <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
     </el-upload>
 
     <div class="header-text">
@@ -183,6 +182,9 @@ const fetchData = async () => {
     const res = await userApi.getUserInfo({}, headers);
     if (res.code === 200) {
       form.value = res.data;
+      if(res.data.headPortrait == ''){
+        form.value.headPortrait = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png';
+      }
     } else {
       ElMessage.error(res.message || '查询失败');
     }

@@ -16,7 +16,7 @@
           <el-input v-model="form.password" type="password" placeholder="设置登录密码" />
         </el-form-item>
         <el-form-item class="link-wrap link-wrap-text">
-          <el-checkbox v-model="isAgreement">我已阅读并同意用户协议</el-checkbox>
+          <el-checkbox v-model="isAgreement">用户协议</el-checkbox>
         </el-form-item>
         <el-form-item label="" prop="code">
           <el-button type="primary" native-type="submit">注册</el-button>

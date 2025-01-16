@@ -68,7 +68,7 @@ const headers = getHeader();
 const { systemApi, userApi } = useServer();
 const activeStepId = ref(1);
 const formRef: any = ref(null);
-const title = ref("验证器")
+const title = ref("邮箱验证码")
 const form = ref({
   bindGoogleAuth: false,
   bindEmail: false,
@@ -152,6 +152,7 @@ const handleCheck = async () => {
       if (validateRes.code === 200) {
         form.value.emailCodeToken = validateRes.data;
         if(form.value.bindGoogleAuth){
+          title.value = 'google 验证器';
           activeStepId.value = 2;
         }else{
           processFunc();

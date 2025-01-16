@@ -61,7 +61,6 @@ const cleanQR = () => {
   form.value.currencyChainId = '';
   form.value.inputAmount = '';
   form.value.remark = '';
-  console.log(form.value);
 };
 
 // 初始化数据

@@ -30,6 +30,9 @@ const formRef = ref(null);
 // 更新父组件的 form 数据
 const updateForm = (newForm) => {
   form.value = newForm;
+  console.log(form.value);
+  console.log(form.value);
+  console.log(form.value);
 };
 const form = ref({
   transferQR: '',

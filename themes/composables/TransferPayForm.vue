@@ -1,4 +1,3 @@
-<!-- TransferForm.vue -->
 <template>
   <el-dialog title="转账" v-model="props.isDialogVisible" width="500">
     <el-form :model="form" :rules="rules" ref="formRef">
@@ -37,19 +36,22 @@
         </el-select>
       </el-form-item>
       <el-form-item label="数量" prop="inputAmount" :rules="[{ required: true, message: '数量不能为空', trigger: 'blur' }]">
-        <el-input v-model.number="form.inputAmount"></el-input>
+        <el-input
+            v-model.number="form.inputAmount"
+            @input="validateInputAmount"
+        ></el-input>
       </el-form-item>
       <div class="tips-wrap">
-        <div>可转账数量：{{transferableAmount}} {{form.currencyName}}</div>
-        <div>费用：{{fee}} {{form.currencyName}}</div>
-        <div>实际转账数量：{{actualTransferAmount}} {{form.currencyName}}</div>
+        <div>可转账数量：{{ transferableAmount }} {{ form.currencyName }}</div>
+        <div>费用：{{ fee }} {{ form.currencyName }}</div>
+        <div>实际转账数量：{{ actualTransferAmount }} {{ form.currencyName }}</div>
       </div>
       <el-form-item label="收款备注" prop="remark">
         <el-input v-model="form.remark"></el-input>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
-      <el-button @click="cancel">取 消</el-button>
+      <el-button @click="emit('close')">取 消</el-button>
       <el-button type="primary" @click="handleSubmit">确 定</el-button>
     </span>
   </el-dialog>
@@ -59,6 +61,8 @@
 import { ref, defineProps, onMounted } from 'vue';
 import { ElMessage } from "element-plus";
 import { getHeader } from "@/utils/storageUtils";
+const headers = getHeader();
+const { assetsApi } = useServer();
 
 const currencyList = ref([]);
 const currencyChainList = ref([]);
@@ -71,6 +75,7 @@ const props = defineProps({
   form: Object,
   isDialogVisible: Boolean,
 });
+
 // 表单验证规则
 const rules = {
   currencyId: [
@@ -83,7 +88,7 @@ const rules = {
     { required: true, message: '数量不能为空', trigger: 'blur' },
   ],
 };
-const emit = defineEmits(['update:form', 'close']);
+
 // 选择链
 const handleCurrencyChain = () => {
   const currentCurrency = currencyList.value.find(currency => currency.currencyId === props.form.currencyId);
@@ -91,6 +96,23 @@ const handleCurrencyChain = () => {
     currencyChainList.value = currentCurrency.chains;
     props.form.currencyChainId = currentCurrency.chains[0]?.currencyChainId;
     transferableAmount.value = currentCurrency.chains[0]?.balance;
+  }
+};
+
+// 验证输入金额
+const validateInputAmount = async () => {
+  let res = await assetsApi.getWithdrawRateFee({
+    currencyId: props.form.currencyId,
+    currencyChain: props.form.currencyChainId,
+    amount: props.form.inputAmount
+  }, headers);
+  if (res.code === 200) {
+    fee.value = res.data.fee;
+    actualTransferAmount.value = transferableAmount.value - res.data.fee;
+  }
+  if (props.form.inputAmount > transferableAmount.value) {
+    props.form.inputAmount = transferableAmount.value; // 将输入金额限制为实际转账数量
+    ElMessage.warning('转入金额不能大于实际转账数量');
   }
 };
 
@@ -107,15 +129,10 @@ const handleSubmit = async () => {
   }
 };
 
-// 取消操作
-const cancel = () => {
-  emit('close');
-};
+const emit = defineEmits(['update:form', 'close']);
 
 // 获取资产数据
 const assetsData = async () => {
-  const headers = getHeader();
-  const { assetsApi } = useServer();
   try {
     let res = await assetsApi.accountAssets({}, headers);
     if (res.code === 200) {
@@ -158,7 +175,7 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
 }
-.tips-wrap{
+.tips-wrap {
   padding: 20px;
 }
 </style>
