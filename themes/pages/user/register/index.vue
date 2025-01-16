@@ -161,7 +161,7 @@ const rules = {
 };
 
 const handleSubmit = async () => {
-  if (!isAgreement.value) {
+  if (activeStepId.value == 1 && !isAgreement.value) {
     ElMessage.error('请先同意用户协议');
     return;
   }

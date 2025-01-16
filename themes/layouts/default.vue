@@ -4,9 +4,9 @@
     <slot></slot>
     <div class="affix-container">
       <el-affix target=".affix-container" :offset="80">
-        <router-link to="/work-order">
+        <a href="/work-order">
           <el-button type="primary" class="break-text">客服中心</el-button>
-        </router-link>
+        </a>
       </el-affix>
     </div>
   </main>

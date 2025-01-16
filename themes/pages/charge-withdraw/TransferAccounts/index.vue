@@ -65,27 +65,14 @@ const currencyList = ref([]);
 const currencyChainList = ref([]);
 // 表单数据
 const form = ref({
-  transferQR: '',
-  generateQR: '',
+  transferQR: '23232323',
+  generateQR: '23232323',
   currencyId: null,
   currencyChainId: null,
   inputAmount: '',
   remark: '',
 });
 
-// 获取初始化信息
-const fetchData = async () => {
-  try {
-    const res = await userApi.getUserInfo({}, headers);
-    if (res.code === 200) {
-      form.value = res.data;
-    } else {
-      ElMessage.error(res.message || '查询失败');
-    }
-  } catch (error) {
-    ElMessage.error('请求失败，请重试');
-  }
-};
 // 获取数据的函数
 const assetsData = async () => {
   try {
@@ -159,7 +146,7 @@ const handleSubmit = async () => {
   try {
     if (valid) {
       let transferQR = form.value.transferQR;
-      form.value.generateQR = '?qr=' + transferQR + '&currencyId=' + form.value.currencyId + '&currencyChainId=' + form.value.currencyChainId + '&inputAmount=' + form.value.inputAmount + '&remark=' + form.value.remark;
+      form.value.generateQR = `?qr=${form.value.transferQR}&currencyId=${form.value.currencyId}&currencyChainId=${form.value.currencyChainId}&inputAmount=${form.value.inputAmount}&remark=${form.value.remark}`;
       isDialogVisible.value = false;
       console.log(form.value);
     }
@@ -169,11 +156,11 @@ const handleSubmit = async () => {
 };
 // 提交转账
 const cleanQR = () => {
-  try {
-
-  } catch (error) {
-    ElMessage.error('请求失败，请重试');
-  }
+  form.value.generateQR = form.value.transferQR;
+  form.value.currencyId = '';
+  form.value.currencyChainId = '';
+  form.value.inputAmount = '';
+  form.value.remark = '';
 };
 
 // 获取 URL 查询参数
@@ -190,7 +177,6 @@ onMounted(() => {
   const userStore = UseUserStore();
   form.value.transferQR = userStore.userInfo.transferQR;
   form.value.generateQR = userStore.userInfo.transferQR;
-  fetchData();
   assetsData();
 });
 </script>
