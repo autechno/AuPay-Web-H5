@@ -8,7 +8,7 @@
         :headers="headers"
         action="/app/v1/aupay-message/ticket/upload"
     >
-      <img v-if="form.headPortrait" :src="form.headPortrait" class="avatar" />
+      <img :src="form.headPortrait" class="avatar" />
     </el-upload>
 
     <div class="header-text">
