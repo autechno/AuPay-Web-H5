@@ -8,7 +8,7 @@
     </span>
     <!-- 充值/提现链接 -->
     <span style="padding-right:16px;">
-      <a href="/charge-withdraw">
+      <a href="/charge-withdraw/transfer">
         <el-icon style="font-size: 20px; position: relative; top: 4px;"><Money /></el-icon>充值/提现
       </a>
     </span>

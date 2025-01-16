@@ -161,13 +161,13 @@ const rules = {
 };
 
 const handleSubmit = async () => {
-  if (activeStepId.value == 1 && !isAgreement.value) {
-    ElMessage.error('请先同意用户协议');
-    return;
-  }
   const valid = await formRef.value.validate();
     if (valid) {
       if (activeStepId.value == 1) {
+        if (!isAgreement.value) {
+          ElMessage.error('请先同意用户协议');
+          return;
+        }
         let res = await userApi.register(form.value, {});
         if (res.code === 200) {
           const userStore = UseUserStore();

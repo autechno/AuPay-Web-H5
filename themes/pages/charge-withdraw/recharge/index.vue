@@ -1,4 +1,7 @@
 <template>
+  <el-tabs v-model="activeIndex" @tab-click="handleTabClick">
+    <el-tab-pane label="充值" /> <el-tab-pane label="转账"  /> <el-tab-pane label="提现"  />
+  </el-tabs>
   <div class="exchange-container">
     <el-form :model="form" ref="formRef" @submit.prevent="showQrDialog = true">
       <el-select
@@ -61,6 +64,17 @@ const form = ref({
 const currencyList = ref([]);
 const currencyChainList = ref([]);
 const formRef = ref(null);
+const activeIndex = ref('0');
+
+// 处理外部选项卡点击事件
+const handleTabClick = (tab: any) => {
+  if(tab.index == '1'){
+    window.location.href="/charge-withdraw/transfer";
+  }else if(tab.index == '2'){
+    window.location.href="/charge-withdraw/withdrawal";
+  }
+};
+
 
 // 获取 URL 查询参数
 const getQueryParams = () => {

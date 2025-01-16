@@ -279,10 +279,10 @@ class AssetsApi extends Http {
         return this.get('/aupay-trade/fastSwap/getFastSwapDetail', params, headers);
     }
     /**
-     * 账户发起对换
+     * 账户发起转账
      */
     public transferApply(params: any, headers: any): Promise<any> {
-        return this.post('/aupay-trade/transferApply'+params.optToken, params, headers)
+        return this.post('/aupay-trade/transfer/apply'+params.optToken, params, headers)
     }
     /**
      * 获取汇率
