@@ -15,9 +15,9 @@
 </template>
 
 <script setup lang="ts">
-import Recharge from '@/composables/Recharge.vue';
-import TransferAccounts from '@/composables/TransferAccounts.vue';
-import Withdrawal from '@/composables/Withdrawal.vue';
+import Recharge from './Recharge.vue';
+import TransferAccounts from './TransferAccounts.vue';
+import Withdrawal from './Withdrawal.vue';
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 const route = useRoute();

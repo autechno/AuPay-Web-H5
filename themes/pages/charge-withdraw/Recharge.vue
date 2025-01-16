@@ -6,10 +6,10 @@
           id="currency-select"
           v-model="form.currencyId"
           placeholder="请选择货币"
-          @change="updateCurrencyChain"
+          @change="handleCurrencyChain"
       >
         <el-option
-            v-for="currency in selectedCurrency"
+            v-for="currency in currencyList"
             :key="currency.currencyId"
             :label="currency.currencyName"
             :value="currency.currencyId"
@@ -21,10 +21,10 @@
           style="margin-bottom: 20px;"
           v-model="form.currencyChainId"
           placeholder="请选择链"
-          @change="updateWalletAddress"
+          @change="handleWalletAddress"
       >
         <el-option
-            v-for="chain in selectedCurrencyChain"
+            v-for="chain in currencyChainList"
             :key="chain.currencyChainId"
             :label="chain.currencyChainName"
             :value="chain.currencyChainId"
@@ -46,9 +46,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { getHeader } from "@/utils/storageUtils";
+import { getHeader } from "~/utils/storageUtils";
 import { ElMessage } from "element-plus";
-import QCcode from "@/composables/QCcode.vue";
+import QCcode from "~/composables/QCcode.vue";
 const showQrDialog = ref(false);
 const headers = getHeader();
 const { assetsApi } = useServer();
@@ -58,8 +58,8 @@ const form = ref({
   walletAddress: '',
   avatar: '',
 });
-const selectedCurrency = ref([]);
-const selectedCurrencyChain = ref([]);
+const currencyList = ref([]);
+const currencyChainList = ref([]);
 const formRef = ref(null);
 
 // 获取 URL 查询参数
@@ -106,21 +106,21 @@ const fetchData = async () => {
           walletAddress: item.walletAddress,
         });
       });
-      selectedCurrency.value = Array.from(currencyMap.values());
+      currencyList.value = Array.from(currencyMap.values());
       // 查询参数
       const { currencyId, currencyChainId } = getQueryParams();
       if (currencyId) {
         form.value.currencyId = currencyId;
-        updateCurrencyChain();
+        handleCurrencyChain();
         if (currencyChainId) {
           form.value.currencyChainId = currencyChainId;
-          updateWalletAddress(); // 更新钱包地址
+          handleWalletAddress(); // 更新钱包地址
         }
       }else{
-        form.value.currencyId = selectedCurrency.value[0]?.currencyId;
-        form.value.currencyChainId = selectedCurrency.value[0]?.chains[0]?.currencyChainId;
-        form.value.walletAddress = selectedCurrency.value[0]?.walletAddress || '';
-        selectedCurrencyChain.value = selectedCurrency.value[0]?.chains || [];
+        form.value.currencyId = currencyList.value[0]?.currencyId;
+        form.value.currencyChainId = currencyList.value[0]?.chains[0]?.currencyChainId;
+        form.value.walletAddress = currencyList.value[0]?.walletAddress || '';
+        currencyChainList.value = currencyList.value[0]?.chains || [];
       }
     } else {
       ElMessage.error(res.message || '查询失败');
@@ -131,18 +131,18 @@ const fetchData = async () => {
 };
 
 // 更新链选择
-const updateCurrencyChain = () => {
-  const currentCurrency = selectedCurrency.value.find(currency => currency.currencyId === form.value.currencyId);
+const handleCurrencyChain = () => {
+  const currentCurrency = currencyList.value.find(currency => currency.currencyId === form.value.currencyId);
   if (currentCurrency) {
-    selectedCurrencyChain.value = currentCurrency.chains;
+    currencyChainList.value = currentCurrency.chains;
     form.value.currencyChainId = currentCurrency.chains[0]?.currencyChainId;
     form.value.walletAddress = currentCurrency.chains[0]?.walletAddress || '';
   }
 };
 
 // 更新钱包地址
-const updateWalletAddress = () => {
-  const selectedChain = selectedCurrencyChain.value.find(chain => chain.currencyChainId === form.value.currencyChainId);
+const handleWalletAddress = () => {
+  const selectedChain = currencyChainList.value.find(chain => chain.currencyChainId === form.value.currencyChainId);
   if (selectedChain) {
     form.value.walletAddress = selectedChain.walletAddress;
   }

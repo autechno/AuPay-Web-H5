@@ -16,9 +16,7 @@
           <el-input v-model="form.password" type="password" placeholder="设置登录密码" />
         </el-form-item>
         <el-form-item class="link-wrap link-wrap-text">
-          <el-checkbox-group v-model="form.type">
-            <el-checkbox value="1" name="type">用户协议</el-checkbox>
-          </el-checkbox-group>
+          <el-checkbox v-model="isAgreement">我已阅读并同意用户协议</el-checkbox>
         </el-form-item>
         <el-form-item label="" prop="code">
           <el-button type="primary" native-type="submit">注册</el-button>
@@ -91,6 +89,7 @@ const { userApi, systemApi } = useServer();
 // 表单引用
 const formRef: any = ref(null);
 const routeStr = ref("/user/register");
+const isAgreement = ref(false);
 
 // 表单数据
 const form = ref({
@@ -98,7 +97,6 @@ const form = ref({
   password: '',
   paymentPassword: '',
   emailCode: '',
-  type: [],
 });
 
 // Google 验证码相关数据
@@ -116,7 +114,7 @@ const googleForm = ref({
 const sendEamil = async () => {
   let res = await systemApi.sendRegEmail({email: form.value.email}, {});
   if (res.code === 200) {
-    ElMessage.info('email发送成功');
+    ElMessage.success('email发送成功');
   } else {
     ElMessage.error(res.message);
   }
@@ -163,6 +161,10 @@ const rules = {
 };
 
 const handleSubmit = async () => {
+  if (!isAgreement.value) {
+    ElMessage.error('请先同意用户协议');
+    return;
+  }
   const valid = await formRef.value.validate();
     if (valid) {
       if (activeStepId.value == 1) {
