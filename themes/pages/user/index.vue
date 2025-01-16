@@ -28,9 +28,11 @@
     <!-- 创建密码验证对话框 -->
     <el-dialog :title="title" v-model="dialogCheckVisible">
       <el-form :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleCheck">
-        <div>{{form.email}}</div>
-        <el-form-item  v-if="activeStepId == 1" label="设置邮箱验证码" prop="emailCode">
-          <el-input v-model="form.emailCode" placeholder="设置邮验密码" />
+        <el-form-item  label="邮箱" >
+          <el-input :value="form.email" disabled />
+        </el-form-item>
+        <el-form-item  v-if="activeStepId == 1" label="邮箱验证码" prop="emailCode">
+          <el-input v-model="form.emailCode" placeholder="请输入邮箱验证码" />
         </el-form-item>
         <el-form-item v-if="activeStepId == 2" label="身份验证器APP验证码" prop="googleCode" >
           <el-input v-model="form.googleCode" placeholder="请输入6位验证码" />

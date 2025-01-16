@@ -35,13 +35,13 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="数量" prop="inputAmount" :rules="[{ required: true, message: '数量不能为空', trigger: 'blur' }]">
+      <el-form-item label="数量" prop="amount" :rules="[{ required: true, message: '数量不能为空', trigger: 'blur' }]">
         <el-input
-            v-model.number="form.inputAmount"
+            v-model.number="form.amount"
             @input="validateInputAmount"
         ></el-input>
       </el-form-item>
-      <div class="tips-wrap">
+      <div class="tips-wrap" v-if="props.isFlag">
         <div>可转账数量：{{ transferableAmount }} {{ form.currencyName }}</div>
         <div>费用：{{ fee }} {{ form.currencyName }}</div>
         <div>实际转账数量：{{ actualTransferAmount }} {{ form.currencyName }}</div>
@@ -73,6 +73,7 @@ const actualTransferAmount = ref(0);
 
 const props = defineProps({
   form: Object,
+  isFlag: Boolean,
   isDialogVisible: Boolean,
 });
 
@@ -84,7 +85,7 @@ const rules = {
   currencyChainId: [
     { required: true, message: '货币链不能为空', trigger: 'blur' },
   ],
-  inputAmount: [
+  amount: [
     { required: true, message: '数量不能为空', trigger: 'blur' },
   ],
 };
@@ -104,14 +105,14 @@ const validateInputAmount = async () => {
   let res = await assetsApi.getWithdrawRateFee({
     currencyId: props.form.currencyId,
     currencyChain: props.form.currencyChainId,
-    amount: props.form.inputAmount
+    amount: props.form.amount
   }, headers);
   if (res.code === 200) {
     fee.value = res.data.fee;
     actualTransferAmount.value = transferableAmount.value - res.data.fee;
   }
-  if (props.form.inputAmount > transferableAmount.value) {
-    props.form.inputAmount = transferableAmount.value; // 将输入金额限制为实际转账数量
+  if (props.form.amount > transferableAmount.value) {
+    props.form.amount = transferableAmount.value; // 将输入金额限制为实际转账数量
     ElMessage.warning('转入金额不能大于实际转账数量');
   }
 };
@@ -120,7 +121,7 @@ const validateInputAmount = async () => {
 const handleSubmit = async () => {
   const valid = await formRef.value.validate();
   if (valid) {
-    props.form.generateQR = `?qr=${props.form.transferQR}&currencyId=${props.form.currencyId}&currencyChainId=${props.form.currencyChainId}&inputAmount=${props.form.inputAmount}&remark=${props.form.remark}`;
+    props.form.generateQR = `/charge-withdraw/transfer/detail?qr=${props.form.transferQR}&currencyId=${props.form.currencyId}&currencyChainId=${props.form.currencyChainId}&amount=${props.form.amount}&remark=${props.form.remark}`;
     props.isDialogVisible = false;
     emit('update:form', { ...props.form }); // 更新父组件的 form 数据
     emit('close');

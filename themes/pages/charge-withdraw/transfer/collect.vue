@@ -15,6 +15,7 @@
         :form="form"
         :isDialogVisible="isDialogVisible"
         @update:form="updateForm"
+        :isFlag="false"
         @close="isDialogVisible = false"
     />
   </div>
@@ -22,7 +23,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import TransferForm from '@/composables/TransferForm.vue';
+import TransferForm from '@/composables/TransferPayForm.vue';
 import { ElNotification } from "element-plus";
 import QCcode from "@/composables/QCcode.vue";
 
@@ -31,7 +32,7 @@ const form = ref({
   generateQR: '',
   currencyId: null,
   currencyChainId: null,
-  inputAmount: '',
+  amount: '',
   remark: '',
 });
 const isDialogVisible = ref(false);
@@ -59,7 +60,7 @@ const cleanQR = () => {
   form.value.generateQR = form.value.transferQR;
   form.value.currencyId = '';
   form.value.currencyChainId = '';
-  form.value.inputAmount = '';
+  form.value.amount = '';
   form.value.remark = '';
 };
 

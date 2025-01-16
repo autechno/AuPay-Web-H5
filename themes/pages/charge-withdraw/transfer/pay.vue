@@ -15,6 +15,7 @@
         :form="form"
         :isDialogVisible="isDialogVisible"
         @update:form="updateForm"
+        :isFlag="true"
         @close="isDialogVisible = false"
     />
   </div>
@@ -28,18 +29,18 @@ const isDialogVisible = ref(false);
 const formRef = ref(null);
 
 // 更新父组件的 form 数据
-const updateForm = (newForm) => {
+const updateForm = (newForm: Object) => {
   form.value = newForm;
-  console.log(form.value);
-  console.log(form.value);
-  console.log(form.value);
+  if(form.value.generateQR) {
+    window.location.href = form.value.generateQR
+  }
 };
 const form = ref({
   transferQR: '',
   generateQR: '',
   currencyId: null,
   currencyChainId: null,
-  inputAmount: '',
+  amount: '',
   remark: '',
 });
 
