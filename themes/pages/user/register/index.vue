@@ -168,7 +168,7 @@ const handleSubmit = async () => {
   const valid = await formRef.value.validate();
     if (valid) {
       if (activeStepId.value == 1) {
-        let res = await userApi.register(form.value, headers);
+        let res = await userApi.register(form.value, {});
         if (res.code === 200) {
           const userStore = UseUserStore();
           userStore.setTokenState(res.data);

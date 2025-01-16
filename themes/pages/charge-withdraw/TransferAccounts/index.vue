@@ -1,17 +1,17 @@
 <template>
   <div class="page">
     <div class="qc-wrap">
-      <QCcode :value="form.transferQR" :size="300" />
+      <QCcode :value="form.generateQR" :size="300" />
       <div>auPayID:{{ form.transferQR }} <el-button type="primary" size="small" @click="copyText(form.transferQR)">复制</el-button></div>
       <div><el-button @click="isDialogVisible = true">编辑</el-button></div>
-      <div><el-button @click="cleanOR">清空</el-button></div>
+      <div><el-button @click="cleanQR">清空</el-button></div>
       <div><el-button>下载</el-button></div>
       <div><el-button>分享</el-button></div>
     </div>
 
     <!-- 转账弹窗 -->
     <el-dialog title="转账" v-model="isDialogVisible" width="500">
-      <el-form :model="form" ref="formRef"  @submit.prevent="handleSubmit">
+      <el-form :model="form" ref="formRef">
         <el-select
             style="margin-bottom: 20px;"
             id="currency-select"
@@ -46,7 +46,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="isDialogVisible = false">取 消</el-button>
-        <el-button type="primary" native-type="submit">确 定</el-button>
+        <el-button type="primary" @click="handleSubmit">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -60,19 +60,18 @@ const headers = getHeader();
 const { userApi, assetsApi } = useServer();
 import QCcode from "@/composables/QCcode.vue";
 const formRef = ref(null);
+const isDialogVisible = ref(false);
 const currencyList = ref([]);
 const currencyChainList = ref([]);
 // 表单数据
 const form = ref({
-  transferQR: '12345655656rdrfd',
+  transferQR: '',
+  generateQR: '',
   currencyId: null,
   currencyChainId: null,
   inputAmount: '',
   remark: '',
 });
-
-// 转账弹窗数据
-const isDialogVisible = ref(false);
 
 // 获取初始化信息
 const fetchData = async () => {
@@ -155,15 +154,21 @@ const handleCurrencyChain = () => {
 };
 
 // 提交转账
-const handleSubmit = () => {
+const handleSubmit = async () => {
+  const valid = await formRef.value.validate();
   try {
-
+    if (valid) {
+      let transferQR = form.value.transferQR;
+      form.value.generateQR = '?qr=' + transferQR + '&currencyId=' + form.value.currencyId + '&currencyChainId=' + form.value.currencyChainId + '&inputAmount=' + form.value.inputAmount + '&remark=' + form.value.remark;
+      isDialogVisible.value = false;
+      console.log(form.value);
+    }
   } catch (error) {
     ElMessage.error('请求失败，请重试');
   }
 };
 // 提交转账
-const cleanOR = () => {
+const cleanQR = () => {
   try {
 
   } catch (error) {
@@ -182,6 +187,9 @@ const getQueryParams = () => {
 
 // 初始化数据
 onMounted(() => {
+  const userStore = UseUserStore();
+  form.value.transferQR = userStore.userInfo.transferQR;
+  form.value.generateQR = userStore.userInfo.transferQR;
   fetchData();
   assetsData();
 });
