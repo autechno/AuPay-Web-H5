@@ -25,6 +25,8 @@ import { ref } from 'vue';
 import { ElForm, ElMessage } from "element-plus";
 import TransferForm from '@/composables/TransferPayForm.vue';
 const isDialogVisible = ref(false);
+const formRef = ref(null);
+
 // 更新父组件的 form 数据
 const updateForm = (newForm) => {
   form.value = newForm;
@@ -47,11 +49,10 @@ const rules = {
 
 // 确认按钮的处理函数
 const handleSubmit = async () => {
-  const formRef = ref();
   const valid = await formRef.value.validate();
   try {
     if (valid) {
-
+      isDialogVisible.value = true;
       // 处理提交逻辑
       console.log(`确认支付，AuPayId: ${form.value.transferQR}`);
     }

@@ -11,8 +11,8 @@
         </el-form-item>
         <div style="height: 30px;">
           <div class="links" >
-            <a class="left-link" href="/user/forgot-password">忘记密码?</a>
-            <a class="right-link" href="/user/register">注册新账号</a>
+            <a class="left-link" href="/user/register">注册新账号</a>
+            <a class="right-link" href="/user/forgot-password">忘记密码</a>
           </div>
         </div>
         <div class="social-login">
@@ -114,6 +114,7 @@ const handleSubmit = async () => {
           let res = await userApi.loginValidateEmail(form.value, {});
           if (res.code === 200) {
             userStore.setTokenState(res.data);
+            // 解决设置token缓存延迟
             let headers = {'Authorization': 'Bearer ' + res.data}
             const [infoRes, configRes] = await Promise.all([
               userApi.getUserInfo({}, headers),

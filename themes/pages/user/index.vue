@@ -26,7 +26,7 @@
     </div>
 
     <!-- 创建密码验证对话框 -->
-    <el-dialog title="兑换验证" v-model="dialogCheckVisible">
+    <el-dialog :title="title" v-model="dialogCheckVisible">
       <el-form :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleCheck">
         <div>{{form.email}}</div>
         <el-form-item  v-if="activeStepId == 1" label="设置邮箱验证码" prop="emailCode">
@@ -42,7 +42,7 @@
       </el-form>
     </el-dialog>
 
-    <el-dialog title="兑换验证" v-model="dialogVisible">
+    <el-dialog title="设置密码" v-model="dialogVisible">
       <el-form :model="form" :rules="rules" ref="formRef" @submit.prevent="handleSubmit">
         <el-form-item label="" prop="newPassword">
           <el-input v-model="form.newPassword" type="password" placeholder="请输入密码" />
@@ -68,7 +68,7 @@ const headers = getHeader();
 const { systemApi, userApi } = useServer();
 const activeStepId = ref(1);
 const formRef: any = ref(null);
-
+const title = ref("验证器")
 const form = ref({
   bindGoogleAuth: false,
   bindEmail: false,

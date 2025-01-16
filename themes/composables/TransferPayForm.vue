@@ -39,8 +39,10 @@
       <el-form-item label="数量" prop="inputAmount" :rules="[{ required: true, message: '数量不能为空', trigger: 'blur' }]">
         <el-input v-model.number="form.inputAmount"></el-input>
       </el-form-item>
-      <div>
-
+      <div class="tips-wrap">
+        <div>可转账数量：{{transferableAmount}} {{form.currencyName}}</div>
+        <div>费用：{{fee}} {{form.currencyName}}</div>
+        <div>实际转账数量：{{actualTransferAmount}} {{form.currencyName}}</div>
       </div>
       <el-form-item label="收款备注" prop="remark">
         <el-input v-model="form.remark"></el-input>
@@ -61,6 +63,10 @@ import { getHeader } from "@/utils/storageUtils";
 const currencyList = ref([]);
 const currencyChainList = ref([]);
 const formRef = ref(null);
+const transferableAmount = ref(0);
+const fee = ref(0);
+const actualTransferAmount = ref(0);
+
 const props = defineProps({
   form: Object,
   isDialogVisible: Boolean,
@@ -77,15 +83,14 @@ const rules = {
     { required: true, message: '数量不能为空', trigger: 'blur' },
   ],
 };
-
 const emit = defineEmits(['update:form', 'close']);
-
 // 选择链
 const handleCurrencyChain = () => {
   const currentCurrency = currencyList.value.find(currency => currency.currencyId === props.form.currencyId);
   if (currentCurrency) {
     currencyChainList.value = currentCurrency.chains;
     props.form.currencyChainId = currentCurrency.chains[0]?.currencyChainId;
+    transferableAmount.value = currentCurrency.chains[0]?.balance;
   }
 };
 
@@ -129,6 +134,8 @@ const assetsData = async () => {
           currencyChainId: item.currencyChain,
           currencyChainName: getCoinInfo(item.currencyChain)?.name,
           walletAddress: item.walletAddress,
+          balance: item.balance,
+          totalBalanceUsdt: item.totalBalanceUsdt,
         });
       });
       currencyList.value = Array.from(currencyMap.values());
@@ -150,5 +157,8 @@ onMounted(() => {
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
+}
+.tips-wrap{
+  padding: 20px;
 }
 </style>

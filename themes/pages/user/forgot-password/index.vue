@@ -49,7 +49,7 @@ const btnName = ref('确定');
 const formRef: any = ref(null);
 // 表单数据
 const form = ref({
-  email: 'yoney.zhang@autech.one',
+  email: '',
   password: '',
   confirmPassword: '',
   validateKey: '',
@@ -116,11 +116,12 @@ const handleSubmit = async () => {
       if (activeStepId.value == 1) {
         let res = await systemApi.sendResetValidateEmail(form.value, {});
         if (res.code === 200) {
-          title.value = 'google 验证器';
           form.value.emailCodeToken = res.data.emailCodeToken;
           if(res.data.bindGoogleAuth){
+            title.value = 'google 验证器';
             activeStepId.value = 2;
           }else{
+            title.value = '设置新密码';
             activeStepId.value = 3;
           }
         } else {
@@ -129,7 +130,6 @@ const handleSubmit = async () => {
       }else if(activeStepId.value == 2) {
         let res = await systemApi.sendResetValidateGoogle(form.value, {});
         if (res.code === 200) {
-          title.value = '设置新密码';
           form.value.googleCodeToken = res.data;
           activeStepId.value = 3;
         } else {
