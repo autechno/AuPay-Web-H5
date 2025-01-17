@@ -24,7 +24,7 @@ import { ElForm, ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
 const headers = getHeader();
 const activeStepId = ref(0);
-const title = ref('验证密码');
+const title = ref('验证资金密码');
 const props = defineProps({
   isDialogVisible: Boolean,
   form: Object,
@@ -70,6 +70,7 @@ const handleSubmit = async () => {
         props.form.passwordToken = passRes.data;
         if (checkForm.value.bindGoogleAuth) {
           activeStepId.value = 3;
+          title.value = 'google 验证码';
         }else{
           processMethod();
         }
@@ -84,6 +85,7 @@ const handleSubmit = async () => {
         props.form.dialogCheckVisible.value = true;
         if (checkForm.value.bindGoogleAuth) {
           activeStepId.value = 3;
+          title.value = 'google 验证码';
         }else{
           processMethod();
         }
@@ -134,9 +136,11 @@ const fetchData = async () => {
       }
       if(!checkForm.value.bindAssetsPassword && checkForm.value.bindEmail){
         activeStepId.value = 2;
+        title.value = '邮箱验证码';
       }
       if(!checkForm.value.bindAssetsPassword && !checkForm.value.bindEmail && checkForm.value.bindGoogleAuth){
         activeStepId.value = 3;
+        title.value = 'google 验证码';
       }
     } else {
       ElMessage.error(res.message || '查询失败');

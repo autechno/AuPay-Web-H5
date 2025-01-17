@@ -61,10 +61,8 @@
 import { ref, onMounted } from 'vue';
 import { ElForm, ElMessage } from 'element-plus';
 import {useRouter, useRoute} from 'vue-router';
-import { getHeader } from '@/utils/storageUtils';
 const { userApi } = useServer();
 const route = useRoute();
-const router = useRouter();
 const activeStepId = ref(route.query.stepId || 1);
 
 // 表单引用
@@ -100,40 +98,27 @@ const handleSubmit = async () => {
   const userStore = UseUserStore();
   try {
     if (valid) {
-        if (activeStepId.value == 1) {
-            let res = await userApi.login(form.value, {});
-            if (res.code === 200) {
-              activeStepId.value = 2;
-              form.value.validateKey = res.data
-              ElMessage.success('邮箱验证码已发送到您邮箱');
-              console.log(form.value)
-            } else {
-              ElMessage.error(res.message || '登录失败'); // 错误提示
-            }
+      if (activeStepId.value == 1) {
+        let res = await userApi.login(form.value, {});
+        if (res.code === 200) {
+          activeStepId.value = 2;
+          form.value.validateKey = res.data
+          ElMessage.success('邮箱验证码已发送到您邮箱');
         } else {
-          let res = await userApi.loginValidateEmail(form.value, {});
-          if (res.code === 200) {
-            userStore.setTokenState(res.data);
-            // 解决设置token缓存延迟
-            let headers = {'Authorization': 'Bearer ' + res.data}
-            const [infoRes, configRes] = await Promise.all([
-              userApi.getUserInfo({}, headers),
-              userApi.getUserSystemConfig({}, headers)
-            ]);
-            if (infoRes.code === 200) {
-              const combinedData = {
-                ...infoRes.data,
-                currencyUnit: configRes.data.currencyUnit,
-                showHide: configRes.data.showHide,
-                systemLanguage: configRes.data.systemLanguage
-              };
-              dialogVisible.value = true;
-              userStore.setUserInfo(combinedData);
-            }
-          } else {
-            ElMessage.error(res.message || '登录失败'); // 错误提示
-          }
+          ElMessage.error(res.message || '登录失败'); // 错误提示
         }
+      } else {
+        let res = await userApi.loginValidateEmail(form.value, {});
+        if (res.code === 200) {
+          userStore.setTokenState(res.data);
+          let result = await userStore.fetchUserInfo();
+          if(result){
+            dialogVisible.value = true;
+          }
+        } else {
+          ElMessage.error(res.message || '登录失败'); // 错误提示
+        }
+      }
     } else {
       console.error('输入无效');
       return false;
@@ -148,7 +133,7 @@ const handleSliderChange = (value) => {
     ElMessage.success('验证成功！');
     setTimeout(() => {
       window.location.href = '/user/info'
-    }, 500); // 1秒后跳转
+    }, 200); // 1秒后跳转
   }
 };
 

@@ -20,12 +20,12 @@
     <div class="content">
       <div class="status-item" >
         <span>Google Authenticator </span>
-        <span v-if="form.bindGoogleAuth"><a href="javascript:;">重新绑定</a> | <a href="javascript:;" @click="deleteGoogleAuth">删除</a></span>
-        <span v-else><a href="javascript:;">绑定</a></span>
+        <span v-if="form.bindGoogleAuth"><a href="javascript:;" @click="deleteGoogleAuth(1)">重新绑定</a> | <a  href="javascript:;" @click="deleteGoogleAuth(0)">删除</a></span>
+        <span v-else><a href="javascript:;" @click="resetGoogleAuth(1)">绑定</a></span>
       </div>
     </div>
 
-    <!-- 创建密码验证对话框 -->
+    <!-- 密码验证对话框 -->
     <el-dialog :title="title" v-model="dialogCheckVisible">
       <el-form :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleCheck">
         <el-form-item  label="邮箱" >
@@ -58,6 +58,20 @@
       </el-form>
     </el-dialog>
 
+    <el-dialog v-model="isCheckDialogVisible" title="设置Google验证码">
+      <div style="text-align: center;">
+        <img :src="googleForm.qrCode" alt="Google QR Code" style="width: 150px; height: 150px;" />
+        <el-form :model="googleForm" label-position="top" style="margin-top: 20px;">
+          <el-form-item label="" prop="googleCode">
+            <el-input v-model="googleForm.googleCode" placeholder="请输入Google验证码" />
+          </el-form-item>
+        </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="resetGoogleAuth(2)">确认</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 <script setup lang="ts">
@@ -71,6 +85,10 @@ const { systemApi, userApi } = useServer();
 const activeStepId = ref(1);
 const formRef: any = ref(null);
 const title = ref("邮箱验证码")
+const dialogCheckVisible = ref(false);
+const dialogVisible = ref(false);
+const userStore = UseUserStore();
+const isCheckDialogVisible = ref(false);
 const form = ref({
   bindGoogleAuth: false,
   bindEmail: false,
@@ -86,8 +104,14 @@ const form = ref({
   type: 1
 })
 
-const dialogCheckVisible = ref(false);
-const dialogVisible = ref(false);
+const googleForm = ref({
+  googleCode: '',
+  googleSecret: '',
+  qrCode: '',
+  type: 1,
+});
+
+
 /**
  * 自定义验证器：确认密码
  */
@@ -147,12 +171,19 @@ const handleValidate = async (type: number) =>{
 }
 
 // 验证密码
-const deleteGoogleAuth = async () => {
+const deleteGoogleAuth = async (isReset: number) => {
   try {
       let validateRes = await systemApi.resetGoogleAuth({}, headers);
       if (validateRes.code === 200) {
-        UseUserInfo(headers);
-        ElMessage.error('解绑成功')
+        let result = await userStore.fetchUserInfo();
+        if(result){
+          dialogVisible.value = true;
+        }
+        if(isReset == 1){
+          resetGoogleAuth(1);
+        }else{
+          ElMessage.error('解绑成功')
+        }
       } else {
         ElMessage.error(validateRes.message);
       }
@@ -161,6 +192,30 @@ const deleteGoogleAuth = async () => {
   } finally {
   }
 }
+// 验证密码
+const resetGoogleAuth = async (type: number) => {
+  try {
+    googleForm.value.type = type;
+    let res = await systemApi.bindGoogleAuth(googleForm.value, headers);
+    if (res.code === 200) {
+      if(type == 1){
+        googleForm.value.googleSecret = res.data.googleSecret;
+        googleForm.value.qrCode = res.data.qr;
+        isCheckDialogVisible.value = true;
+      }else{
+        await userStore.fetchUserInfo();
+        ElMessage.error('绑定成功')
+        window.location.reload();
+      }
+    } else {
+      ElMessage.error(res.message);
+    }
+  } catch (error) {
+    ElMessage.error('请求失败，请重试')
+  } finally {
+  }
+}
+
 
 
 
