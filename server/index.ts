@@ -184,6 +184,22 @@ class SystemApi extends Http {
         return this.get('/aupay-user/verifyGoogle', params, headers)
     }
     /**
+     * 重置验证Google
+     */
+    public resetGoogleAuth(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-user/resetGoogleAuth', params, headers)
+    }
+    /**
+     * 绑定 Google Auth
+     */
+    public bindGoogleAuth(params: any, headers: any): Promise<any> {
+        if(params.type == 1){
+            return this.get('/aupay-user/bindGoogleAuth', {}, headers)
+        }else{
+            return this.put('/aupay-user/bindGoogleAuth?googleSecret='+params.googleSecret+'&googleCode='+params.googleCode, {}, headers)
+        }
+    }
+    /**
      * 发送注册邮箱验证码
      */
     public sendRegEmail(params: any, headers: any): Promise<any> {
@@ -207,20 +223,12 @@ class SystemApi extends Http {
     public sendResetValidateGoogle(params: any, headers: any): Promise<any> {
         return this.get('/aupay-user/password/validateResetPasswordGoogleAuth', params, headers)
     }
-    /**
-     * 绑定 Google Auth
-     */
-    public bindGoogleAuth(params: any, headers: any): Promise<any> {
-        if(params.type == 1){
-            return this.get('/aupay-user/bindGoogleAuth', {}, headers)
-        }else{
-            return this.put('/aupay-user/bindGoogleAuth?googleSecret='+params.googleSecret+'&googleCode='+params.googleCode, {}, headers)
-        }
-    }
+
+
     /**
      * 验证资金密码权限
      */
-    public assetsFlashPermission(params: any, headers: any): Promise<any> {
+    public checkPermission(params: any, headers: any): Promise<any> {
         return this.post('/aupay-user/permission/checkOptPermission', params, headers)
     }
     /**
@@ -282,7 +290,7 @@ class AssetsApi extends Http {
      * 账户发起转账
      */
     public transferApply(params: any, headers: any): Promise<any> {
-        return this.post('/aupay-trade/transfer/apply'+params.optToken, params, headers)
+        return this.post('/aupay-trade/transfer/apply/'+params.optToken, params, headers)
     }
     /**
      * 获取汇率
@@ -299,14 +307,32 @@ class AssetsApi extends Http {
     /**
      * 获取币种兑换汇率
      */
+    public getRateCoin2currency(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-operate/rate/coin2currency', params, headers)
+    }
+    /**
+     * 获取币种兑换汇率
+     */
     public getFastRateFee(params: any, headers: any): Promise<any> {
         return this.post('/aupay-trade/fastSwap/fee', params, headers)
     }
     /**
-     * 获取币种提取汇率
+     * 获取币种转账汇率
      */
     public getWithdrawRateFee(params: any, headers: any): Promise<any> {
         return this.post('/aupay-trade/withdraw/fee', params, headers)
+    }
+    /**
+     * 获取币种提现汇率
+     */
+    public getTransferRateFee(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-trade/transfer/fee', params, headers)
+    }
+    /**
+     * 提取现金
+     */
+    public getTransferApply(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-trade/transfer/apply/'+params.optToken, params, headers)
     }
 }
 

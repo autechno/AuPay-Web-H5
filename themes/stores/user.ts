@@ -1,3 +1,4 @@
+import {getHeader} from "@/utils/storageUtils";
 
 type UserInfo = {
     id: number;
@@ -11,8 +12,6 @@ type UserInfo = {
     sex: number;
     sign: string;
     userType: number;
-    createTime: string;
-    loginTime: string;
     userLevel: number;
     transferQR: string;
     bindGoogleAuth: boolean;
@@ -22,8 +21,8 @@ type UserInfo = {
     bindAppleLogin: boolean;
     currencyUnit: string;
     showHide: number;
+    systemLanguage: string
 };
-
 const initialUserInfo: UserInfo = {
     id: 0,
     username: '',
@@ -36,8 +35,6 @@ const initialUserInfo: UserInfo = {
     sex: 0,
     sign: '',
     userType: 0,
-    createTime: '',
-    loginTime: '',
     userLevel: 0,
     transferQR: '',
     bindGoogleAuth: false,
@@ -49,6 +46,7 @@ const initialUserInfo: UserInfo = {
     showHide: 0,
     systemLanguage: ''
 };
+const { userApi } = useServer();
 
 export const UseUserStore = defineStore('user', {
     state: () => ({
@@ -65,6 +63,28 @@ export const UseUserStore = defineStore('user', {
         clearUserState() {
             this.appToken = ''
             this.userInfo = { ...initialUserInfo }
+        },
+        async fetchUserInfo() {
+            const headers = getHeader();
+            try {
+                const [infoRes, configRes] = await Promise.all([
+                    userApi.getUserInfo({}, headers),
+                    userApi.getUserSystemConfig({}, headers)
+                ]);
+                if (infoRes.code === 200) {
+                    const combinedData: UserInfo = {
+                        ...infoRes.data,
+                        currencyUnit: configRes.data.currencyUnit,
+                        showHide: configRes.data.showHide,
+                        systemLanguage: configRes.data.systemLanguage
+                    };
+                    this.userInfo(combinedData);
+                } else {
+                    console.error('获取用户信息失败:', infoRes.message);
+                }
+            } catch (error) {
+                console.error('请求失败:', error);
+            }
         }
     },
     persist: true

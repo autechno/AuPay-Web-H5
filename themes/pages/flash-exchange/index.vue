@@ -317,7 +317,7 @@ const swapCurrencies = () => {
 // 对象权限获取
 const handleValidate = async () =>{
   // 验证
-  let permissionRes = await systemApi.assetsFlashPermission({permissionId: 6}, headers);
+  let permissionRes = await systemApi.checkPermission({permissionId: 6}, headers);
   if(permissionRes.code == 200) {
     form.value.optToken = permissionRes.data.optToken;
     let verifyMethods = permissionRes.data.verifyMethods;
@@ -335,7 +335,7 @@ const handleValidate = async () =>{
 const handleSubmit = async () => {
   try {
      if(activeStepId.value == 1){
-      let flashRes = await systemApi.assetsFlashPermission({permissionId: 6}, headers);
+      let flashRes = await systemApi.checkPermission({permissionId: 6}, headers);
       if(flashRes.code == 200) {
          form.value.optToken = flashRes.data.optToken;
          let passRes = await systemApi.verifyAssetsPassword({
@@ -374,9 +374,9 @@ const processFunc = async() =>{
   }
   let falshRes = await assetsApi.fastSwapApply({
     optToken: form.value.optToken,
-    outCurrencyId: form.value.selectedCurrencyTo,
+    outCurrencyId: form.value.selectedCurrencyToId,
     outChain: form.value.selectedChainTo,
-    inCurrencyId: form.value.selectedCurrency,
+    inCurrencyId: form.value.selectedCurrencyId,
     inChain: form.value.selectedChain,
     transOutAmount: form.value.inputAmountTo,
     transInAmount: form.value.inputAmount,

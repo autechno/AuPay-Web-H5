@@ -17,7 +17,7 @@ import Collect from './collect.vue';
 import Pay from './pay.vue';
 import { ref } from 'vue';
 // 默认选中充值
-const activeIndex = ref('2');
+const activeIndex = ref('1');
 const activeInnerIndex = ref('0');
 
 // 处理外部选项卡点击事件

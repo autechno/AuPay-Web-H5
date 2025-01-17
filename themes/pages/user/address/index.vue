@@ -37,8 +37,8 @@
     <!-- 创建密码验证对话框 -->
     <el-dialog title="兑换验证" v-model="dialogCheckVisible">
       <el-form :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleCheck">
-        <el-form-item  v-if="activeStepId == 1" label="设置支付密码" prop="paymentPassword">
-          <el-input v-model="form.paymentPassword" type="password" placeholder="设置支付密码" />
+        <el-form-item  v-if="activeStepId == 1" label="设置支付密码" prop="assetsPassword">
+          <el-input v-model="form.assetsPassword" type="password" placeholder="设置支付密码" />
         </el-form-item>
         <el-form-item v-if="activeStepId == 2" label="身份验证器APP验证码" prop="googleCode" >
           <el-input v-model="form.googleCode" type="password" placeholder="请输入6位验证码" />
@@ -153,7 +153,7 @@ const query = ref({
 const form = ref({ ...initialFormValues });
 // 表单验证规则
 const rules = {
-  paymentPassword: [
+  assetsPassword: [
     { required: true, message: '密码不能为空', trigger: 'blur' },
     { min: 6, message: '密码长度至少为6位', trigger: 'blur' }
   ],
@@ -179,11 +179,11 @@ const opearType = ref(1);
 const handleCheck = async () => {
   try {
     if(activeStepId.value == 1){
-      let flashRes = await systemApi.assetsFlashPermission({permissionId: 11}, headers);
+      let flashRes = await systemApi.checkPermission({permissionId: 11}, headers);
       if(flashRes.code == 200) {
         form.value.optToken = flashRes.data.optToken;
         let passRes = await systemApi.verifyAssetsPassword({
-          assetsPassword: form.value.paymentPassword,
+          assetsPassword: form.value.assetsPassword,
           optToken: flashRes.data.optToken
         }, headers);
         if(passRes.code == 200) {

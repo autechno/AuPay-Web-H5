@@ -20,7 +20,7 @@
     <div class="content">
       <div class="status-item" >
         <span>Google Authenticator </span>
-        <span v-if="form.bindGoogleAuth"><a href="javascript:;">重新绑定</a> | <a href="javascript:;">删除</a></span>
+        <span v-if="form.bindGoogleAuth"><a href="javascript:;">重新绑定</a> | <a href="javascript:;" @click="deleteGoogleAuth">删除</a></span>
         <span v-else><a href="javascript:;">绑定</a></span>
       </div>
     </div>
@@ -124,7 +124,7 @@ const statusList = ref([
 ]);
 
 const handleValidate = async (type: number) =>{
-  let permissionRes = await systemApi.assetsFlashPermission({permissionId: type}, headers);
+  let permissionRes = await systemApi.checkPermission({permissionId: type}, headers);
   if(permissionRes.code == 200) {
     form.value.type = type;
     form.value.optToken = permissionRes.data.optToken;
@@ -145,6 +145,24 @@ const handleValidate = async (type: number) =>{
     ElMessage.error(permissionRes.message);
   }
 }
+
+// 验证密码
+const deleteGoogleAuth = async () => {
+  try {
+      let validateRes = await systemApi.resetGoogleAuth({}, headers);
+      if (validateRes.code === 200) {
+        UseUserInfo(headers);
+        ElMessage.error('解绑成功')
+      } else {
+        ElMessage.error(validateRes.message);
+      }
+  } catch (error) {
+    ElMessage.error('请求失败，请重试')
+  } finally {
+  }
+}
+
+
 
 // 验证密码
 const handleCheck = async () => {
@@ -177,6 +195,8 @@ const handleCheck = async () => {
   } finally {
   }
 }
+
+
 
 /**
  * 表单提交

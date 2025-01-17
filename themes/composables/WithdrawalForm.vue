@@ -1,10 +1,6 @@
 <template>
-  <el-dialog title="转账" v-model="props.isDialogVisible" width="500">
     <el-form :model="form" :rules="rules" ref="formRef">
-      <el-form-item
-          label="货币"
-          prop="currencyId"
-          :rules="[{ required: true, message: '货币不能为空', trigger: 'blur' }]">
+      <el-form-item label="货币" prop="currencyId">
         <el-select
             style="margin-bottom: 20px;"
             id="currency-select"
@@ -19,12 +15,8 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item
-          label="货币链"
-          prop="currencyChainId"
-          :rules="[{ required: true, message: '货币链不能为空', trigger: 'blur' }]">
+      <el-form-item label="货币链" prop="currencyChainId" >
         <el-select
-            id="chain-select"
             v-model="form.currencyChainId"
             placeholder="请选择货币链">
           <el-option
@@ -35,12 +27,27 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="数量" prop="amount" :rules="[{ required: true, message: '数量不能为空', trigger: 'blur' }]">
+
+      <el-form-item  label="提现地址" prop="toAddress">
+        <el-select
+            v-model="form.toAddress"
+            placeholder="请选择地址">
+          <el-option
+              v-for="address in addressList"
+              :key="address.name"
+              :label="address.name"
+              :value="address.name"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="数量" prop="amount">
         <el-input
             v-model.number="form.amount"
             @input="validateInputAmount"
         ></el-input>
       </el-form-item>
+
       <div class="tips-wrap" v-if="props.isFlag">
         <div>可转账数量：{{ transferableAmount }} {{ form.currencyName }}</div>
         <div>费用：{{ fee }} {{ form.currencyName }}</div>
@@ -51,10 +58,8 @@
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
-      <el-button @click="emit('close')">取 消</el-button>
-      <el-button type="primary" @click="handleSubmit">确 定</el-button>
+      <el-button type="primary" @click="handleSubmit">下一步</el-button>
     </span>
-  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -62,10 +67,11 @@ import { ref, defineProps, onMounted } from 'vue';
 import { ElMessage } from "element-plus";
 import { getHeader } from "@/utils/storageUtils";
 const headers = getHeader();
-const { assetsApi } = useServer();
+const { assetsApi, userApi } = useServer();
 
 const currencyList = ref([]);
 const currencyChainList = ref([]);
+const addressList = ref([]);
 const formRef = ref(null);
 const transferableAmount = ref(0);
 const fee = ref(0);
@@ -74,7 +80,6 @@ const actualTransferAmount = ref(0);
 const props = defineProps({
   form: Object,
   isFlag: Boolean,
-  isDialogVisible: Boolean,
 });
 
 // 表单验证规则
@@ -85,7 +90,10 @@ const rules = {
   currencyChainId: [
     { required: true, message: '货币链不能为空', trigger: 'blur' },
   ],
-  amount: [
+  toAddress: [
+    { required: true, message: '地址不能为空', trigger: 'blur' },
+  ],
+  inputAmount: [
     { required: true, message: '数量不能为空', trigger: 'blur' },
   ],
 };
@@ -102,7 +110,7 @@ const handleCurrencyChain = () => {
 
 // 验证输入金额
 const validateInputAmount = async () => {
-  let res = await assetsApi.getTransferRateFee({
+  let res = await assetsApi.getWithdrawRateFee({
     currencyId: props.form.currencyId,
     currencyChain: props.form.currencyChainId,
     amount: props.form.amount
@@ -121,10 +129,8 @@ const validateInputAmount = async () => {
 const handleSubmit = async () => {
   const valid = await formRef.value.validate();
   if (valid) {
-    props.form.generateQR = `/charge-withdraw/transfer/detail?qr=${props.form.transferQR}&currencyId=${props.form.currencyId}&currencyChainId=${props.form.currencyChainId}&amount=${props.form.amount}&remark=${props.form.remark}`;
-    props.isDialogVisible = false;
+    props.form.withdrawalStatus = true;
     emit('update:form', { ...props.form }); // 更新父组件的 form 数据
-    emit('close');
   } else {
     ElMessage.error('表单验证失败');
   }
@@ -133,11 +139,12 @@ const handleSubmit = async () => {
 const emit = defineEmits(['update:form', 'close']);
 
 // 获取资产数据
-const assetsData = async () => {
+const initialData = async () => {
   try {
-    let res = await assetsApi.accountAssets({}, headers);
-    if (res.code === 200) {
-      let dataList = res.data;
+    // 账户查询
+    let resAssets = await assetsApi.accountAssets({}, headers);
+    if (resAssets.code === 200) {
+      let dataList = resAssets.data;
       const currencyMap = new Map();
       dataList.forEach(item => {
         if (!currencyMap.has(item.currencyId)) {
@@ -158,8 +165,17 @@ const assetsData = async () => {
       });
       currencyList.value = Array.from(currencyMap.values());
     } else {
-      ElMessage.error(res.message || '查询失败');
+      ElMessage.error(resAssets.message || '查询失败');
     }
+
+    // 常用地址查询
+    const resAddress = await userApi.getFrequentlyList({}, headers);
+    if (resAddress.code === 200) {
+      addressList.value = resAddress.data;
+    } else {
+      ElMessage.error(resAddress.message || '查询失败');
+    }
+
   } catch (error) {
     ElMessage.error('请求失败，请重试');
   }
@@ -167,7 +183,7 @@ const assetsData = async () => {
 
 // 初始化数据
 onMounted(() => {
-  assetsData();
+  initialData();
 });
 </script>
 
