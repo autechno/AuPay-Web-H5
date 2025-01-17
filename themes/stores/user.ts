@@ -31,14 +31,14 @@ export const UseUserStore = defineStore('user', {
                         systemLanguage: configRes.data.systemLanguage
                     };
                     this.setUserInfo(combinedData);
-                    return true; // 成功
+                    return true;
                 } else {
                     console.error('获取用户信息失败:', infoRes.message);
-                    return false; // 失败
+                    return false;
                 }
             } catch (error) {
                 console.error('请求失败:', error);
-                return false; // 异常
+                return false;
             }
         }
     },

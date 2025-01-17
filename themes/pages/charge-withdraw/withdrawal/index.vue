@@ -51,8 +51,7 @@ const updateForm = (newForm: Object) => {
     if(form.value.googleToken != ''){
       headers['Google-Auth-Token'] = form.value.googleToken;
     }
-    console.log(headers)
-    let res = assetsApi.getTransferApply(newForm, headers);
+    let res = assetsApi.getWithdrawApply(newForm, headers);
     if (res.code === 200) {
       ElMessage.success('提现成功');
       window.location.reload();

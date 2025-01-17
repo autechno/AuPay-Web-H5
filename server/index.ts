@@ -168,7 +168,7 @@ class SystemApi extends Http {
     /**
      * 发送修改邮箱验证码
      */
-    public sendUpdateEmail(params: any,  headers: any): Promise<any> {
+    public sendEmail(params: any, headers: any): Promise<any> {
         return this.get('/aupay-user/email/sendEmailCode', params, headers)
     }
     /**
@@ -187,7 +187,7 @@ class SystemApi extends Http {
      * 重置验证Google
      */
     public resetGoogleAuth(params: any, headers: any): Promise<any> {
-        return this.get('/aupay-user/resetGoogleAuth', params, headers)
+        return this.put('/aupay-user/resetGoogleAuth', params, headers)
     }
     /**
      * 绑定 Google Auth
@@ -317,22 +317,22 @@ class AssetsApi extends Http {
         return this.post('/aupay-trade/fastSwap/fee', params, headers)
     }
     /**
-     * 获取币种转账汇率
-     */
-    public getWithdrawRateFee(params: any, headers: any): Promise<any> {
-        return this.post('/aupay-trade/withdraw/fee', params, headers)
-    }
-    /**
      * 获取币种提现汇率
      */
     public getTransferRateFee(params: any, headers: any): Promise<any> {
         return this.post('/aupay-trade/transfer/fee', params, headers)
     }
     /**
+     * 获取币种转账汇率
+     */
+    public getWithdrawRateFee(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-trade/withdraw/fee', params, headers)
+    }
+    /**
      * 提取现金
      */
-    public getTransferApply(params: any, headers: any): Promise<any> {
-        return this.post('/aupay-trade/transfer/apply/'+params.optToken, params, headers)
+    public getWithdrawApply(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-trade/withdraw/apply/'+params.optToken, params, headers)
     }
 }
 

@@ -4,9 +4,14 @@
       <el-form-item  v-if="activeStepId == 1" label="设置支付密码" prop="assetsPasswordCode">
         <el-input v-model="checkForm.assetsPasswordCode" type="password" placeholder="设置支付密码" />
       </el-form-item>
-      <el-form-item  v-if="activeStepId == 2" label="邮箱验证码" prop="emailCode">
-        <el-input v-model="checkForm.emailCode" placeholder="请输入邮箱验证码" />
-      </el-form-item>
+      <div v-if="activeStepId == 2">
+        <el-form-item  label="邮箱" >
+          <el-input :value="props.form.email" disabled />
+        </el-form-item>
+        <el-form-item  label="邮箱验证码" prop="emailCode">
+          <el-input v-model="checkForm.emailCode" placeholder="请输入邮箱验证码" />
+        </el-form-item>
+      </div>
       <el-form-item v-if="activeStepId == 3" label="身份验证器APP验证码" prop="googleCode" >
         <el-input v-model="checkForm.googleCode" type="password" placeholder="请输入6位验证码" />
       </el-form-item>
@@ -19,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps, onMounted } from 'vue';
+import { ref, defineProps, onMounted, watch } from 'vue';
 import { ElForm, ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
 const headers = getHeader();
@@ -28,8 +33,9 @@ const title = ref('验证资金密码');
 const props = defineProps({
   isDialogVisible: Boolean,
   form: Object,
-  permissionId: Number
+  permissionId: Number,
 });
+
 const checkForm = ref({
   bindGoogleAuth: false,
   bindAssetsPassword: false,
@@ -68,11 +74,12 @@ const handleSubmit = async () => {
       let passRes = await systemApi.verifyAssetsPassword({ assetsPassword: checkForm.value.assetsPasswordCode, optToken: checkForm.value.optToken}, headers);
       if (passRes.code == 200) {
         props.form.passwordToken = passRes.data;
-        if (checkForm.value.bindGoogleAuth) {
+        if (checkForm.value.bindEmail) {
+          activeStepId.value = 2;
+          sendEmail();
+        }else if(!checkForm.value.bindEmail && checkForm.value.bindGoogleAuth){
           activeStepId.value = 3;
           title.value = 'google 验证码';
-        }else{
-          processMethod();
         }
       }else{
         ElMessage.error(passRes.message);
@@ -80,18 +87,15 @@ const handleSubmit = async () => {
       return;
     }
     if (activeStepId.value == 2){
-      let sendRes = await systemApi.sendUpdateEmail({ email: props.form.email, optToken: checkForm.value.optToken},  headers);
-      if (sendRes.code === 200) {
-        props.form.dialogCheckVisible.value = true;
+      let sendValidateEmailRes = await systemApi.sendValidateEmail({ emailCode: props.form.email, optToken: checkForm.value.optToken}, headers);
+      if (sendValidateEmailRes.code === 200) {
+        props.form.emailCodeToken = sendValidateEmailRes.data;
         if (checkForm.value.bindGoogleAuth) {
+          title.value = 'google 验证器';
           activeStepId.value = 3;
-          title.value = 'google 验证码';
-        }else{
+        } else {
           processMethod();
         }
-        ElMessage.success('email已发送到' + props.form.email +"邮箱");
-      }else{
-        ElMessage.error(sendRes.message);
       }
       return;
     }
@@ -110,6 +114,17 @@ const handleSubmit = async () => {
   } finally {
   }
 };
+
+// 发送邮箱验证码
+const sendEmail = async () => {
+  title.value = '邮箱验证码';
+  let sendEmailRes = await systemApi.sendEmail({ email: props.form.email, optToken: checkForm.value.optToken},  headers);
+  if (sendEmailRes.code === 200) {
+    ElMessage.success('email已发送到' + props.form.email +"邮箱");
+  }else{
+    ElMessage.error(sendEmailRes.message);
+  }
+}
 const processMethod = async () => {
   props.form.permissionStatus = true;
   props.form.optToken = checkForm.value.optToken;
@@ -124,6 +139,7 @@ const processMethod = async () => {
 // 获取初始化信息
 const fetchData = async () => {
   try {
+    console.log(props.form);
     let res = await systemApi.checkPermission({permissionId: props.permissionId}, headers);
     if (res.code === 200) {
       checkForm.value.optToken = res.data.optToken;
@@ -137,6 +153,7 @@ const fetchData = async () => {
       if(!checkForm.value.bindAssetsPassword && checkForm.value.bindEmail){
         activeStepId.value = 2;
         title.value = '邮箱验证码';
+        sendEmail();
       }
       if(!checkForm.value.bindAssetsPassword && !checkForm.value.bindEmail && checkForm.value.bindGoogleAuth){
         activeStepId.value = 3;
@@ -149,11 +166,13 @@ const fetchData = async () => {
     ElMessage.error('请求失败，请重试');
   }
 };
-
-// 初始化数据
-onMounted(() => {
-  fetchData();
+// 监听 isDialogVisible 的变化
+watch(() => props.isDialogVisible, (newVal) => {
+  if (newVal) {
+    fetchData();
+  }
 });
+
 </script>
 
 <style scoped>

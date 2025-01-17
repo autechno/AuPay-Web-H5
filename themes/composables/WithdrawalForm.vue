@@ -119,8 +119,8 @@ const validateInputAmount = async () => {
     fee.value = res.data.fee;
     actualTransferAmount.value = props.form.amount + res.data.fee;
   }
-  if (props.form.amount > transferableAmount.value) {
-    props.form.amount = transferableAmount.value; // 将输入金额限制为实际转账数量
+  if (props.form.amount > actualTransferAmount.value) {
+    props.form.amount = actualTransferAmount.value; // 将输入金额限制为实际转账数量
     ElMessage.warning('转入金额不能大于实际转账数量');
   }
 };
