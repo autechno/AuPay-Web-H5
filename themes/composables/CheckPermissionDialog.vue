@@ -77,7 +77,7 @@ const handleSubmit = async () => {
       return;
     }
     if (activeStepId.value == 2){
-      let sendValidateEmailRes = await systemApi.sendValidateEmail({ emailCode: props.form.emailCode, optToken: checkForm.value.optToken}, headers);
+      let sendValidateEmailRes = await systemApi.sendValidateEmail({ emailCode: checkForm.emailCode, optToken: checkForm.value.optToken}, headers);
       if (sendValidateEmailRes.code === 200) {
         props.form.emailCodeToken = sendValidateEmailRes.data;
         if (checkForm.value.bindGoogleAuth) {
