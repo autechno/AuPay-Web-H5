@@ -50,6 +50,9 @@ const checkForm = ref({
 const emit = defineEmits(['update:form', 'close']);
 // 取消操作
 const cancel = () => {
+  checkForm.value.emailCode = '';
+  checkForm.value.checkAssetsPassword = '';
+  checkForm.value.googleCode = '';
   emit('close');
 };
 
