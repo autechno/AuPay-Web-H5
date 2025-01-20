@@ -77,7 +77,7 @@ const handleSubmit = async () => {
       return;
     }
     if (activeStepId.value == 2){
-      let sendValidateEmailRes = await systemApi.sendValidateEmail({ emailCode: checkForm.emailCode, optToken: checkForm.value.optToken}, headers);
+      let sendValidateEmailRes = await systemApi.sendValidateEmail({ emailCode: checkForm.value.emailCode, optToken: checkForm.value.optToken}, headers);
       if (sendValidateEmailRes.code === 200) {
         props.form.emailCodeToken = sendValidateEmailRes.data;
         if (checkForm.value.bindGoogleAuth) {
@@ -166,5 +166,4 @@ watch(() => props.isDialogVisible, (newVal) => {
 </script>
 
 <style scoped>
-/* 添加您的样式 */
 </style>
