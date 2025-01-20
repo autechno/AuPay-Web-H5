@@ -41,21 +41,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { ElNotification } from 'element-plus';
-
+import { copyText } from "@/utils/funcUtil";
 const dialogTitle = ref("充值");
-const copyText = (text: string) => {
-  navigator.clipboard.writeText(text).then(() => {
-    ElNotification({
-      title: '成功',
-      message: '链接已复制到剪贴板!',
-      type: 'success',
-      duration: 2000,
-    });
-  }).catch(err => {
-    console.error('Error copying text: ', err);
-  });
-};
-
 const protocols = ref([
   { label: 'Ethereum', value: 'ethereum' },
   { label: 'Binance Smart Chain', value: 'bsc' },

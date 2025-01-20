@@ -216,7 +216,9 @@ class SystemApi extends Http {
     public sendResetValidateGoogle(params: any, headers: any): Promise<any> {
         return this.get('/aupay-user/password/validateResetPasswordGoogleAuth', params, headers)
     }
-
+    public sendResetValidateGoogle(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-operate/operation/getCountryCodes', params, headers)
+    }
 
     /**
      * 验证资金密码权限

@@ -1,126 +1,122 @@
 <template>
-  <div class="exchange-container exchange-container-wrap">
-    <p>闪兑</p>
-    <div class="exchange-wrapper">
-      <div class="exchange-container">
-        <div class="select-container">
-          <el-select
-              style="margin-bottom: 20px;"
-              id="currency-select"
-              v-model="form.selectedCurrencyId"
-              placeholder="请选择货币"
-              @change="updateCurrencyChain('form')">
-            <el-option
-                v-for="currency in currencyMergedData"
-                :key="currency.currencyId"
-                :label="currency.currency[0].name"
-                :value="currency.currencyId"
-            />
-          </el-select>
-          <el-select
-              id="chain-select"
-              style="margin-bottom: 20px;"
-              v-model="form.selectedChain"
-              placeholder="请选择链">
-            <el-option
-                v-for="chain in form.selectedCurrencyChain"
-                :key="chain.id"
-                :label="chain.name"
-                :value="chain.id"
-            />
-          </el-select>
-          <!-- 输入框部分 -->
-          <div class="input-container">
-            <el-input
-                v-model="form.inputAmount"
-                placeholder="请输入金额"
-                type="number"
-                @input="syncInputAmount"
-            />
-            <span style="padding-left: 20px;">{{ form.selectedCurrency }}</span>
+  <div class="page">
+    <div class="exchange-container exchange-container-wrap">
+      <p>闪兑</p>
+      <div class="exchange-wrapper">
+        <div class="exchange-container">
+          <div class="select-container">
+            <el-select
+                style="margin-bottom: 20px;"
+                id="currency-select"
+                v-model="form.selectedCurrencyId"
+                placeholder="请选择货币"
+                @change="updateCurrencyChain('form')">
+              <el-option
+                  v-for="currency in currencyMergedData"
+                  :key="currency.currencyId"
+                  :label="currency.currency[0].name"
+                  :value="currency.currencyId"
+              />
+            </el-select>
+            <el-select
+                id="chain-select"
+                style="margin-bottom: 20px;"
+                v-model="form.selectedChain"
+                placeholder="请选择链">
+              <el-option
+                  v-for="chain in form.selectedCurrencyChain"
+                  :key="chain.id"
+                  :label="chain.name"
+                  :value="chain.id"
+              />
+            </el-select>
+            <!-- 输入框部分 -->
+            <div class="input-container">
+              <el-input
+                  v-model="form.inputAmount"
+                  placeholder="请输入金额"
+                  type="number"
+                  @input="syncInputAmount"
+              />
+              <span style="padding-left: 20px;">{{ form.selectedCurrency }}</span>
+            </div>
+            <!-- 显示余额 -->
+            <div class="balance-display">
+              <span>可兑换余额: {{ form.bigNumCost }}</span>
+            </div>
           </div>
-          <!-- 显示余额 -->
-          <div class="balance-display">
-            <span>可兑换余额: {{ form.bigNumCost }}</span>
+        </div>
+        <div class="button-container">
+          <el-button @click="swapCurrencies">交换</el-button>
+        </div>
+        <div class="exchange-container">
+          <div class="select-container">
+            <el-select
+                style="margin-bottom: 20px;"
+                id="currency-select-to"
+                v-model="form.selectedCurrencyToId"
+                placeholder="请选择货币"
+                @change="updateCurrencyChain('to')">
+              <el-option
+                  v-for="currency in currencyMergedData"
+                  :key="currency.currencyId"
+                  :label="currency.currency[0].name"
+                  :value="currency.currencyId"
+              />
+            </el-select>
+            <el-select
+                id="chain-select-to"
+                style="margin-bottom: 20px;"
+                v-model="form.selectedChainTo"
+                placeholder="请选择链">
+              <el-option
+                  v-for="chain in form.selectedCurrencyChainTo"
+                  :key="chain.id"
+                  :label="chain.name"
+                  :value="chain.id"
+              />
+            </el-select>
+            <!-- 输入框部分 -->
+            <div class="input-container">
+              <el-input
+                  v-model="form.inputAmountTo"
+                  placeholder="请输入金额"
+                  type="number"
+                  @input="syncInputAmountTo"
+              />
+              <span style="padding-left: 20px;">{{ form.selectedCurrencyTo }}</span>
+            </div>
           </div>
         </div>
       </div>
-      <div class="button-container">
-        <el-button @click="swapCurrencies">交换</el-button>
-      </div>
-      <div class="exchange-container">
-        <div class="select-container">
-          <el-select
-              style="margin-bottom: 20px;"
-              id="currency-select-to"
-              v-model="form.selectedCurrencyToId"
-              placeholder="请选择货币"
-              @change="updateCurrencyChain('to')">
-            <el-option
-                v-for="currency in currencyMergedData"
-                :key="currency.currencyId"
-                :label="currency.currency[0].name"
-                :value="currency.currencyId"
-            />
-          </el-select>
-          <el-select
-              id="chain-select-to"
-              style="margin-bottom: 20px;"
-              v-model="form.selectedChainTo"
-              placeholder="请选择链">
-            <el-option
-                v-for="chain in form.selectedCurrencyChainTo"
-                :key="chain.id"
-                :label="chain.name"
-                :value="chain.id"
-            />
-          </el-select>
-          <!-- 输入框部分 -->
-          <div class="input-container">
-            <el-input
-                v-model="form.inputAmountTo"
-                placeholder="请输入金额"
-                type="number"
-                @input="syncInputAmountTo"
-            />
-            <span style="padding-left: 20px;">{{ form.selectedCurrencyTo }}</span>
-          </div>
-        </div>
+      <div style="text-align: right;">
+        <div>当前兑换汇率：{{ rateExchange.content }}</div>
+        <div v-if="cost">费用：{{ cost }}</div>
       </div>
     </div>
-    <div style="text-align: right;">
-      <div>当前兑换汇率：{{ rateExchange.content }}</div>
-      <div v-if="cost">费用：{{ cost }}</div>
-    </div>
+    <el-button @click="dialogCheckVisible = true" type="primary" >确认兑换</el-button>
+    <!-- 密码验证对话框 -->
+    <CheckPermissionDialog
+        :form="form"
+        @update:form="updateForm"
+        :permissionId="6"
+        :isDialogVisible="dialogCheckVisible"
+        @close="dialogCheckVisible = false"
+    />
+    <List></List>
   </div>
-  <el-button @click="handleValidate" type="primary" >确认兑换</el-button>
-  <!-- 创建对话框 -->
-  <el-dialog title="兑换验证" v-model="dialogVisible">
-    <el-form :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleSubmit">
-      <el-form-item  v-if="activeStepId == 1" label="设置支付密码" prop="assetsPassword">
-        <el-input v-model="form.assetsPassword" type="password" placeholder="设置支付密码" />
-      </el-form-item>
-      <el-form-item v-if="activeStepId == 2" label="身份验证器APP验证码" prop="googleCode" >
-        <el-input v-model="form.googleCode" placeholder="请输入6位验证码" />
-      </el-form-item>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" native-type="submit">确 定</el-button>
-      </span>
-    </el-form>
-  </el-dialog>
-  <List></List>
 </template>
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { getHeader } from "@/utils/storageUtils";
 import {ElForm, ElMessage} from "element-plus";
 import List from './detail/list.vue'
+import CheckPermissionDialog from "~/composables/CheckPermissionDialog.vue";
 const headers = getHeader();
 const { assetsApi, systemApi } = useServer();
 // 处理整合数据列表
 const currencyMergedData = ref([]);
-const  dialogVisible = ref(false);
+const  dialogCheckVisible = ref(false);
 const  activeStepId = ref(1);
 const  bindGoogleAuth = ref(false);
 const  rateExchange = ref({
@@ -153,16 +149,29 @@ const form = ref({
   googleToken: '',
   optToken: '',
 });
-// 表单验证规则
-const rules = {
-  assetsPassword: [
-    { required: true, message: '密码不能为空', trigger: 'blur' },
-    { min: 6, message: '密码长度至少为6位', trigger: 'blur' }
-  ],
-  googleCode: [
-    { required: true, message: 'google验证码不能为空', trigger: 'blur' },
-  ],
+
+// 更新父组件的 form 数据
+const updateForm = async (newForm: Object) => {
+  form.value = newForm;
+  dialogCheckVisible.value = false;
+  if(form.value.permissionStatus){
+    setHeadersAuth(headers, form);
+    let res = await assetsApi.fastSwapApply({
+      optToken: form.value.optToken,
+      outCurrencyId: form.value.selectedCurrencyToId,
+      outChain: form.value.selectedChainTo,
+      inCurrencyId: form.value.selectedCurrencyId,
+      inChain: form.value.selectedChain,
+      transOutAmount: form.value.inputAmountTo,
+      transInAmount: form.value.inputAmount,
+    }, headers);
+    if(res.code == 200) {
+      ElMessage.success("闪兑成功，")
+    }
+  }
 };
+
+
 
 // 获取数据的函数
 const fetchData = async () => {
@@ -313,79 +322,6 @@ const swapCurrencies = () => {
   form.value.inputAmount = form.value.inputAmountTo;
   form.value.inputAmountTo = tempAmount;
 };
-
-// 对象权限获取
-const handleValidate = async () =>{
-  // 验证
-  let permissionRes = await systemApi.checkPermission({permissionId: 6}, headers);
-  if(permissionRes.code == 200) {
-    form.value.optToken = permissionRes.data.optToken;
-    let verifyMethods = permissionRes.data.verifyMethods;
-    form.value.bindGoogleAuth = verifyMethods.includes("GOOGLEAUTHENICATOR");
-    form.value.bindPassword = verifyMethods.includes("ASSETSPASSWORD");
-    // 判断如果密码不验证，直接跳到google验证吗
-    if(!form.value.bindPassword){
-      activeStepId.value = 2
-    }
-    dialogVisible.value = true;
-  }
-}
-
-// 提交
-const handleSubmit = async () => {
-  try {
-     if(activeStepId.value == 1){
-      let flashRes = await systemApi.checkPermission({permissionId: 6}, headers);
-      if(flashRes.code == 200) {
-         form.value.optToken = flashRes.data.optToken;
-         let passRes = await systemApi.verifyAssetsPassword({
-            assetsPassword: form.value.assetsPassword,
-            optToken: flashRes.data.optToken
-          }, headers);
-         if(passRes.code == 200) {
-           form.value.passwordToken = passRes.data;
-           if(bindGoogleAuth.value){
-             activeStepId.value = 2;
-           }else{
-             processFunc();
-           }
-         }
-      }
-    }else if(activeStepId.value == 2){
-      let googleRes = await systemApi.verifyValidateGoogle({
-        googleCode: form.value.googleCode,
-        optToken: form.value.optToken
-      }, headers);
-      if(googleRes.code == 200) {
-        form.value.googleToken = googleRes.data;
-        processFunc();
-      }
-    }
-  } catch (error) {
-    ElMessage.error('请求失败，请重试')
-  } finally {
-  }
-}
-// 执行
-const processFunc = async() =>{
-  headers['Assets-Password-Token'] = form.value.passwordToken;
-  if(form.value.googleToken != '' && bindGoogleAuth.value){
-    headers['Google-Auth-Token'] = form.value.googleToken;
-  }
-  let falshRes = await assetsApi.fastSwapApply({
-    optToken: form.value.optToken,
-    outCurrencyId: form.value.selectedCurrencyToId,
-    outChain: form.value.selectedChainTo,
-    inCurrencyId: form.value.selectedCurrencyId,
-    inChain: form.value.selectedChain,
-    transOutAmount: form.value.inputAmountTo,
-    transInAmount: form.value.inputAmount,
-  }, headers);
-  if(falshRes.code == 200) {
-    ElMessage.success("闪兑成功，")
-    dialogVisible.value = false;
-  }
-}
 
 </script>
 

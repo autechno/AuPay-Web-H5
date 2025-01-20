@@ -54,6 +54,7 @@ import { ElMessage } from "element-plus";
 import QCcode from "~/composables/QCcode.vue";
 const showQrDialog = ref(false);
 const headers = getHeader();
+import { copyText } from "@/utils/funcUtil";
 const { assetsApi } = useServer();
 const form = ref({
   currencyId: null,
@@ -85,19 +86,6 @@ const getQueryParams = () => {
   };
 };
 
-// 复制方法
-const copyText = (text: string) => {
-  navigator.clipboard.writeText(text).then(() => {
-    ElNotification({
-      title: '成功',
-      message: '链接已复制到剪贴板!',
-      type: 'success',
-      duration: 2000,
-    });
-  }).catch(err => {
-    console.error('复制文本时出错: ', err);
-  });
-};
 // 获取数据的函数
 const fetchData = async () => {
   try {

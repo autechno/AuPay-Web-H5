@@ -14,8 +14,8 @@
         :form="form"
         @update:form="updateForm"
         :permissionId = 4
-        :isDialogVisible="isDialogVisible"
-        @close="isDialogVisible = false"
+        :isDialogVisible="dialogCheckVisible"
+        @close="dialogCheckVisible = false"
     />
   </div>
 </template>
@@ -25,9 +25,10 @@ import { ref } from "vue";
 import { getHeader } from "@/utils/storageUtils";
 import WithdrawalForm from '@/composables/WithdrawalForm.vue';
 import CheckPermissionDialog from '@/composables/CheckPermissionDialog.vue';
+import { setHeadersAuth } from "@/utils/funcUtil";
 import {ElMessage} from "element-plus";
 const activeIndex = ref('2');
-const isDialogVisible = ref(false);
+const dialogCheckVisible = ref(false);
 const { assetsApi } = useServer();
 
 const form = ref({
@@ -43,23 +44,21 @@ const form = ref({
 });
 
 // 更新父组件的 form 数据
-const updateForm = (newForm: Object) => {
+const updateForm = async (newForm: Object) => {
   form.value = newForm;
   const headers = getHeader();
   if(form.value.withdrawalStatus && form.value.permissionStatus) {
-    headers['Assets-Password-Token'] = form.value.passwordToken;
-    if(form.value.googleToken != ''){
-      headers['Google-Auth-Token'] = form.value.googleToken;
-    }
-    let res = assetsApi.getWithdrawApply(newForm, headers);
-    if (res.code === 200) {
+    setHeadersAuth(headers,form);
+    form.value['currencyChain'] = form.value.currencyChainId;
+    let res = await assetsApi.getWithdrawApply(form.value, headers);
+    if (res.code == 200) {
       ElMessage.success('提现成功');
       window.location.reload();
     } else {
-      ElMessage.error(res.message || '提现失败请与管理员联系');
+      ElMessage.error(res.message);
     }
   }else if(form.value.withdrawalStatus && !form.value.permissionStatus) {
-    isDialogVisible.value = true;
+    dialogCheckVisible.value = true;
   }
 };
 

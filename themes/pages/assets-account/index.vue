@@ -105,7 +105,8 @@ import { ref, onMounted } from 'vue';
 import { getHeader } from "@/utils/storageUtils";
 import { formatCurrency, getCurrencyInfo, getCoinInfo, formatDate, getStatusText, getTransactionTypeName, getCurrencyByCode } from "@/utils/formatUtils";
 import CurrencyTabs from "@/composables/CurrencyTabs.vue";
-import {ElMessage, ElNotification} from "element-plus";
+import {ElMessage} from "element-plus";
+import { copyText } from "@/utils/funcUtil";
 
 const headers = getHeader();
 const { assetsApi, systemApi } = useServer();
@@ -138,20 +139,6 @@ const handleCurrencyChange = (currencyId: number) => {
 const handleShowCurrencyChanged = (value) => {
   isShowCurrency.value = value;
   console.log('Show Currency:', isShowCurrency.value);
-};
-
-// 复制方法
-const copyText = (text: string) => {
-  navigator.clipboard.writeText(text).then(() => {
-    ElNotification({
-      title: '成功',
-      message: '链接已复制到剪贴板!',
-      type: 'success',
-      duration: 2000,
-    });
-  }).catch(err => {
-    console.error('Error copying text: ', err);
-  });
 };
 
 // 表单数据

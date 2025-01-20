@@ -55,4 +55,6 @@ export const rules = {
     currencyUnit: [{ required: true, message: '请选择货币单位', trigger: 'change' }],
     showHide: [{ required: true, message: '请选择是否隐藏余额', trigger: 'change' }],
     systemLanguage: [{ required: true, message: '请选择语言', trigger: 'change' }],
+    name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
+    address: [{ required: true, message: '地址不能为空', trigger: 'blur' }],
 };

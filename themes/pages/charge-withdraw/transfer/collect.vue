@@ -24,7 +24,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import TransferForm from '@/composables/TransferPayForm.vue';
-import { ElNotification } from "element-plus";
 import QCcode from "@/composables/QCcode.vue";
 
 const form = ref({
@@ -39,20 +38,6 @@ const isDialogVisible = ref(false);
 // 更新父组件的 form 数据
 const updateForm = (newForm) => {
   form.value = newForm;
-};
-
-// 复制方法
-const copyText = (text: string) => {
-  navigator.clipboard.writeText(text).then(() => {
-    ElNotification({
-      title: '成功',
-      message: '链接已复制到剪贴板!',
-      type: 'success',
-      duration: 2000,
-    });
-  }).catch(err => {
-    console.error('复制文本时出错: ', err);
-  });
 };
 
 // 清空表单

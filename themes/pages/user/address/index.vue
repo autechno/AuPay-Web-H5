@@ -2,7 +2,7 @@
   <div class="container">
     <!-- 创建按钮 -->
     <el-button type="primary" @click="opearItemBtn({}, 0);">创建</el-button>
-    <el-button type="success" @click="openSearchDialog">搜索</el-button>
+    <el-button type="success" @click="searchDialogVisible = true">搜索</el-button>
     <!-- 消息表格 -->
     <el-table :data="recordList" style="width: 100%">
       <el-table-column label="序号" width="60">
@@ -12,7 +12,7 @@
       </el-table-column>
       <el-table-column label="链" >
         <template #default="scope">
-          {{ getCoinInfo(scope.row.currencyId).title }}
+          {{ getCoinInfo(scope.row.currencyChain).title }}
         </template>
       </el-table-column>
       <el-table-column prop="name" label="名称" > </el-table-column>
@@ -39,15 +39,15 @@
         @update:form="updateForm"
         :permissionId="11"
         :isDialogVisible="dialogCheckVisible"
-        @close="handleCheckPermissionClose"
+        @close="dialogCheckVisible = false"
     />
     <!-- 创建地址对话框 -->
     <el-dialog :title="title" v-model="dialogVisible">
-      <el-form :model="form" ref="formRef">
-        <el-form-item label="名称" prop="name" :rules="[{ required: true, message: '请输入名称', trigger: 'blur' }]">
+      <el-form :model="form" ref="formRef" :rules="rules">
+        <el-form-item label="名称" prop="name" >
           <el-input v-model="form.name" />
         </el-form-item>
-        <el-form-item label="链" prop="currencyChain" :rules="[{ required: true, message: '请选择链', trigger: 'change' }]">
+        <el-form-item label="链" prop="currencyChain">
           <el-select v-model="form.currencyChain" placeholder="请选择链">
             <el-option v-for="item in chainOptions" :key="item.code" :label="item.title" :value="item.code" />
           </el-select>
@@ -58,8 +58,8 @@
             <el-radio :label="false">否</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="地址">
-          <el-input v-model="form.address" :rules="[{ required: true, message: '请输入地址', trigger: 'change' }]"/>
+        <el-form-item label="地址" prop="address">
+          <el-input v-model="form.address" />
         </el-form-item>
         <el-form-item label="描述">
           <el-input v-model="form.remark" />
@@ -70,17 +70,13 @@
         <el-button type="primary" @click="editAddress">确 定</el-button>
       </span>
     </el-dialog>
+
     <!-- 搜索对话框 -->
     <el-dialog title="搜索" v-model="searchDialogVisible">
       <el-form :model="query" ref="searchFormRef">
         <el-form-item label="白名单" prop="white">
           <el-select v-model="query.white" placeholder="白名单">
             <el-option v-for="item in statusOptions" :key="item.code" :label="item.title" :value="item.code" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="链" prop="currencyChain">
-          <el-select v-model="query.currencyChain" placeholder="请选择代币协议">
-            <el-option v-for="item in chainOptions" :key="item.code" :label="item.title" :value="item.code" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -98,12 +94,9 @@ import { ref, onMounted } from 'vue';
 import {ElForm, ElMessage} from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
 import { setHeadersAuth } from "@/utils/funcUtil";
-import {getDataList, getCurrencyInfo, getCoinInfo} from "@/utils/formatUtils";
-import CheckPermissionDialog from "~/composables/CheckPermissionDialog.vue";
-// 打开搜索对话框
-const openSearchDialog = () => {
-  searchDialogVisible.value = true;
-};
+import { rules } from "@/utils/validationRules";
+import {getDataList, getCoinInfo} from "@/utils/formatUtils";
+import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 
 // 处理搜索
 const handleSearch = async () => {
@@ -159,17 +152,11 @@ const formRef = ref(null);
 const dialogVisible = ref(false);
 const dialogCheckVisible = ref(false);
 const searchDialogVisible = ref(false);
-const bindGoogleAuth = ref(false);
 const statusOptions = ref(getDataList('searchStatus'));
 const chainOptions = ref(getDataList('coin'));
 const activeStepId = ref(1);
 const title = ref('创建地址');
 const opearType = ref(0);
-
-// 关闭按钮
-const handleCheckPermissionClose = () => {
-  dialogCheckVisible.value = false;
-};
 
 // 编辑地址按钮
 const opearItemBtn = (obj: any, type: number) => {
@@ -244,6 +231,7 @@ const fetchData = async () => {
     const res = await userApi.getFrequentlyList(query.value, headers);
     if (res.code === 200) {
       recordList.value = res.data;
+      console.log(recordList.value)
     } else {
       ElMessage.error(res.message || '查询失败');
     }
@@ -251,6 +239,7 @@ const fetchData = async () => {
     ElMessage.error('请求失败，请重试');
   }
 };
+
 // 切换白名单
 const toggleWhitelist = async () => {
   try {
@@ -270,8 +259,6 @@ const toggleWhitelist = async () => {
 
 // 初始化数据
 onMounted(() => {
-  const userStore = UseUserStore();
-  bindGoogleAuth.value = userStore.userInfo.bindGoogleAuth;
   fetchData();
 });
 

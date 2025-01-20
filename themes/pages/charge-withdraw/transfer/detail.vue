@@ -25,39 +25,41 @@
     <el-button type="primary" @click="handleSubmit"> 确认 </el-button>
   </div>
   <!-- 密码验证对话框 -->
-  <el-dialog title="兑换验证" v-model="dialogCheckVisible">
-    <el-form :model="checkForm" :rules="rules" ref="formRef"  @submit.prevent="handleCheck">
-      <el-form-item  v-if="activeStepId == 1" label="设置支付密码" prop="assetsPassword">
-        <el-input v-model="checkForm.assetsPassword" type="password" placeholder="设置支付密码" />
-      </el-form-item>
-      <el-form-item v-if="activeStepId == 2" label="身份验证器APP验证码" prop="googleCode" >
-        <el-input v-model="checkForm.googleCode" type="password" placeholder="请输入6位验证码" />
-      </el-form-item>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogCheckVisible = false">取 消</el-button>
-        <el-button type="primary" native-type="submit">确 定</el-button>
-      </span>
-    </el-form>
-  </el-dialog>
+  <CheckPermissionDialog
+      :form="checkForm"
+      @update:form="updateForm"
+      :permissionId="8"
+      :isDialogVisible="dialogCheckVisible"
+      @close="dialogCheckVisible = false"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { getHeader } from "@/utils/storageUtils";
 import { useRoute } from 'vue-router';
-import {ElForm, ElMessage} from "element-plus";
+import {ElMessage} from "element-plus";
 import {getCurrencyInfo, getCoinInfo, formatCurrency, getCurrencyByCode} from "@/utils/formatUtils";
+import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
+import {setHeadersAuth} from "@/utils/funcUtil";
 
 const route = useRoute();
 const headers = getHeader();
 const dialogCheckVisible = ref(false);
-const activeStepId = ref(1);
 const { userApi, assetsApi, systemApi } = useServer();
 const currency = ref({
   code: 'USD',
   sign: '$',
   rate: 1,
 });
+
+// 更新父组件的 form 数据
+const updateForm = (newForm: Object) => {
+  checkForm.value = newForm;
+  if(checkForm.value.permissionStatus){
+    processPay();
+  }
+};
 
 // 表单验证规则
 const rules = {
@@ -81,9 +83,10 @@ const checkForm = ref({
   googleCode: '',
   passwordToken: '',
   googleToken: '',
-  permission: {},
+  optToken: '',
   bindGoogleAuth: false,
-  bindAssetsPassword: false
+  bindAssetsPassword: false,
+  permissionStatus: false,
 })
 const account = ref({
   accountNo: '',
@@ -100,44 +103,8 @@ const currencyAccount = ref({
   fee: '',
   rateCurrency: '',
 });
-// 验证密码
-const handleCheck = async () => {
-  try {
-    if(checkForm.value.assetsPassword && activeStepId.value == 1) {
-      let passRes = await systemApi.verifyAssetsPassword({
-        assetsPassword: checkForm.value.assetsPassword,
-        optToken: checkForm.value.permission.optToken,
-      }, headers);
-      if(passRes.code == 200) {
-        checkForm.value.passwordToken = passRes.data;
-        if(checkForm.value.bindGoogleAuth){
-          activeStepId.value = 2;
-        }else{
-          processPay();
-        }
-        return;
-      }else{
-        ElMessage.error(passRes.message);
-      }
-    }
-    if(checkForm.value.bindGoogleAuth && activeStepId.value == 2){
-      let googleRes = await systemApi.verifyValidateGoogle({
-        googleCode: checkForm.value.googleCode,
-        optToken: checkForm.value.permission.optToken,
-      }, headers);
-      if(googleRes.code == 200) {
-        checkForm.value.googleToken = googleRes.data;
-        processPay();
-      }else{
-        ElMessage.error(passRes.message);
-      }
-    }
-  } catch (error) {
-    ElMessage.error('请求失败，请重试')
-  } finally {
-  }
-}
 
+// 转账成功
 const  processPay = async () =>{
   let params = {
     accountId: account.value.accountId,
@@ -147,12 +114,12 @@ const  processPay = async () =>{
     currencyChain: form.value.currencyChainId,
     transferAmount: form.value.amount,
     remark: form.value.remark,
-    optToken: checkForm.value.permission.optToken
+    optToken: checkForm.value.optToken
   }
-  headers['Assets-Password-Token'] = checkForm.value.passwordToken;
-  if(checkForm.value.googleToken != '' && checkForm.value.bindGoogleAuth){
-    headers['Google-Auth-Token'] = checkForm.value.googleToken;
-  }
+  console.log("--params--")
+  console.log(params)
+  console.log("--params--")
+  setHeadersAuth(headers, checkForm);
   let res = await assetsApi.transferApply(params, headers);
   if(res.code == 200) {
     ElMessage.success('转账成功');
@@ -167,13 +134,11 @@ const  processPay = async () =>{
 // 获取数据的函数
 const initializeData = async () => {
   try {
-    const [assetsRes, checkTransferRes, rateRes, permissionRes] = await Promise.all([
+    const [assetsRes, checkTransferRes, rateRes] = await Promise.all([
       assetsApi.accountAssets({}, headers),
       userApi.getCheckTransferCode({ qrCode: form.value.qr }, headers),
       assetsApi.getRateCoin2currency({ coinId: form.value.currencyId, currency: currency.value.code, }, headers),
-      systemApi.checkPermission({permissionId: 8}, headers),
     ]);
-
     // 处理资产数据
     if (assetsRes.code == 200) {
       assetsRes.data.forEach(item => {
@@ -207,15 +172,6 @@ const initializeData = async () => {
     } else {
       ElMessage.error(rateRes.message || '查询失败');
     }
-    // opToken
-    if (permissionRes.code == 200) {
-      checkForm.value.permission = permissionRes.data;
-      let verifyMethods = permissionRes.data.verifyMethods;
-      checkForm.value.bindGoogleAuth = verifyMethods.includes("GOOGLEAUTHENICATOR");
-      checkForm.value.bindAssetsPassword = verifyMethods.includes("ASSETSPASSWORD");
-    } else {
-      ElMessage.error(rateRes.message || '查询失败');
-    }
   } catch (error) {
     ElMessage.error('请求失败，请重试');
   }
@@ -233,8 +189,6 @@ const handleSubmit = async () => {
       throw new Error('转账货币信息不完整');
     } else if(!form.value.amount) {
       throw new Error('转账金额不能为空');
-    } else if(!checkForm.value.permission.optToken) {
-      throw new Error('非法操作');
     }
     dialogCheckVisible.value = true;
   } catch (error) {
