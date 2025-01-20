@@ -52,4 +52,7 @@ export const rules = {
     country: [
         { required: true, message: "请选择国家", trigger: "change" }
     ],
+    currencyUnit: [{ required: true, message: '请选择货币单位', trigger: 'change' }],
+    showHide: [{ required: true, message: '请选择是否隐藏余额', trigger: 'change' }],
+    systemLanguage: [{ required: true, message: '请选择语言', trigger: 'change' }],
 };

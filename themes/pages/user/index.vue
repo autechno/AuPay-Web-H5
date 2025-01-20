@@ -35,8 +35,8 @@
     <!-- 设置密码对话框 -->
     <el-dialog title="设置密码" v-model="isPassDialogVisible">
       <el-form :model="form" :rules="rules" ref="formRef" @submit.prevent="handleSubmit">
-        <el-form-item label="" prop="newPassword">
-          <el-input v-model="form.newPassword" type="password" placeholder="请输入密码" />
+        <el-form-item label="" prop="password">
+          <el-input v-model="form.password" type="password" placeholder="请输入密码" />
         </el-form-item>
         <el-form-item label="" prop="confirmPassword">
           <el-input v-model="form.confirmPassword" type="password" placeholder="请输入确认密码" />
@@ -69,6 +69,7 @@
 import {ref, onMounted} from 'vue';
 import {Check, Close} from "@element-plus/icons-vue";
 import { getHeader } from "@/utils/storageUtils";
+import { rules } from "@/utils/validationRules";
 import {ElForm} from "element-plus";
 const headers = getHeader();
 const { systemApi, userApi } = useServer();
@@ -85,7 +86,7 @@ import CheckPermissionDialog from '@/composables/CheckPermissionDialog.vue';
  */
 const form = ref({
   email: '',
-  newPassword: '',
+  password: '',
   confirmPassword: '',
   optToken: '',
   googleToken: '',
@@ -109,26 +110,23 @@ const googleForm = ref({
  * 自定义验证器：确认密码
  */
 const validateConfirmPassword = (rule: any, value: string, callback: any) => {
-  if (value !== form.value.newPassword) {
+  if (value !== form.value.password) {
     callback(new Error('确认密码与密码不一致'));
   } else {
     callback();
   }
 };
-const rules = {
-  newPassword: [
-    { required: true, message: '密码不能为空', trigger: 'blur' },
-    { min: 6, message: '密码长度至少为6位', trigger: 'blur' }
-  ],
+
+// 表单验证规则
+const formRules = {
+  ...rules,
   confirmPassword: [
     { required: true, message: '确认密码不能为空', trigger: 'blur' },
-    { min: 6, message: '确认密码长度至少为6位', trigger: 'blur' },
+    { min: 8, message: '确认密码长度至少为8位', trigger: 'blur' },
     { validator: validateConfirmPassword, trigger: 'blur' }
   ],
-  googleCode: [
-    { required: true, message: 'google验证码不能为空', trigger: 'blur' },
-  ]
 };
+
 const statusList = ref([
   { name: '绑定Google登录', key: 'bindGoogleLogin', status: false },
   { name: 'Apple验证', key: 'bindAppleLogin', status: false },
@@ -169,7 +167,7 @@ const deleteGoogleAuth = async () => {
   } finally {
   }
 }
-const checkGoogleAuth = (type, id) => {
+const checkGoogleAuth = (type: number, id: number) => {
   form.value.paramType = type;
   permissionId.value = id;
   dialogCheckVisible.value = true;
@@ -186,7 +184,7 @@ const resetGoogleAuth = async (type: number) => {
         isGoogleDialogVisible.value = true;
       }else{
         await userStore.fetchUserInfo();
-        ElMessage.error('绑定成功')
+        ElMessage.success('绑定成功')
         window.location.reload();
       }
     } else {
@@ -208,6 +206,7 @@ const handleSubmit = async () => {
         if(form.value.googleToken != ''){
           headers['Google-Auth-Token'] = form.value.googleToken;
         }
+        form.value['newPassword'] = form.value.password;
         let res;
         if(form.value.type == 3){
           res = await userApi.updatePassword(form.value, headers);
