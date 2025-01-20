@@ -39,7 +39,7 @@
         @update:form="updateForm"
         :permissionId="11"
         :isDialogVisible="dialogCheckVisible"
-        @close="dialogCheckVisible = false"
+        @close="handleCheckPermissionClose"
     />
     <!-- 创建地址对话框 -->
     <el-dialog :title="title" v-model="dialogVisible">
@@ -151,36 +151,48 @@ const dialogVisible = ref(false);
 const dialogCheckVisible = ref(false);
 const searchDialogVisible = ref(false);
 const bindGoogleAuth = ref(false);
-const currencyOptions = ref(getDataList('cryptocurrencies'));
 const statusOptions = ref(getDataList('searchStatus'));
 const chainOptions = ref(getDataList('coin'));
 const activeStepId = ref(1);
 const title = ref('创建地址');
 const opearType = ref(1);
 
-// 执行
-const processFunc = async() =>{
+// // 执行
+// const processFunc = async() =>{
+//   dialogCheckVisible.value = false;
+//   activeStepId.value = 1
+//   if(opearType.value == 2){
+//     toggleWhitelist();
+//   }else if(opearType.value == 3){
+//     deleteItem();
+//   }else if(opearType.value == 0 || opearType.value == 1){
+//     dialogVisible.value = true;
+//   }
+// }
+// 关闭按钮
+const handleCheckPermissionClose = () => {
   dialogCheckVisible.value = false;
-  activeStepId.value = 1
-  if(opearType.value == 2){
-    toggleWhitelist();
-  }else if(opearType.value == 3){
-    deleteItem();
-  }else if(opearType.value == 0 || opearType.value == 1){
-    dialogVisible.value = true;
-  }
-}
+};
+
+// 创建地址弹窗
+const openCreateDialog = () => {
+  title.value = '创建地址';
+  form.value = { id: '', name: '', white: false, currencyId: '', currencyChain: '', address: '', remark: '' };
+};
 
 // 编辑地址按钮
 const opearItemBtn = (obj: any, type: number) => {
+  if (dialogCheckVisible.value) {
+    console.log(obj)
+    return;
+  }
   opearType.value = type;
-  if(type == 0){
-    title.value = '创建地址';
-    form.value.id = '';
-  } else if(type == 1){
+  if (type === 0) {
+    openCreateDialog();
+  } else if (type === 1) {
     title.value = '编辑地址';
-    form.value = obj;
-  }else if(type == 2 || type == 3){
+    form.value = { ...obj };
+  } else if (type === 2 || type === 3) {
     form.value.id = obj.id;
   }
   dialogCheckVisible.value = true;

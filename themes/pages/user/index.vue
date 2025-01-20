@@ -34,7 +34,7 @@
     />
     <!-- 设置密码对话框 -->
     <el-dialog title="设置密码" v-model="isPassDialogVisible">
-      <el-form :model="form" :rules="rules" ref="formRef" @submit.prevent="handleSubmit">
+      <el-form :model="form" :rules="formRules" ref="formRef" @submit.prevent="handleSubmit">
         <el-form-item label="" prop="password">
           <el-input v-model="form.password" type="password" placeholder="请输入密码" />
         </el-form-item>
@@ -52,14 +52,14 @@
         <img :src="googleForm.qrCode" alt="Google QR Code" style="width: 150px; height: 150px;" />
         <div>{{googleForm.googleSecret}}</div>
         <el-button size="small" @click="copyText(googleForm.googleSecret)">复制</el-button>
-        <el-form :model="googleForm" :rules="rules" ref="formRef" label-position="top" style="margin-top: 20px;">
+        <el-form :model="googleForm" :rules="formRules" ref="formRef" label-position="top" style="margin-top: 20px;">
           <el-form-item label="" prop="googleCode">
             <el-input v-model="googleForm.googleCode" placeholder="请输入Google验证码" />
           </el-form-item>
         </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="resetGoogleAuth(2)">确认</el-button>
+        <el-button type="primary" @click="bingGoogleAuth(2)">确认</el-button>
       </span>
     </el-dialog>
   </div>
@@ -91,6 +91,7 @@ const form = ref({
   optToken: '',
   googleToken: '',
   emailCodeToken: '',
+  passwordToken: '',
   type: 1,
   paramType: 'password',
 })
@@ -141,8 +142,9 @@ const updateForm = (newForm: Object) => {
   }else if(form.value.paramType === 'delGoogle'){
     deleteGoogleAuth();
   }else{
-    resetGoogleAuth(1);
+    bingGoogleAuth(1);
   }
+  console.log(newForm);
 };
 
 // 设置密码
@@ -154,7 +156,8 @@ const setPassBtn = async (type: number) =>{
 // 删除绑定
 const deleteGoogleAuth = async () => {
   try {
-      let validateRes = await systemApi.resetGoogleAuth({}, headers);
+    setHeaders();
+      let validateRes = await systemApi.resetGoogleAuth({optToken: form.value.optToken}, headers);
       if (validateRes.code === 200) {
         await userStore.fetchUserInfo();
           ElMessage.error('解绑成功')
@@ -173,10 +176,15 @@ const checkGoogleAuth = (type: number, id: number) => {
   dialogCheckVisible.value = true;
 }
 // 绑定Google
-const resetGoogleAuth = async (type: number) => {
+const bingGoogleAuth = async (type: number) => {
   try {
-    googleForm.value.type = type;
-    let res = await systemApi.bindGoogleAuth(googleForm.value, headers);
+    setHeaders();
+    let res = await systemApi.bindGoogleAuth({
+      googleSecret: googleForm.value.googleSecret,
+      googleCode: googleForm.value.googleCode,
+      optToken: form.value.optToken,
+      type: type,
+    }, headers);
     if (res.code === 200) {
       if(type == 1){
         googleForm.value.googleSecret = res.data.googleSecret;
@@ -202,16 +210,16 @@ const handleSubmit = async () => {
   const valid = await formRef.value.validate();
   try {
     if (valid) {
-        headers['Email-Token'] = form.value.emailCodeToken;
-        if(form.value.googleToken != ''){
-          headers['Google-Auth-Token'] = form.value.googleToken;
-        }
-        form.value['newPassword'] = form.value.password;
+      setHeaders();
         let res;
+        let params = {
+          newPassword: form.value.password,
+          optToken: form.value.optToken,
+        };
         if(form.value.type == 3){
-          res = await userApi.updatePassword(form.value, headers);
+          res = await userApi.updatePassword(params, headers);
         }else{
-          res = await userApi.updateAssetsPassword(form.value, headers);
+          res = await userApi.updateAssetsPassword(params, headers);
         }
         if (res.code === 200) {
           window.location.reload();
@@ -224,6 +232,18 @@ const handleSubmit = async () => {
     ElMessage.error('请求失败，请重试');
   }
 };
+
+// 设置 headers 的函数
+const setHeaders = () => {
+  headers['Email-Token'] = form.value.emailCodeToken;
+  if (form.value.googleToken !== '') {
+    headers['Google-Auth-Token'] = form.value.googleToken;
+  }
+  if (form.value.passwordToken !== '') {
+    headers['Assets-Password-Token'] = form.value.passwordToken;
+  }
+};
+
 
 // 复制方法
 const copyText = (text: string) => {

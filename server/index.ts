@@ -187,7 +187,7 @@ class SystemApi extends Http {
      * 重置验证Google
      */
     public resetGoogleAuth(params: any, headers: any): Promise<any> {
-        return this.put('/aupay-user/resetGoogleAuth', params, headers)
+        return this.put('/aupay-user/resetGoogleAuth/'+params.optToken, params, headers)
     }
     /**
      * 绑定 Google Auth
@@ -196,7 +196,7 @@ class SystemApi extends Http {
         if(params.type == 1){
             return this.get('/aupay-user/bindGoogleAuth', {}, headers)
         }else{
-            return this.put('/aupay-user/bindGoogleAuth?googleSecret='+params.googleSecret+'&googleCode='+params.googleCode, {}, headers)
+            return this.put('/aupay-user/bindGoogleAuth/'+params.optToken+'?googleSecret='+params.googleSecret+'&googleCode='+params.googleCode, {}, headers)
         }
     }
     /**
