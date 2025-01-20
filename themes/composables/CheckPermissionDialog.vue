@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="title" v-model="props.isDialogVisible">
+  <el-dialog :title="title" v-model="props.isDialogVisible" @close="cancel">
     <el-form :model="checkForm" :rules="rules" ref="formRef"  @submit.prevent="handleSubmit">
       <el-form-item  v-if="activeStepId == 1" label="资金密码" prop="checkAssetsPassword">
         <el-input v-model="checkForm.checkAssetsPassword" type="password" placeholder="请转入资金密码" />

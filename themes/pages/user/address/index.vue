@@ -126,6 +126,7 @@ const initialFormValues = {
   passwordToken: '',
   googleToken: '',
   googleCode: '',
+  permissionStatus: false
 };
 // 表单查询字段数据
 const query = ref({
@@ -139,7 +140,7 @@ const form = ref({ ...initialFormValues });
 // 更新父组件的 form 数据
 const updateForm = (newForm: Object) => {
   form.value = newForm;
-  if(newForm.permissionStatus){
+  if(form.value.permissionStatus){
     dialogVisible.value = true;
   }
 };
@@ -155,7 +156,7 @@ const statusOptions = ref(getDataList('searchStatus'));
 const chainOptions = ref(getDataList('coin'));
 const activeStepId = ref(1);
 const title = ref('创建地址');
-const opearType = ref(1);
+const opearType = ref(0);
 
 // // 执行
 // const processFunc = async() =>{
@@ -174,21 +175,17 @@ const handleCheckPermissionClose = () => {
   dialogCheckVisible.value = false;
 };
 
-// 创建地址弹窗
-const openCreateDialog = () => {
-  title.value = '创建地址';
-  form.value = { id: '', name: '', white: false, currencyId: '', currencyChain: '', address: '', remark: '' };
-};
-
 // 编辑地址按钮
 const opearItemBtn = (obj: any, type: number) => {
-  if (dialogCheckVisible.value) {
-    console.log(obj)
-    return;
-  }
   opearType.value = type;
   if (type === 0) {
-    openCreateDialog();
+    title.value = '创建地址';
+    form.value.id = '';
+    form.value.name = '';
+    form.value.currencyId = '';
+    form.value.currencyChain = '';
+    form.value.address = '';
+    form.value.remark = '';
   } else if (type === 1) {
     title.value = '编辑地址';
     form.value = { ...obj };
@@ -218,8 +215,6 @@ const editAddress = async () => {
       } catch (error) {
         ElMessage.error('请求失败，请重试');
       }
-    } else {
-      ElMessage.error('表单验证失败，请检查输入');
     }
   });
 };
