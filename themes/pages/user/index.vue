@@ -69,6 +69,7 @@
 import {ref, onMounted} from 'vue';
 import {Check, Close} from "@element-plus/icons-vue";
 import { getHeader } from "@/utils/storageUtils";
+import { setHeadersAuth, copyText } from "@/utils/funcUtil";
 import { rules } from "@/utils/validationRules";
 import {ElForm} from "element-plus";
 const headers = getHeader();
@@ -144,7 +145,6 @@ const updateForm = (newForm: Object) => {
   }else{
     bingGoogleAuth(1);
   }
-  console.log(newForm);
 };
 
 // 设置密码
@@ -156,15 +156,15 @@ const setPassBtn = async (type: number) =>{
 // 删除绑定
 const deleteGoogleAuth = async () => {
   try {
-    setHeaders();
-      let validateRes = await systemApi.resetGoogleAuth({optToken: form.value.optToken}, headers);
-      if (validateRes.code === 200) {
-        await userStore.fetchUserInfo();
-          ElMessage.error('解绑成功')
-          window.location.reload();
-      } else {
-        ElMessage.error(validateRes.message);
-      }
+    setHeadersAuth(headers, form);
+    let validateRes = await systemApi.resetGoogleAuth({optToken: form.value.optToken}, headers);
+    if (validateRes.code === 200) {
+      await userStore.fetchUserInfo();
+        ElMessage.success('解绑成功')
+        window.location.reload();
+    } else {
+      ElMessage.error(validateRes.message);
+    }
   } catch (error) {
     ElMessage.error('请求失败，请重试')
   } finally {
@@ -178,7 +178,7 @@ const checkGoogleAuth = (type: number, id: number) => {
 // 绑定Google
 const bingGoogleAuth = async (type: number) => {
   try {
-    setHeaders();
+    setHeadersAuth(headers, form);
     let res = await systemApi.bindGoogleAuth({
       googleSecret: googleForm.value.googleSecret,
       googleCode: googleForm.value.googleCode,
@@ -210,7 +210,7 @@ const handleSubmit = async () => {
   const valid = await formRef.value.validate();
   try {
     if (valid) {
-      setHeaders();
+      setHeadersAuth(headers, form);
         let res;
         let params = {
           newPassword: form.value.password,
@@ -231,32 +231,6 @@ const handleSubmit = async () => {
   } catch (error) {
     ElMessage.error('请求失败，请重试');
   }
-};
-
-// 设置 headers 的函数
-const setHeaders = () => {
-  headers['Email-Token'] = form.value.emailCodeToken;
-  if (form.value.googleToken !== '') {
-    headers['Google-Auth-Token'] = form.value.googleToken;
-  }
-  if (form.value.passwordToken !== '') {
-    headers['Assets-Password-Token'] = form.value.passwordToken;
-  }
-};
-
-
-// 复制方法
-const copyText = (text: string) => {
-  navigator.clipboard.writeText(text).then(() => {
-    ElNotification({
-      title: '成功',
-      message: '链接已复制到剪贴板!',
-      type: 'success',
-      duration: 2000,
-    });
-  }).catch(err => {
-    console.error('复制文本时出错: ', err);
-  });
 };
 
 // 初始化数据

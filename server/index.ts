@@ -65,14 +65,6 @@ class UserApi extends Http {
         return this.get('/aupay-user/base/check/transferCode', params, headers)
     }
     /**
-     * ，验证收款码
-     * @param params
-     * @param headers
-     */
-    public setTransferCode(params: any, headers: any): Promise<any> {
-        return this.get('/aupay-user/base/set/transferCode', params, headers)
-    }
-    /**
      * 常用地址列表
      */
     public getFrequentlyList(params: any, headers: any): Promise<any> {
@@ -84,6 +76,7 @@ class UserApi extends Http {
     public getFrequentlyWhiteCheck(params: any, headers: any): Promise<any> {
         return this.get('/aupay-user/address/white/check', params, headers)
     }
+
     /**
      * 删除常用地址
      */

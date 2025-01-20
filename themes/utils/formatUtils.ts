@@ -13,6 +13,14 @@ const storeData = {
         { name: 'OZC', title: 'OZCoin', code: 5 },
         { name: 'TOTO', title: 'TOTO', code: 6 },
     ],
+    cryptocurrencies: [
+        { name: 'BTC', title: 'Bitcoin', code: 1 },
+        { name: 'ETH', title: 'Ethereum', code: 2 },
+        { name: 'USDT', title: 'TetherUS', code: 3 },
+        { name: 'TRX', title: 'TRON', code: 4 },
+        { name: 'OZC', title: 'OZCoin', code: 5 },
+        { name: 'TOTO', title: 'TOTO', code: 6 },
+    ],
     searchStatus: [
         { name: 'All', title: '全部', code: '' },
         { name: 'Y', title: '是', code: true },
@@ -170,3 +178,4 @@ export const getDataList = (type: string) => {
 export const getStatusText = (status: any, type: any): string => {
     return StatusEnum[type][status] || '未知状态';
 };
+

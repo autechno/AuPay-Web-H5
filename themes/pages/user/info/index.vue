@@ -75,7 +75,7 @@ import { ElMessage } from "element-plus";
 import { getHeader } from "@/utils/storageUtils";
 import { rules } from "@/utils/validationRules";
 import { getDataList } from "@/utils/formatUtils";
-import { copyText } from "@/utils/copyText";
+import { copyText } from "~/utils/funcUtil";
 import type { UploadProps } from 'element-plus';
 import QCcode from "@/composables/QCcode.vue";
 const { public: { API_HOST } } = useRuntimeConfig();

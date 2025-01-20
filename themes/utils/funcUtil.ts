@@ -1,0 +1,38 @@
+import { ElNotification } from 'element-plus';
+
+export const copyText = async (text: string) => {
+    try {
+        await navigator.clipboard.writeText(text);
+        ElNotification({
+            title: '成功',
+            message: '链接已复制到剪贴板!',
+            type: 'success',
+            duration: 2000,
+        });
+    } catch (err) {
+        console.error('复制文本时出错: ', err);
+        ElNotification({
+            title: '错误',
+            message: '复制链接失败!',
+            type: 'error',
+            duration: 2000,
+        });
+    }
+};
+
+// 设置 headers 的函数
+export const setHeadersAuth = (headers, form) => {
+    if (form && form.value) {
+        if (form.value.emailCodeToken !== undefined && form.value.emailCodeToken !== '') {
+            headers['Email-Token'] = form.value.emailCodeToken;
+        }
+        if (form.value.googleToken !== undefined && form.value.googleToken !== '') {
+            headers['Google-Auth-Token'] = form.value.googleToken;
+        }
+        if (form.value.passwordToken !== undefined && form.value.passwordToken !== '') {
+            headers['Assets-Password-Token'] = form.value.passwordToken;
+        }
+    } else {
+        console.error("form or form.value is undefined");
+    }
+};

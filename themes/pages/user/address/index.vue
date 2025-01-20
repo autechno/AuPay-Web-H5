@@ -97,7 +97,7 @@
 import { ref, onMounted } from 'vue';
 import {ElForm, ElMessage} from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
-import { rules } from "@/utils/validationRules";
+import { setHeadersAuth } from "@/utils/funcUtil";
 import {getDataList, getCurrencyInfo, getCoinInfo} from "@/utils/formatUtils";
 import CheckPermissionDialog from "~/composables/CheckPermissionDialog.vue";
 // 打开搜索对话框
@@ -141,7 +141,15 @@ const form = ref({ ...initialFormValues });
 const updateForm = (newForm: Object) => {
   form.value = newForm;
   if(form.value.permissionStatus){
-    dialogVisible.value = true;
+    dialogCheckVisible.value = false;
+    activeStepId.value = 1
+    if(opearType.value == 2){
+      toggleWhitelist();
+    }else if(opearType.value == 3){
+      deleteItem();
+    }else if(opearType.value == 0 || opearType.value == 1){
+      dialogVisible.value = true;
+    }
   }
 };
 
@@ -158,18 +166,6 @@ const activeStepId = ref(1);
 const title = ref('创建地址');
 const opearType = ref(0);
 
-// // 执行
-// const processFunc = async() =>{
-//   dialogCheckVisible.value = false;
-//   activeStepId.value = 1
-//   if(opearType.value == 2){
-//     toggleWhitelist();
-//   }else if(opearType.value == 3){
-//     deleteItem();
-//   }else if(opearType.value == 0 || opearType.value == 1){
-//     dialogVisible.value = true;
-//   }
-// }
 // 关闭按钮
 const handleCheckPermissionClose = () => {
   dialogCheckVisible.value = false;
@@ -200,10 +196,7 @@ const editAddress = async () => {
   await formRef.value.validate(async (valid) => {
     if (valid) {
       try {
-        headers['Assets-Password-Token'] = form.value.passwordToken;
-        if(form.value.googleToken != '' && bindGoogleAuth.value){
-          headers['Google-Auth-Token'] = form.value.googleToken;
-        }
+        setHeadersAuth(headers, form);
         const response = await userApi.getFrequentlyEdit(form.value,  headers);
         if (response.code === 200) {
           ElMessage.success(title.value + '成功');
@@ -229,10 +222,7 @@ const deleteItem = async () => {
   if (confirm) {
     // 调用 API 删除项
     try {
-      headers['Assets-Password-Token'] = form.value.passwordToken;
-      if(form.value.googleToken != ''){
-        headers['Google-Auth-Token'] = form.value.googleToken;
-      }
+      setHeadersAuth(headers, form);
       const response = await userApi.getFrequentlyDelete(form.value, headers);
       if (response.code === 200) {
         ElMessage.success('删除成功');
@@ -264,10 +254,7 @@ const fetchData = async () => {
 // 切换白名单
 const toggleWhitelist = async () => {
   try {
-    headers['Assets-Password-Token'] = form.value.passwordToken;
-    if(form.value.googleToken != ''){
-      headers['Google-Auth-Token'] = form.value.googleToken;
-    }
+    setHeadersAuth(headers, form);
     const response = await userApi.getFrequentlyToggle(form.value, headers);
     if (response.code === 200) {
       ElMessage.success('状态更新成功');
