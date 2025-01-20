@@ -10,9 +10,9 @@
           {{ scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column prop="代币种类" label="代币种类" >
+      <el-table-column label="链" >
         <template #default="scope">
-          {{ getCurrencyInfo(scope.row.currencyId).title }}
+          {{ getCoinInfo(scope.row.currencyId).title }}
         </template>
       </el-table-column>
       <el-table-column prop="name" label="名称" > </el-table-column>
@@ -98,7 +98,7 @@ import { ref, onMounted } from 'vue';
 import {ElForm, ElMessage} from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
 import { rules } from "@/utils/validationRules";
-import {getDataList, getCurrencyInfo} from "@/utils/formatUtils";
+import {getDataList, getCurrencyInfo, getCoinInfo} from "@/utils/formatUtils";
 import CheckPermissionDialog from "~/composables/CheckPermissionDialog.vue";
 // 打开搜索对话框
 const openSearchDialog = () => {
