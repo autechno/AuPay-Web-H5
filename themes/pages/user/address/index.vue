@@ -3,7 +3,6 @@
     <!-- 创建按钮 -->
     <el-button type="primary" @click="opearItemBtn({}, 0);">创建</el-button>
     <el-button type="success" @click="openSearchDialog">搜索</el-button>
-
     <!-- 消息表格 -->
     <el-table :data="recordList" style="width: 100%">
       <el-table-column label="序号" width="60">
@@ -34,34 +33,22 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- 创建密码验证对话框 -->
-    <el-dialog title="兑换验证" v-model="dialogCheckVisible">
-      <el-form :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleCheck">
-        <el-form-item  v-if="activeStepId == 1" label="设置支付密码" prop="assetsPassword">
-          <el-input v-model="form.assetsPassword" type="password" placeholder="设置支付密码" />
-        </el-form-item>
-        <el-form-item v-if="activeStepId == 2" label="身份验证器APP验证码" prop="googleCode" >
-          <el-input v-model="form.googleCode" type="password" placeholder="请输入6位验证码" />
-        </el-form-item>
-        <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogCheckVisible = false">取 消</el-button>
-        <el-button type="primary" native-type="submit">确 定</el-button>
-      </span>
-      </el-form>
-    </el-dialog>
+    <!-- 密码验证对话框 -->
+    <CheckPermissionDialog
+        :form="form"
+        @update:form="updateForm"
+        :permissionId="11"
+        :isDialogVisible="dialogCheckVisible"
+        @close="dialogCheckVisible = false"
+    />
     <!-- 创建地址对话框 -->
     <el-dialog :title="title" v-model="dialogVisible">
       <el-form :model="form" ref="formRef">
         <el-form-item label="名称" prop="name" :rules="[{ required: true, message: '请输入名称', trigger: 'blur' }]">
           <el-input v-model="form.name" />
         </el-form-item>
-        <el-form-item label="代币种类" prop="currencyId" :rules="[{ required: true, message: '请选择代币种类', trigger: 'change' }]">
-          <el-select v-model="form.currencyId">
-            <el-option v-for="item in currencyOptions" :key="item.code" :label="item.title" :value="item.code" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="代币协议" prop="currencyChain" :rules="[{ required: true, message: '请选择代币协议', trigger: 'change' }]">
-          <el-select v-model="form.currencyChain">
+        <el-form-item label="链" prop="currencyChain" :rules="[{ required: true, message: '请选择链', trigger: 'change' }]">
+          <el-select v-model="form.currencyChain" placeholder="请选择链">
             <el-option v-for="item in chainOptions" :key="item.code" :label="item.title" :value="item.code" />
           </el-select>
         </el-form-item>
@@ -72,7 +59,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="地址">
-          <el-input v-model="form.address" />
+          <el-input v-model="form.address" :rules="[{ required: true, message: '请输入地址', trigger: 'change' }]"/>
         </el-form-item>
         <el-form-item label="描述">
           <el-input v-model="form.remark" />
@@ -91,12 +78,7 @@
             <el-option v-for="item in statusOptions" :key="item.code" :label="item.title" :value="item.code" />
           </el-select>
         </el-form-item>
-        <el-form-item label="代币种类" prop="currencyId">
-          <el-select v-model="query.currencyId" placeholder="请选择代币种类">
-            <el-option v-for="item in currencyOptions" :key="item.code" :label="item.title" :value="item.code" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="代币协议" prop="currencyChain">
+        <el-form-item label="链" prop="currencyChain">
           <el-select v-model="query.currencyChain" placeholder="请选择代币协议">
             <el-option v-for="item in chainOptions" :key="item.code" :label="item.title" :value="item.code" />
           </el-select>
@@ -115,7 +97,9 @@
 import { ref, onMounted } from 'vue';
 import {ElForm, ElMessage} from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
+import { rules } from "@/utils/validationRules";
 import {getDataList, getCurrencyInfo} from "@/utils/formatUtils";
+import CheckPermissionDialog from "~/composables/CheckPermissionDialog.vue";
 // 打开搜索对话框
 const openSearchDialog = () => {
   searchDialogVisible.value = true;
@@ -127,7 +111,7 @@ const handleSearch = async () => {
   fetchData();
 };
 const headers = getHeader();
-const { userApi, systemApi } = useServer();
+const { userApi } = useServer();
 // 初始化数据
 const initialFormValues = {
   id: '',
@@ -151,16 +135,15 @@ const query = ref({
 });
 // 表单数据
 const form = ref({ ...initialFormValues });
-// 表单验证规则
-const rules = {
-  assetsPassword: [
-    { required: true, message: '密码不能为空', trigger: 'blur' },
-    { min: 6, message: '密码长度至少为6位', trigger: 'blur' }
-  ],
-  googleCode: [
-    { required: true, message: 'google验证码不能为空', trigger: 'blur' },
-  ],
+
+// 更新父组件的 form 数据
+const updateForm = (newForm: Object) => {
+  form.value = newForm;
+  if(newForm.permissionStatus){
+    dialogVisible.value = true;
+  }
 };
+
 // 数据
 const recordList = ref([]);
 const formRef = ref(null);
@@ -175,42 +158,6 @@ const activeStepId = ref(1);
 const title = ref('创建地址');
 const opearType = ref(1);
 
-// 验证密码
-const handleCheck = async () => {
-  try {
-    if(activeStepId.value == 1){
-      let flashRes = await systemApi.checkPermission({permissionId: 11}, headers);
-      if(flashRes.code == 200) {
-        form.value.optToken = flashRes.data.optToken;
-        let passRes = await systemApi.verifyAssetsPassword({
-          assetsPassword: form.value.assetsPassword,
-          optToken: flashRes.data.optToken
-        }, headers);
-        if(passRes.code == 200) {
-          form.value.passwordToken = passRes.data;
-          if(bindGoogleAuth.value){
-            activeStepId.value = 2;
-          }else{
-            processFunc();
-          }
-        }
-      }
-    }else{
-      let googleRes = await systemApi.verifyValidateGoogle({
-        googleCode: form.value.googleCode,
-        optToken: form.value.optToken
-      }, headers);
-      if(googleRes.code == 200) {
-        form.value.googleToken = googleRes.data;
-        processFunc();
-      }
-    }
-  } catch (error) {
-    ElMessage.error('请求失败，请重试')
-  } finally {
-  }
-}
-
 // 执行
 const processFunc = async() =>{
   dialogCheckVisible.value = false;
@@ -219,7 +166,6 @@ const processFunc = async() =>{
     toggleWhitelist();
   }else if(opearType.value == 3){
     deleteItem();
-    console.log(3)
   }else if(opearType.value == 0 || opearType.value == 1){
     dialogVisible.value = true;
   }

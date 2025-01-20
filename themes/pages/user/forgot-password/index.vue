@@ -1,8 +1,8 @@
 <template>
-  <div class="login-container">
-    <div class="container">
+  <div class="page">
+    <div class="login-container">
       <h2>{{title}}</h2>
-      <el-form :model="form" :rules="rules" ref="formRef" @submit.prevent="handleSubmit">
+      <el-form :model="form" :rules="formRules" ref="formRef" @submit.prevent="handleSubmit">
         <div v-if="activeStepId == 1">
           <el-form-item label="" prop="email">
             <el-input v-model="form.email" placeholder="请输入邮箱" />
@@ -38,6 +38,7 @@ import { ref, onMounted } from 'vue';
 import { ElForm, ElMessage } from 'element-plus';
 import {useRouter, useRoute} from 'vue-router';
 import { getHeader } from '@/utils/storageUtils';
+import { rules } from '@/utils/validationRules';
 const headers = getHeader();
 const { userApi, systemApi } = useServer();
 const route = useRoute();
@@ -59,7 +60,6 @@ const form = ref({
   googleCodeToken: ''
 });
 
-
 /**
  * 自定义验证器：确认密码
  */
@@ -72,25 +72,12 @@ const validateConfirmPassword = (rule: any, value: string, callback: any) => {
 };
 
 // 表单验证规则
-const rules = {
-  email: [
-    { required: true, message: '邮箱不能为空', trigger: 'blur' },
-    { type: 'email', message: '请输入有效的邮箱地址', trigger: ['blur', 'change'] }
-  ],
-  password: [
-    { required: true, message: '密码不能为空', trigger: 'blur' },
-    { min: 6, message: '密码长度至少为6位', trigger: 'blur' }
-  ],
+const formRules = {
+  ...rules,
   confirmPassword: [
     { required: true, message: '确认密码不能为空', trigger: 'blur' },
-    { min: 6, message: '确认密码长度至少为6位', trigger: 'blur' },
+    { min: 8, message: '确认密码长度至少为8位', trigger: 'blur' },
     { validator: validateConfirmPassword, trigger: 'blur' }
-  ],
-  emailCode: [
-    { required: true, message: '验证码不能为空', trigger: 'blur' },
-  ],
-  googleCode: [
-    { required: true, message: 'google验证码不能为空', trigger: 'blur' },
   ],
 };
 

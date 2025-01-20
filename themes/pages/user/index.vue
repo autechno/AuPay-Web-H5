@@ -3,8 +3,8 @@
   <div class="page">
     <h1>账户信息</h1>
     <div style="padding-bottom: 20px;">账户：{{ baseInfo.email }}</div>
-    <div>登录密码： <span><a href="javascript:;" @click="setPassword(3)">设置登录密码</a></span></div>
-    <div>交易密码： <span><a href="javascript:;" @click="setPassword(2)">设置交易密码</a></span></div>
+    <div>登录密码： <span><a href="javascript:;" @click="setPassBtn(3)">设置登录密码</a></span></div>
+    <div>交易密码： <span><a href="javascript:;" @click="setPassBtn(2)">设置交易密码</a></span></div>
     <h1>三方授权</h1>
     <div class="content">
       <div class="status-item" v-for="item in statusList" :key="item.key">
@@ -20,8 +20,8 @@
     <div class="content">
       <div class="status-item" >
         <span>Google Authenticator </span>
-        <span v-if="baseInfo.bindGoogleAuth"><a href="javascript:;" @click="deleteGoogleAuth(1)">重新绑定</a> | <a  href="javascript:;" @click="deleteGoogleAuth(0)">删除</a></span>
-        <span v-else><a href="javascript:;" @click="checkGoogleAuth">绑定</a></span>
+        <span v-if="baseInfo.bindGoogleAuth"><a href="javascript:;" @click="checkGoogleAuth('bindGoogle', 13)">重新绑定</a> | <a  href="javascript:;" @click="checkGoogleAuth('delGoogle', 14)">删除</a></span>
+        <span v-else><a href="javascript:;" @click="checkGoogleAuth('bindGoogle', 13)">绑定</a></span>
       </div>
     </div>
     <!-- 密码验证对话框 -->
@@ -140,27 +140,27 @@ const updateForm = (newForm: Object) => {
   form.value = newForm;
   if(form.value.paramType === 'password') {
     isPassDialogVisible.value = true;
+  }else if(form.value.paramType === 'delGoogle'){
+    deleteGoogleAuth();
   }else{
     resetGoogleAuth(1);
   }
 };
-const setPassword = async (type: number) =>{
+
+// 设置密码
+const setPassBtn = async (type: number) =>{
   form.value.paramType = 'password';
   permissionId.value = type;
   dialogCheckVisible.value = true;
 }
-// 验证密码
-const deleteGoogleAuth = async (isReset: number) => {
+// 删除绑定
+const deleteGoogleAuth = async () => {
   try {
       let validateRes = await systemApi.resetGoogleAuth({}, headers);
       if (validateRes.code === 200) {
         await userStore.fetchUserInfo();
-        if(isReset == 1){
-          dialogCheckVisible.value = true;
-        }else{
           ElMessage.error('解绑成功')
           window.location.reload();
-        }
       } else {
         ElMessage.error(validateRes.message);
       }
@@ -169,11 +169,12 @@ const deleteGoogleAuth = async (isReset: number) => {
   } finally {
   }
 }
-const checkGoogleAuth = () => {
-  form.value.paramType = 'google';
+const checkGoogleAuth = (type, id) => {
+  form.value.paramType = type;
+  permissionId.value = id;
   dialogCheckVisible.value = true;
 }
-// 验证密码
+// 绑定Google
 const resetGoogleAuth = async (type: number) => {
   try {
     googleForm.value.type = type;

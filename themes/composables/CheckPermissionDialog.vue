@@ -1,8 +1,8 @@
 <template>
   <el-dialog :title="title" v-model="props.isDialogVisible">
     <el-form :model="checkForm" :rules="rules" ref="formRef"  @submit.prevent="handleSubmit">
-      <el-form-item  v-if="activeStepId == 1" label="设置支付密码" prop="assetsPasswordCode">
-        <el-input v-model="checkForm.assetsPasswordCode" type="password" placeholder="设置支付密码" />
+      <el-form-item  v-if="activeStepId == 1" label="资金密码" prop="checkAssetsPassword">
+        <el-input v-model="checkForm.checkAssetsPassword" type="password" placeholder="请转入资金密码" />
       </el-form-item>
       <div v-if="activeStepId == 2">
         <el-form-item  label="邮箱" >
@@ -12,8 +12,8 @@
           <el-input v-model="checkForm.emailCode" placeholder="请输入邮箱验证码" />
         </el-form-item>
       </div>
-      <el-form-item v-if="activeStepId == 3" label="身份验证器APP验证码" prop="googleCode" >
-        <el-input v-model="checkForm.googleCode" type="password" placeholder="请输入6位验证码" />
+      <el-form-item v-if="activeStepId == 3" label="google验证码" prop="googleCode" >
+        <el-input v-model="checkForm.googleCode" type="password" placeholder="请输入google验证码" />
       </el-form-item>
       <span slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
@@ -27,9 +27,10 @@
 import { ref, defineProps, onMounted, watch } from 'vue';
 import { ElForm, ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
+import { rules } from "@/utils/validationRules";
 const headers = getHeader();
 const activeStepId = ref(0);
-const title = ref('验证资金密码');
+const title = ref('资金密码');
 const props = defineProps({
   isDialogVisible: Boolean,
   form: Object,
@@ -42,22 +43,9 @@ const checkForm = ref({
   bindEmail: false,
   optToken: false,
   emailCode: '',
-  assetsPasswordCode: '',
+  checkAssetsPassword: '',
   googleCode: '',
 })
-// 表单验证规则
-const rules = {
-  assetsPasswordCode: [
-    { required: true, message: '密码不能为空', trigger: 'blur' },
-    { min: 6, message: '密码长度至少为6位', trigger: 'blur' }
-  ],
-  emailCode: [
-    { required: true, message: '邮箱验证码不能为空', trigger: 'blur' },
-  ],
-  googleCode: [
-    { required: true, message: 'google验证码不能为空', trigger: 'blur' },
-  ],
-};
 
 const emit = defineEmits(['update:form', 'close']);
 // 取消操作
@@ -71,7 +59,7 @@ const { systemApi } = useServer();
 const handleSubmit = async () => {
   try {
     if(activeStepId.value == 1) {
-      let passRes = await systemApi.verifyAssetsPassword({ assetsPassword: checkForm.value.assetsPasswordCode, optToken: checkForm.value.optToken}, headers);
+      let passRes = await systemApi.verifyAssetsPassword({ assetsPassword: checkForm.value.checkAssetsPassword, optToken: checkForm.value.optToken}, headers);
       if (passRes.code == 200) {
         props.form.passwordToken = passRes.data;
         if (checkForm.value.bindEmail) {
@@ -80,6 +68,8 @@ const handleSubmit = async () => {
         }else if(!checkForm.value.bindEmail && checkForm.value.bindGoogleAuth){
           activeStepId.value = 3;
           title.value = 'google 验证码';
+        }else{
+          processMethod();
         }
       }else{
         ElMessage.error(passRes.message);
@@ -157,7 +147,7 @@ const fetchData = async () => {
       }
       if(!checkForm.value.bindAssetsPassword && !checkForm.value.bindEmail && checkForm.value.bindGoogleAuth){
         activeStepId.value = 3;
-        title.value = 'google 验证码';
+        title.value = 'google验证码';
       }
     } else {
       ElMessage.error(res.message || '查询失败');

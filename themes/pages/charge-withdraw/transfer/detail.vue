@@ -112,8 +112,12 @@ const handleCheck = async () => {
         checkForm.value.passwordToken = passRes.data;
         if(checkForm.value.bindGoogleAuth){
           activeStepId.value = 2;
+        }else{
+          processPay();
         }
         return;
+      }else{
+        ElMessage.error(passRes.message);
       }
     }
     if(checkForm.value.bindGoogleAuth && activeStepId.value == 2){
@@ -123,32 +127,40 @@ const handleCheck = async () => {
       }, headers);
       if(googleRes.code == 200) {
         checkForm.value.googleToken = googleRes.data;
-        let params = {
-          accountId: account.value.accountId,
-          accountType: account.value.accountType,
-          qrcode: form.value.qr,
-          currencyId: form.value.currencyId,
-          currencyChain: form.value.currencyChainId,
-          transferAmount: form.value.amount,
-          remark: form.value.remark,
-          optToken: checkForm.value.permission.optToken
-        }
-        headers['Assets-Password-Token'] = checkForm.value.passwordToken;
-        if(checkForm.value.googleToken != '' && checkForm.value.bindGoogleAuth){
-          headers['Google-Auth-Token'] = checkForm.value.googleToken;
-        }
-        let res = await assetsApi.transferApply(params, headers);
-        if(res.code == 200) {
-          ElMessage.success('转账成功');
-          window.location.href = '/charge-withdraw/transfer';
-        }else{
-          throw new Error(res.message);
-        }
+        processPay();
+      }else{
+        ElMessage.error(passRes.message);
       }
     }
   } catch (error) {
     ElMessage.error('请求失败，请重试')
   } finally {
+  }
+}
+
+const  processPay = async () =>{
+  let params = {
+    accountId: account.value.accountId,
+    accountType: account.value.accountType,
+    qrcode: form.value.qr,
+    currencyId: form.value.currencyId,
+    currencyChain: form.value.currencyChainId,
+    transferAmount: form.value.amount,
+    remark: form.value.remark,
+    optToken: checkForm.value.permission.optToken
+  }
+  headers['Assets-Password-Token'] = checkForm.value.passwordToken;
+  if(checkForm.value.googleToken != '' && checkForm.value.bindGoogleAuth){
+    headers['Google-Auth-Token'] = checkForm.value.googleToken;
+  }
+  let res = await assetsApi.transferApply(params, headers);
+  if(res.code == 200) {
+    ElMessage.success('转账成功');
+    setTimeout(()=>{
+      window.location.href = '/charge-withdraw/transfer';
+    },800)
+  }else{
+    throw new Error(res.message);
   }
 }
 

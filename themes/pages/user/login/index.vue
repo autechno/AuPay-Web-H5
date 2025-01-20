@@ -1,60 +1,62 @@
 <template>
-  <div class="login-container">
-    <h2>登录</h2>
-    <div v-if="activeStepId == 1">
-      <el-form :model="form" :rules="rules" ref="formRef" @submit.prevent="handleSubmit">
-        <el-form-item label="" prop="username">
-          <el-input v-model="form.username" placeholder="请输入邮箱" />
-        </el-form-item>
-        <el-form-item label="" prop="password">
-          <el-input v-model="form.password" type="password" placeholder="请输入密码" />
-        </el-form-item>
-        <div style="height: 30px;">
-          <div class="links" >
-            <a class="left-link" href="/user/register">注册新账号</a>
-            <a class="right-link" href="/user/forgot-password">忘记密码</a>
+  <div class="page">
+    <div class="login-container">
+      <h2>登录</h2>
+      <div v-if="activeStepId == 1">
+        <el-form :model="form" :rules="rules" ref="formRef" @submit.prevent="handleSubmit">
+          <el-form-item label="" prop="email">
+            <el-input v-model="form.email" placeholder="请输入邮箱" />
+          </el-form-item>
+          <el-form-item label="" prop="loginPassword">
+            <el-input v-model="form.loginPassword" type="password" placeholder="请输入密码" />
+          </el-form-item>
+          <div style="height: 30px;">
+            <div class="links" >
+              <a class="left-link" href="/user/register">注册新账号</a>
+              <a class="right-link" href="/user/forgot-password">忘记密码</a>
+            </div>
           </div>
+          <div class="social-login">
+            <el-button type="primary" class="social-btn" native-type="submit">账户密码登录</el-button>
+          </div>
+        </el-form>
+        <div class="social-login" style="margin-top: 30px;">
+          <el-button type="primary" >Google账户登录</el-button>
         </div>
-        <div class="social-login">
-          <el-button type="primary" class="social-btn" native-type="submit">账户密码登录</el-button>
+      </div>
+      <div v-if="activeStepId == 2">
+        <el-form :model="form" :rules="rules" ref="formRef" @submit.prevent="handleSubmit">
+          <el-form-item label="" prop="email">
+            <el-input v-model="form.email" disabled placeholder="请输入邮箱" />
+          </el-form-item>
+          <el-form-item label="" prop="code" >
+            <el-input v-model="form.emailCode" placeholder="请输入邮箱验证码" />
+          </el-form-item>
+          <div class="social-login">
+            <el-button type="primary" class="social-btn" native-type="submit">登录</el-button>
+          </div>
+        </el-form>
+        <div class="social-login" style="margin-top: 30px;">
+          <el-button type="primary" >Google账户登录</el-button>
         </div>
-      </el-form>
-      <div class="social-login" style="margin-top: 30px;">
-        <el-button type="primary" >Google账户登录</el-button>
       </div>
     </div>
-    <div v-if="activeStepId == 2">
-      <el-form :model="form" :rules="rules" ref="formRef" @submit.prevent="handleSubmit">
-        <el-form-item label="" prop="username">
-          <el-input v-model="form.username" disabled placeholder="请输入邮箱" />
-        </el-form-item>
-        <el-form-item label="" prop="code" >
-          <el-input v-model="form.emailCode" placeholder="请输入邮箱验证码" />
-        </el-form-item>
-        <div class="social-login">
-          <el-button type="primary" class="social-btn" native-type="submit">登录</el-button>
-        </div>
-      </el-form>
-      <div class="social-login" style="margin-top: 30px;">
-        <el-button type="primary" >Google账户登录</el-button>
+    <!-- 真人验证弹窗 -->
+    <el-dialog
+        title="真人验证"
+        v-model="dialogVisible"
+        width="300px"
+        height="500px"
+    >
+      <div>
+        <p>请拖动滑块进行验证</p>
+        <el-slider v-model="sliderValue" :min="0" :max="100" @change="handleSliderChange" />
       </div>
-    </div>
+      <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+        </span>
+    </el-dialog>
   </div>
-  <!-- 真人验证弹窗 -->
-  <el-dialog
-      title="真人验证"
-      v-model="dialogVisible"
-      width="300px"
-      height="500px"
-  >
-    <div>
-      <p>请拖动滑块进行验证</p>
-      <el-slider v-model="sliderValue" :min="0" :max="100" @change="handleSliderChange" />
-    </div>
-    <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-      </span>
-  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -64,6 +66,7 @@ import {useRouter, useRoute} from 'vue-router';
 const { userApi } = useServer();
 const route = useRoute();
 const activeStepId = ref(route.query.stepId || 1);
+import { rules } from '@/utils/validationRules';
 
 // 表单引用
 const formRef: any = ref(null);
@@ -72,26 +75,11 @@ const sliderValue = ref(0);
 
 // 表单数据
 const form = ref({
-  username: '',
-  password: '',
+  email: '',
+  loginPassword: '',
   validateKey: '',
   emailCode: '',
 });
-
-// 表单验证规则
-const rules = {
-  username: [
-    { required: true, message: '邮箱不能为空', trigger: 'blur' },
-    { type: 'email', message: '请输入有效的邮箱地址', trigger: ['blur', 'change'] }
-  ],
-  password: [
-    { required: true, message: '密码不能为空', trigger: 'blur' },
-    { min: 6, message: '密码长度至少为6位', trigger: 'blur' }
-  ],
-  emailCode: [
-    { required: true, message: '验证码不能为空', trigger: 'blur' },
-  ],
-};
 
 const handleSubmit = async () => {
   const valid = await formRef.value.validate();
@@ -99,7 +87,10 @@ const handleSubmit = async () => {
   try {
     if (valid) {
       if (activeStepId.value == 1) {
-        let res = await userApi.login(form.value, {});
+        let res = await userApi.login({
+          password: form.value.loginPassword,
+          username: form.value.email,
+        }, {});
         if (res.code === 200) {
           activeStepId.value = 2;
           form.value.validateKey = res.data
@@ -108,7 +99,10 @@ const handleSubmit = async () => {
           ElMessage.error(res.message || '登录失败'); // 错误提示
         }
       } else {
-        let res = await userApi.loginValidateEmail(form.value, {});
+        let res = await userApi.loginValidateEmail({
+          validateKey: form.value.validateKey,
+          emailCode: form.value.emailCode,
+        }, {});
         if (res.code === 200) {
           userStore.setTokenState(res.data);
           let result = await userStore.fetchUserInfo();

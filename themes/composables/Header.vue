@@ -140,6 +140,9 @@ const jumpMenuPath = (path: string) => {
   if (path === '') {
     return;
   }
+  console.log(path)
+  console.log(path)
+  console.log(path)
   router.push(path);
 };
 

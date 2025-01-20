@@ -1,78 +1,78 @@
 <template>
-  <div class="login-container">
-    <div class="container" v-if=" activeStepId == 1">
-      <h2>注册</h2>
-      <el-form :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleSubmit">
-        <el-form-item prop="email">
-          <el-input v-model="form.email" placeholder="请输入邮箱" />
-        </el-form-item>
-        <div class="link-wrap link-wrap-text">
-          <a href="javascript: void(0);" @click="sendEamil">点击获取邮箱验证码</a>
+  <div class="page">
+    <div class="login-container">
+      <div class="container" v-if=" activeStepId == 1">
+        <h2>注册</h2>
+        <el-form :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleSubmit">
+          <el-form-item prop="email">
+            <el-input v-model="form.email" placeholder="请输入邮箱" />
+          </el-form-item>
+          <div class="link-wrap link-wrap-text">
+            <a href="javascript: void(0);" @click="sendEamil">点击获取邮箱验证码</a>
+          </div>
+          <el-form-item label="" prop="emailCode">
+            <el-input v-model="form.emailCode" placeholder="请输入邮箱验证码" />
+          </el-form-item>
+          <el-form-item label="" prop="password">
+            <el-input v-model="form.password" type="password" placeholder="设置登录密码" />
+          </el-form-item>
+          <el-form-item class="link-wrap link-wrap-text">
+            <el-checkbox v-model="isAgreement">用户协议</el-checkbox>
+          </el-form-item>
+          <el-form-item label="" prop="code">
+            <el-button type="primary" native-type="submit">注册</el-button>
+          </el-form-item>
+        </el-form>
+        <div class="social-login" style="margin-top: 30px;">
+          <el-button type="primary" @click="bindGoogleAuth">Google账户注册</el-button>
+  <!--        <el-button type="info">Apple账户注册</el-button>-->
+  <!--        <el-button type="info">Telegram账户注册</el-button>-->
         </div>
-        <el-form-item label="" prop="emailCode">
-          <el-input v-model="form.emailCode" placeholder="请输入邮箱验证码" />
-        </el-form-item>
-        <el-form-item label="" prop="password">
-          <el-input v-model="form.password" type="password" placeholder="设置登录密码" />
-        </el-form-item>
-        <el-form-item class="link-wrap link-wrap-text">
-          <el-checkbox v-model="isAgreement">用户协议</el-checkbox>
-        </el-form-item>
-        <el-form-item label="" prop="code">
-          <el-button type="primary" native-type="submit">注册</el-button>
-        </el-form-item>
-      </el-form>
-      <div class="social-login" style="margin-top: 30px;">
-        <el-button type="primary" @click="bindGoogleAuth">Google账户注册</el-button>
-<!--        <el-button type="info">Apple账户注册</el-button>-->
-<!--        <el-button type="info">Telegram账户注册</el-button>-->
       </div>
-    </div>
 
-    <div class="container" v-if="activeStepId > 1">
-      <h2>支付密码</h2>
-      <div style="text-align: center; padding: 20px;">{{form.email}} 注册成功</div>
-      <div class="register-status">
-        <div class="status-item" v-for="item in statusList" :key="item.key">
-          <span>{{ item.name }}:</span>
-          <el-icon :size="20" v-if="item.key">
-            <component :is="item.status ? Check : Close" />
-          </el-icon>
+      <div class="container" v-if="activeStepId > 1">
+        <h2>支付密码</h2>
+        <div style="text-align: center; padding: 20px;">{{form.email}} 注册成功</div>
+        <div class="register-status">
+          <div class="status-item" v-for="item in statusList" :key="item.key">
+            <span>{{ item.name }}:</span>
+            <el-icon :size="20" v-if="item.key">
+              <component :is="item.status ? Check : Close" />
+            </el-icon>
+          </div>
+        </div>
+        <el-form v-if="activeStepId == 2" :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleSubmit">
+          <el-form-item  prop="assetsPassword">
+            <el-input v-model="form.assetsPassword" placeholder="设置支付密码" />
+          </el-form-item>
+          <el-form-item  class="social-login">
+              <el-button  type="primary" native-type="submit">保存</el-button>
+          </el-form-item>
+        </el-form>
+        <div class="social-login" >
+          <el-button v-if="activeStepId == 3" type="primary" @click="confirmGoogleAuth(1)">绑定Google验证器</el-button>
+          <el-button v-if="activeStepId == 4" type="primary">Google账户绑定</el-button>
+        </div>
+        <div class="link-wrap" v-if="activeStepId < 5">
+          <a href="javascript:void(0);" @click="nextTick">暂不设置下一步</a>
         </div>
       </div>
-      <el-form v-if="activeStepId == 2" :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleSubmit">
-        <el-form-item  prop="paymentPassword">
-          <el-input v-model="form.paymentPassword" placeholder="设置支付密码" />
-        </el-form-item>
-        <el-form-item  class="social-login">
-            <el-button  type="primary" native-type="submit">保存</el-button>
-        </el-form-item>
-      </el-form>
-      <div class="social-login" >
-        <el-button v-if="activeStepId == 3" type="primary" @click="confirmGoogleAuth(1)">绑定Google验证器</el-button>
-        <el-button v-if="activeStepId == 4" type="primary">Google账户绑定</el-button>
-      </div>
-      <div class="link-wrap" v-if="activeStepId < 5">
-        <a href="javascript:void(0);" @click="nextTick">暂不设置下一步</a>
-      </div>
     </div>
+    <!-- Google 验证码弹出窗口 -->
+    <el-dialog v-model="isDialogVisible" title="设置Google验证码">
+      <div style="text-align: center;">
+        <img :src="googleForm.qrCode" alt="Google QR Code" style="width: 150px; height: 150px;" />
+        <el-form :model="googleForm" label-position="top" style="margin-top: 20px;">
+          <el-form-item label="" prop="googleCode">
+            <el-input v-model="googleForm.googleCode" placeholder="请输入Google验证码" />
+          </el-form-item>
+        </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="confirmGoogleAuth(2)">确认</el-button>
+        </span>
+    </el-dialog>
   </div>
-
-  <!-- Google 验证码弹出窗口 -->
-  <el-dialog v-model="isDialogVisible" title="设置Google验证码">
-    <div style="text-align: center;">
-      <img :src="googleForm.qrCode" alt="Google QR Code" style="width: 150px; height: 150px;" />
-      <el-form :model="googleForm" label-position="top" style="margin-top: 20px;">
-        <el-form-item label="" prop="googleCode">
-          <el-input v-model="googleForm.googleCode" placeholder="请输入Google验证码" />
-        </el-form-item>
-      </el-form>
-    </div>
-    <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="confirmGoogleAuth(2)">确认</el-button>
-      </span>
-  </el-dialog>
-
 </template>
 
 <script setup lang="ts">
@@ -81,6 +81,7 @@ import {ElForm, ElMessage} from 'element-plus';
 import { getHeader } from '@/utils/storageUtils';
 import { useRoute } from 'vue-router';
 import { Check, Close } from '@element-plus/icons-vue';
+import { rules } from '@/utils/validationRules';
 const route = useRoute();
 const activeStepId = ref(route.query.stepId || 1);
 const headers = getHeader();
@@ -95,7 +96,7 @@ const isAgreement = ref(false);
 const form = ref({
   email: '',
   password: '',
-  paymentPassword: '',
+  assetsPassword: '',
   emailCode: '',
 });
 
@@ -141,25 +142,6 @@ const confirmGoogleAuth = async (type: number) => {
   }
 }
 
-// 表单验证规则
-const rules = {
-  email: [
-    { required: true, message: '邮箱不能为空', trigger: 'blur' },
-    { type: 'email', message: '请输入有效的邮箱地址', trigger: ['blur', 'change'] }
-  ],
-  password: [
-    { required: true, message: '密码不能为空', trigger: 'blur' },
-    { min: 6, message: '密码长度至少为6位', trigger: 'blur' }
-  ],
-  paymentPassword: [
-    { required: true, message: '密码不能为空', trigger: 'blur' },
-    { min: 6, message: '密码长度至少为6位', trigger: 'blur' }
-  ],
-  emailCode: [
-    { required: true, message: '验证码不能为空', trigger: 'blur' },
-  ],
-};
-
 const handleSubmit = async () => {
   const valid = await formRef.value.validate();
     if (valid) {
@@ -178,7 +160,7 @@ const handleSubmit = async () => {
         }
       }else if(activeStepId.value == 2) {
         // 设置资产密码
-       let resSetPass = await userApi.setAssetsPassword({ assetsPassword: form.value.paymentPassword }, headers);
+       let resSetPass = await userApi.setAssetsPassword({ assetsPassword: form.value.assetsPassword }, headers);
         // 处理设置资产密码的结果
         if (resSetPass.code === 200) {
           setUserInfo(3);

@@ -1,102 +1,103 @@
 <template>
-  <CurrencyTabs :currency-tabs="currencyTabData" @currency-changed="handleCurrencyChange" @show-currency-changed="handleShowCurrencyChanged" />
-  <div v-if="selectedCurrencyId == 0">
-    <el-row v-for="(item, index) in currencyMergedData" :key="index" class="asset-item">
-      <el-col :span="12">{{ item.currencyJson.name }}</el-col>
-      <el-col :span="12" style="text-align: right;">{{ !isShowCurrency?'******':formatCurrency(item.balance) }}</el-col>
-    </el-row>
-    <div style="text-align: right; margin-top: 20px; font-weight: bold;">
-      总资产：{{!isShowCurrency?'******':formatCurrency(totalAssets) }}{{currencySign}}
+  <div class="page">
+    <CurrencyTabs :currency-tabs="currencyTabData" @currency-changed="handleCurrencyChange" @show-currency-changed="handleShowCurrencyChanged" />
+    <div v-if="selectedCurrencyId == 0">
+      <el-row v-for="(item, index) in currencyMergedData" :key="index" class="asset-item">
+        <el-col :span="12">{{ item.currencyJson.name }}</el-col>
+        <el-col :span="12" style="text-align: right;">{{ !isShowCurrency?'******':formatCurrency(item.balance) }}</el-col>
+      </el-row>
+      <div style="text-align: right; margin-top: 20px; font-weight: bold;">
+        总资产：{{!isShowCurrency?'******':formatCurrency(totalAssets) }}{{currencySign}}
+      </div>
+      <el-table :data="accountAssetsList" style="width: 100%">
+        <el-table-column label="序号" width="60">
+          <template #default="scope">
+            {{scope.$index + 1 }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="tradeNo" label="订单ID" sortable />
+        <el-table-column label="订单类型" >
+          <template #default="scope">
+            {{ getTransactionTypeName(scope.row.tradeType) || '' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="发起时间" sortable >
+          <template #default="scope">
+            {{ formatDate(scope.row.createTime) || '' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="完成时间" sortable >
+          <template #default="scope">
+            {{ formatDate(scope.row.finishTime) || '' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="代币名称" sortable>
+          <template #default="scope">
+            {{ getCurrencyInfo(scope.row.currencyId).title || '' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="代币协议" sortable>
+          <template #default="scope">
+            {{ getCoinInfo(scope.row.currencyChain)?.title || '' }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="amount" label="数量" sortable />
+        <el-table-column label="交易状态" sortable>
+          <template #default="scope">
+            {{ getStatusText(scope.row.status, 'ACCOUNT') || '' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="100">
+          <template #default="scope">
+            <a href="/assets-account/detail/1">查看详情</a>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页组件 -->
+      <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="accountAssetsTotal"
+          :page-size="form.pageSize"
+          :current-page="form.pageNo"
+          @current-change="handlePageChange"
+      />
     </div>
-    <el-table :data="accountAssetsList" style="width: 100%">
-      <el-table-column label="序号" width="60">
-        <template #default="scope">
-          {{scope.$index + 1 }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="tradeNo" label="订单ID" sortable />
-      <el-table-column label="订单类型" >
-        <template #default="scope">
-          {{ getTransactionTypeName(scope.row.tradeType) || '' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="发起时间" sortable >
-        <template #default="scope">
-          {{ formatDate(scope.row.createTime) || '' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="完成时间" sortable >
-        <template #default="scope">
-          {{ formatDate(scope.row.finishTime) || '' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="代币名称" sortable>
-        <template #default="scope">
-          {{ getCurrencyInfo(scope.row.currencyId).title || '' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="代币协议" sortable>
-        <template #default="scope">
-          {{ getCoinInfo(scope.row.currencyChain)?.title || '' }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="amount" label="数量" sortable />
-      <el-table-column label="交易状态" sortable>
-        <template #default="scope">
-          {{ getStatusText(scope.row.status, 'ACCOUNT') || '' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="100">
-        <template #default="scope">
-          <a href="/assets-account/detail/1">查看详情</a>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!-- 分页组件 -->
-    <el-pagination
-        background
-        layout="prev, pager, next"
-        :total="accountAssetsTotal"
-        :page-size="form.pageSize"
-        :current-page="form.pageNo"
-        @current-change="handlePageChange"
-    />
+    <div v-else>
+      <div v-for="(item, index) in currencyItemData" class="container list-wrap" :key="index" >
+          <el-row :gutter="20" v-if="item.currencyId === selectedCurrencyId">
+            <el-col :span="18">
+              <div class="h1">{{ item.currencyJson.title }}</div>
+              <div>{{ item.coinJson.title }}</div>
+              <div @click="copyText(item.walletAddress)" class="copyable-text">
+                {{ item.walletAddress }}
+              </div>
+            </el-col>
+            <el-col :span="6">
+              <el-row class="right-column" type="flex" justify="end" align="middle">
+                <el-col :span="12">
+                  <div class="right-content">
+                    <p class="left-width">{{ !isShowCurrency?'******':formatCurrency(item.balance) }}</p>
+                    <p> 1%</p>
+                  </div>
+                </el-col>
+                <el-col :span="12">
+                  <div class="right-content">
+                    <p class="left-width">{{ item.currencyJson.name }}</p>
+                    <p>{{ !isShowCurrency?'******':formatCurrency(item.totalBalanceUsdt) }}{{currencySign}}</p>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+      </div>
+      <div class="button-group">
+        <el-button type="primary" >转账</el-button>
+        <el-button type="primary" >充值</el-button>
+        <el-button type="primary" >提现</el-button>
+      </div>
+    </div>
   </div>
-  <div v-else>
-    <div v-for="(item, index) in currencyItemData" class="container list-wrap" :key="index" >
-        <el-row :gutter="20" v-if="item.currencyId === selectedCurrencyId">
-          <el-col :span="18">
-            <div class="h1">{{ item.currencyJson.title }}</div>
-            <div>{{ item.coinJson.title }}</div>
-            <div @click="copyText(item.walletAddress)" class="copyable-text">
-              {{ item.walletAddress }}
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <el-row class="right-column" type="flex" justify="end" align="middle">
-              <el-col :span="12">
-                <div class="right-content">
-                  <p class="left-width">{{ !isShowCurrency?'******':formatCurrency(item.balance) }}</p>
-                  <p> 1%</p>
-                </div>
-              </el-col>
-              <el-col :span="12">
-                <div class="right-content">
-                  <p class="left-width">{{ item.currencyJson.name }}</p>
-                  <p>{{ !isShowCurrency?'******':formatCurrency(item.totalBalanceUsdt) }}{{currencySign}}</p>
-                </div>
-              </el-col>
-            </el-row>
-          </el-col>
-        </el-row>
-    </div>
-    <div class="button-group">
-      <el-button type="primary" >转账</el-button>
-      <el-button type="primary" >充值</el-button>
-      <el-button type="primary" >提现</el-button>
-    </div>
-  </div>
-
 </template>
 
 <script lang="ts" setup>

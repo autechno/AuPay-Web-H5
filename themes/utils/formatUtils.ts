@@ -29,6 +29,10 @@ const storeData = {
     language: [
         { name: '英文', code: 'EN', },
         { name: '中文', code: 'CN',}
+    ],
+    country: [
+        { name: "中国", code: "China" },
+        { name: "美国", code: "USA" },
     ]
 };
 
@@ -124,20 +128,17 @@ export const getTransactionTypeName = (typeId: number): string => {
     return type ? type.name : '未知类型';
 };
 
-// 根据 code 查询法定货币
+/**
+ * 根据 code 查询法定货币
+ * @param code
+ * @param type
+ */
 export const getCurrencyByCode = (code: string, type: string) => {
     const currency = storeData.currency.find(item => item.code === code);
     if(currency){
         return currency[type];
     }
 };
-
-// 根据 code 查询语言
-export const getLanguageByCode = (code: string) => {
-    const language = storeData.language.find(item => item.code === code);
-    return language ? language : null; // 返回找到的语言或 null
-};
-
 /**
  * 获取货币信息
  * @param {number} currencyId - 货币ID

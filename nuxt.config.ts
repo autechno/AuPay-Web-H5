@@ -7,7 +7,9 @@ export default defineNuxtConfig({
   devServer: {
     port: process.env.PORT
   },
-  ssr: true,
+  router: {
+    middleware: ['refresh']
+  },
   app: {
     head: {
       meta: [
