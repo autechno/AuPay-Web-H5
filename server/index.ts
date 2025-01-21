@@ -249,7 +249,6 @@ class SystemApi extends Http {
 }
 
 class AssetsApi extends Http {
-
     /**
      * 获取账户资产
      */

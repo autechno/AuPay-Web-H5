@@ -57,5 +57,5 @@ export const rules = {
     systemLanguage: [{ required: true, message: '请选择语言', trigger: 'change' }],
     name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
     address: [{ required: true, message: '地址不能为空', trigger: 'blur' }],
-    currencyId: [{ required: true, message: '链不能为空', trigger: 'blur' }],
+    currencyChain: [{ required: true, message: '链不能为空', trigger: 'blur' }],
 };

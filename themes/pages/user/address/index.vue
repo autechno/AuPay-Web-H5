@@ -12,7 +12,7 @@
       </el-table-column>
       <el-table-column label="链" >
         <template #default="scope">
-          {{ getCoinChainsInfo(scope.row.currencyId, 'chains').name }}
+          {{ getCoinChainsInfo(scope.row.currencyChain, 'chains').name }}
         </template>
       </el-table-column>
       <el-table-column prop="name" label="名称" > </el-table-column>
@@ -47,8 +47,8 @@
         <el-form-item label="名称" prop="name" >
           <el-input v-model="form.name" />
         </el-form-item>
-        <el-form-item label="链" prop="currencyId">
-          <el-select v-model="form.currencyId" placeholder="请选择链">
+        <el-form-item label="链" prop="currencyChain">
+          <el-select v-model="form.currencyChain" placeholder="请选择链">
             <el-option v-for="item in chainOptions" :key="item.chainId" :label="item.chainSymbol" :value="item.chainId" />
           </el-select>
         </el-form-item>
@@ -110,7 +110,7 @@ const initialFormValues = {
   id: '',
   name: '',
   white: false,
-  currencyId: 1,
+  currencyChain: '',
   address: '',
   remark: '',
   optToken: '',
@@ -123,7 +123,7 @@ const initialFormValues = {
 // 表单查询字段数据
 const query = ref({
   white: '',
-  currencyId: '',
+  currencyChain: '',
 });
 // 表单数据
 const form = ref({ ...initialFormValues });
@@ -163,7 +163,7 @@ const opearItemBtn = (obj: any, type: number) => {
     title.value = '创建地址';
     form.value.id = '';
     form.value.name = '';
-    form.value.currencyId = '';
+    form.value.currencyChain = '';
     form.value.address = '';
     form.value.remark = '';
   } else if (type === 1) {

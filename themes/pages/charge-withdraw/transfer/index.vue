@@ -1,15 +1,17 @@
 <template>
+  <div class="page">
     <el-tabs v-model="activeIndex" @tab-click="handleTabClick">
-      <el-tab-pane label="充值" /> <el-tab-pane label="转账" /> <el-tab-pane label="提现" />
-    </el-tabs>
-    <el-tabs v-model="activeInnerIndex" @tab-click="handleInnerTabClick">
-      <el-tab-pane label="收款">
-        <Collect />
-      </el-tab-pane>
-      <el-tab-pane  label="付款">
-        <Pay />
-      </el-tab-pane>
-    </el-tabs>
+        <el-tab-pane label="充值" /> <el-tab-pane label="转账" /> <el-tab-pane label="提现" />
+      </el-tabs>
+      <el-tabs v-model="activeInnerIndex" @tab-click="handleInnerTabClick">
+        <el-tab-pane label="收款">
+          <Collect />
+        </el-tab-pane>
+        <el-tab-pane  label="付款">
+          <Pay />
+        </el-tab-pane>
+      </el-tabs>
+    </div>
 </template>
 
 <script setup lang="ts">

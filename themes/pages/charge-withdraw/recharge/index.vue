@@ -1,49 +1,51 @@
 <template>
-  <el-tabs v-model="activeIndex" @tab-click="handleTabClick">
-    <el-tab-pane label="充值" /> <el-tab-pane label="转账"  /> <el-tab-pane label="提现"  />
-  </el-tabs>
-  <div class="exchange-container">
-    <el-form :model="form" ref="formRef" @submit.prevent="showQrDialog = true">
-      <el-select
-          style="margin-bottom: 20px;"
-          id="currency-select"
-          v-model="form.currencyId"
-          placeholder="请选择货币"
-          @change="handleCurrencyChain"
-      >
-        <el-option
-            v-for="currency in currencyList"
-            :key="currency.currencyId"
-            :label="currency.currencyName"
-            :value="currency.currencyId"
-        />
-      </el-select>
+  <div class="page">
+    <el-tabs v-model="activeIndex" @tab-click="handleTabClick">
+      <el-tab-pane label="充值" /> <el-tab-pane label="转账"  /> <el-tab-pane label="提现"  />
+    </el-tabs>
+    <div class="exchange-container">
+      <el-form :model="form" ref="formRef" @submit.prevent="showQrDialog = true">
+        <el-select
+            style="margin-bottom: 20px;"
+            id="currency-select"
+            v-model="form.currencyId"
+            placeholder="请选择货币"
+            @change="handleCurrencyChain"
+        >
+          <el-option
+              v-for="currency in currencyList"
+              :key="currency.currencyId"
+              :label="currency.currencyName"
+              :value="currency.currencyId"
+          />
+        </el-select>
 
-      <el-select
-          id="chain-select"
-          style="margin-bottom: 20px;"
-          v-model="form.currencyChainId"
-          placeholder="请选择链"
-          @change="handleWalletAddress"
-      >
-        <el-option
-            v-for="chain in currencyChainList"
-            :key="chain.currencyChainId"
-            :label="chain.currencyChainName"
-            :value="chain.currencyChainId"
-        />
-      </el-select>
-      <div class="social-login">
-        <el-button type="primary" native-type="submit">确认生成收款码</el-button>
-      </div>
-    </el-form>
-    <el-dialog v-model="showQrDialog" style="height: 450px; width: 400px">
-        <div style="margin: 30px 30%">
-          <img v-if="form.avatar" :src="form.avatar" class="avatar" style="margin: 20px auto" />
-          <QCcode :value="form.walletAddress" :size="150" />
-          <el-button @click="copyText(form.walletAddress)"> 复制地址 </el-button>
+        <el-select
+            id="chain-select"
+            style="margin-bottom: 20px;"
+            v-model="form.currencyChainId"
+            placeholder="请选择链"
+            @change="handleWalletAddress"
+        >
+          <el-option
+              v-for="chain in currencyChainList"
+              :key="chain.currencyChainId"
+              :label="chain.currencyChainName"
+              :value="chain.currencyChainId"
+          />
+        </el-select>
+        <div class="social-login">
+          <el-button type="primary" native-type="submit">确认生成收款码</el-button>
         </div>
-    </el-dialog>
+      </el-form>
+      <el-dialog v-model="showQrDialog" style="height: 450px; width: 400px">
+          <div style="margin: 30px 30%">
+            <img v-if="form.avatar" :src="form.avatar" class="avatar" style="margin: 20px auto" />
+            <QCcode :value="form.walletAddress" :size="150" />
+            <el-button @click="copyText(form.walletAddress)"> 复制地址 </el-button>
+          </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -114,12 +116,12 @@ const fetchData = async () => {
       if (currencyId) {
         form.value.currencyId = currencyId;
         handleCurrencyChain();
-        if (currencyChainId) {
-          form.value.currencyChainId = currencyChainId;
-          handleWalletAddress(); // 更新钱包地址
-        }
+        console.log(form.value)
+
       }else{
         form.value.currencyId = currencyList.value[0]?.currencyId;
+        console.log(form.value)
+
         form.value.currencyChainId = currencyList.value[0]?.chains[0]?.currencyChainId;
         form.value.walletAddress = currencyList.value[0]?.walletAddress || '';
         currencyChainList.value = currencyList.value[0]?.chains || [];

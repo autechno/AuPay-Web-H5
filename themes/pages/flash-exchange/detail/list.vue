@@ -25,7 +25,7 @@
           {{ getCurrencyInfo(scope.row.cashOutCurrencyId).name }}
         </template>
       </el-table-column>
-      <el-table-column label="兑出币种协议" width="150">
+      <el-table-column label="兑出链" width="150">
         <template #default="scope">
           {{ getCoinInfo(scope.row.cashOutChain).name }}
         </template>
@@ -36,7 +36,7 @@
           {{ getCurrencyInfo(scope.row.cashInCurrencyId).name }}
         </template>
       </el-table-column>
-      <el-table-column label="兑入币种协议" width="150">
+      <el-table-column label="兑入链" width="150">
         <template #default="scope">
           {{ getCoinInfo(scope.row.cashInChain).name }}
         </template>
