@@ -1,11 +1,19 @@
 import { ElNotification } from 'element-plus';
 
+// 复制文本
 export const copyText = async (text: string) => {
     try {
-        console.log("-text-");
-        console.log(text);
-        console.log("-text-");
-        await navigator.clipboard.writeText(text);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+        } else {
+            // 降级方案
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
         ElNotification({
             title: '成功',
             message: '链接已复制到剪贴板!',
@@ -22,7 +30,6 @@ export const copyText = async (text: string) => {
         });
     }
 };
-
 // 设置 headers 的函数
 export const setHeadersAuth = (headers, form) => {
     if (form && form.value) {
