@@ -18,7 +18,7 @@
       <el-form-item label="货币链" prop="currencyChainId" >
         <el-select
             v-model="form.currencyChainId"
-            placeholder="请选择货币链">
+            placeholder="请选择链">
           <el-option
               v-for="chain in currencyChainList"
               :key="chain.currencyChainId"
@@ -66,6 +66,7 @@
 import { ref, defineProps, onMounted } from 'vue';
 import { ElMessage } from "element-plus";
 import { getHeader } from "@/utils/storageUtils";
+import { getCurrencyChainsInfo } from "~/utils/formatUtils";
 const headers = getHeader();
 const { assetsApi, userApi } = useServer();
 
@@ -150,14 +151,14 @@ const initialData = async () => {
         if (!currencyMap.has(item.currencyId)) {
           currencyMap.set(item.currencyId, {
             currencyId: item.currencyId,
-            currencyName: getCurrencyInfo(item.currencyId)?.name,
+            currencyName: getCurrencyChainsInfo(item.currencyId, 'currencyChains')?.name,
             chains: [],
             walletAddress: item.walletAddress,
           });
         }
         currencyMap.get(item.currencyId).chains.push({
           currencyChainId: item.currencyChain,
-          currencyChainName: getCoinInfo(item.currencyChain)?.name,
+          currencyChainName: getCurrencyChainsInfo(item.currencyChain, 'chains')?.name,
           walletAddress: item.walletAddress,
           balance: item.balance,
           totalBalanceUsdt: item.totalBalanceUsdt,

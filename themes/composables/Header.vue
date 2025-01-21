@@ -140,9 +140,6 @@ const jumpMenuPath = (path: string) => {
   if (path === '') {
     return;
   }
-  console.log(path)
-  console.log(path)
-  console.log(path)
   router.push(path);
 };
 
@@ -151,6 +148,10 @@ const breadcrumbs = computed(() => {
   const paths = route.path.split('/').filter(Boolean); // 移除空段
   const breadcrumbList = paths.map((path, index) => {
     const fullPath = '/' + paths.slice(0, index + 1).join('/');
+    // 过滤掉 charge-withdraw 路由
+    if (path === 'charge-withdraw') {
+      return null; // 返回 null 以在后续步骤中过滤
+    }
     // 在菜单项中查找对应的标签
     const menuItem = menuItems.find(item => item.path === fullPath) ||
         menuItems.reduce<MenuItem | null>((found, item) => found || (item.children ? item.children.find(child => child.path === fullPath) : null) || null, null);
@@ -158,7 +159,7 @@ const breadcrumbs = computed(() => {
       label: menuItem ? menuItem.label : path,
       path: fullPath,
     };
-  });
+  }).filter(Boolean);
   // 添加根面包屑
   return [{ label: 'auPay客户端', path: '/' }, ...breadcrumbList];
 });

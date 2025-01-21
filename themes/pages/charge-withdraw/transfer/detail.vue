@@ -39,7 +39,7 @@ import { ref, onMounted } from 'vue';
 import { getHeader } from "@/utils/storageUtils";
 import { useRoute } from 'vue-router';
 import {ElMessage} from "element-plus";
-import {getCurrencyInfo, getCoinInfo, formatCurrency, getCurrencyByCode} from "@/utils/formatUtils";
+import {formatCurrency, getCurrencyByCode, getCurrencyChainsInfo} from "@/utils/formatUtils";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 import {setHeadersAuth} from "@/utils/funcUtil";
 
@@ -116,9 +116,6 @@ const  processPay = async () =>{
     remark: form.value.remark,
     optToken: checkForm.value.optToken
   }
-  console.log("--params--")
-  console.log(params)
-  console.log("--params--")
   setHeadersAuth(headers, checkForm);
   let res = await assetsApi.transferApply(params, headers);
   if(res.code == 200) {
@@ -143,10 +140,10 @@ const initializeData = async () => {
     if (assetsRes.code == 200) {
       assetsRes.data.forEach(item => {
         if (item.currencyId == form.value.currencyId && item.currencyChain == form.value.currencyChainId) {
-          const currencyInfo = getCurrencyInfo(item.currencyId);
+          const currencyInfo = getCurrencyChainsInfo(item.currencyId, 'currencyChains');
           currencyAccount.value.currencyName = currencyInfo?.name;
           currencyAccount.value.currencyTitle = currencyInfo?.title;
-          currencyAccount.value.currencyChainName = getCoinInfo(item.currencyChain)?.name;
+          currencyAccount.value.currencyChainName = getCurrencyChainsInfo(item.currencyChain, 'chains')?.name;
           currencyAccount.value.balance = item.balance;
           validateInputAmount();
           console.log("-item start-");

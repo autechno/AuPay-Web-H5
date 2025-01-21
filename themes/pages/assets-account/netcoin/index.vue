@@ -12,7 +12,7 @@
         width="500"
     >
       <div v-if="step === 1">
-        <el-select v-model="selectedProtocol" placeholder="请选择代币协议">
+        <el-select v-model="selectedProtocol" placeholder="请选择链">
           <el-option
               v-for="protocol in protocols"
               :key="protocol.value"

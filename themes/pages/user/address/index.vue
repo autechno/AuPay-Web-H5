@@ -12,7 +12,7 @@
       </el-table-column>
       <el-table-column label="链" >
         <template #default="scope">
-          {{ getCoinChainsInfo(scope.row.currencyChain, 'chains').name }}
+          {{ getCurrencyChainsInfo(scope.row.currencyChain, 'chains').name }}
         </template>
       </el-table-column>
       <el-table-column prop="name" label="名称" > </el-table-column>
@@ -95,7 +95,7 @@ import {ElForm, ElMessage} from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
 import { setHeadersAuth } from "@/utils/funcUtil";
 import { rules } from "@/utils/validationRules";
-import {getDataList, getCoinChainsInfo} from "@/utils/formatUtils";
+import {getDataList, getCurrencyChainsInfo} from "@/utils/formatUtils";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 const headers = getHeader();
 const { userApi, systemApi } = useServer();

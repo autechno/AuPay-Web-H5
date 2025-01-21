@@ -107,17 +107,16 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { getHeader } from "@/utils/storageUtils";
-import {ElForm, ElMessage} from "element-plus";
+import { ElMessage} from "element-plus";
 import List from './detail/list.vue'
-import CheckPermissionDialog from "~/composables/CheckPermissionDialog.vue";
+import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 const headers = getHeader();
-const { assetsApi, systemApi } = useServer();
+const { assetsApi } = useServer();
 // 处理整合数据列表
 const currencyMergedData = ref([]);
 const  dialogCheckVisible = ref(false);
-const  activeStepId = ref(1);
 const  bindGoogleAuth = ref(false);
 const  rateExchange = ref({
   content: '',
@@ -171,8 +170,6 @@ const updateForm = async (newForm: Object) => {
   }
 };
 
-
-
 // 获取数据的函数
 const fetchData = async () => {
   try {
@@ -189,13 +186,13 @@ const fetchData = async () => {
               balance,
               totalBalanceUsdt,
               currencyId,
-              currencyChain: [{ id: currencyChain, name: getCoinInfo(currencyChain)?.name }],
-              currency: [{ id: currencyId, name: getCurrencyInfo(currencyId)?.name }],
+              currencyChain: [{ id: currencyChain, name: getCurrencyChainsInfo(currencyChain, 'chains')?.name }],
+              currency: [{ id: currencyId, name: getCurrencyChainsInfo(currencyId, 'currencyChains')?.name,}],
             });
           } else {
             const existingData = mergedData.get(currencyId);
             if (!existingData.currencyChain.some(chain => chain.id === currencyChain)) {
-              existingData.currencyChain.push({ id: currencyChain, name: getCoinInfo(currencyChain)?.name });
+              existingData.currencyChain.push({ id: currencyChain, name: getCurrencyChainsInfo(currencyChain, 'chains')?.name });
             }
             existingData.balance += balance;
             existingData.totalBalanceUsdt += totalBalanceUsdt;

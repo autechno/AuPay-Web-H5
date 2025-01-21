@@ -10,8 +10,7 @@
             id="currency-select"
             v-model="form.currencyId"
             placeholder="请选择货币"
-            @change="handleCurrencyChain"
-        >
+            @change="handleCurrencyChain">
           <el-option
               v-for="currency in currencyList"
               :key="currency.currencyId"
@@ -19,14 +18,12 @@
               :value="currency.currencyId"
           />
         </el-select>
-
         <el-select
             id="chain-select"
             style="margin-bottom: 20px;"
             v-model="form.currencyChainId"
             placeholder="请选择链"
-            @change="handleWalletAddress"
-        >
+            @change="handleWalletAddress">
           <el-option
               v-for="chain in currencyChainList"
               :key="chain.currencyChainId"
@@ -54,9 +51,10 @@ import { ref, onMounted } from 'vue';
 import { getHeader } from "~/utils/storageUtils";
 import { ElMessage } from "element-plus";
 import QCcode from "~/composables/QCcode.vue";
+import { copyText } from "@/utils/funcUtil";
+import { getCurrencyChainsInfo } from "@/utils/formatUtils";
 const showQrDialog = ref(false);
 const headers = getHeader();
-import { copyText } from "@/utils/funcUtil";
 const { assetsApi } = useServer();
 const form = ref({
   currencyId: null,
@@ -99,14 +97,14 @@ const fetchData = async () => {
         if (!currencyMap.has(item.currencyId)) {
           currencyMap.set(item.currencyId, {
             currencyId: item.currencyId,
-            currencyName: getCurrencyInfo(item.currencyId)?.name,
+            currencyName: getCurrencyChainsInfo(item.currencyId, 'currencyChains')?.name,
             chains: [],
             walletAddress: item.walletAddress,
           });
         }
         currencyMap.get(item.currencyId).chains.push({
           currencyChainId: item.currencyChain,
-          currencyChainName: getCoinInfo(item.currencyChain)?.name,
+          currencyChainName: getCurrencyChainsInfo(item.currencyChain, 'chains')?.name,
           walletAddress: item.walletAddress,
         });
       });
@@ -116,8 +114,6 @@ const fetchData = async () => {
       if (currencyId) {
         form.value.currencyId = currencyId;
         handleCurrencyChain();
-        console.log(form.value)
-
       }else{
         form.value.currencyId = currencyList.value[0]?.currencyId;
         console.log(form.value)

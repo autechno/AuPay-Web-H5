@@ -1,23 +1,25 @@
 <template>
-  <div class="payment-container">
-    <el-form :model="form" ref="formRef" :rules="rules" @submit.prevent="handleSubmit">
-      <el-form-item label="AuPayId" prop="transferQR">
-        <el-input v-model="form.transferQR" placeholder="请输入 AuPayId" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" native-type="submit">确认</el-button>
-      </el-form-item>
-    </el-form>
-    <el-button @click="scanQRCode" style="margin-left: 10px;">
-      扫描二维码
-    </el-button>
-    <TransferForm
-        :form="form"
-        :isDialogVisible="isDialogVisible"
-        @update:form="updateForm"
-        :isFlag="true"
-        @close="isDialogVisible = false"
-    />
+  <div class="page">
+    <div class="payment-container">
+      <el-form :model="form" ref="formRef" :rules="rules" @submit.prevent="handleSubmit">
+        <el-form-item label="AuPayId" prop="transferQR">
+          <el-input v-model="form.transferQR" placeholder="请输入 AuPayId" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" native-type="submit">确认</el-button>
+        </el-form-item>
+      </el-form>
+      <el-button @click="scanQRCode" style="margin-left: 10px;">
+        扫描二维码
+      </el-button>
+      <TransferForm
+          :form="form"
+          :isDialogVisible="isDialogVisible"
+          @update:form="updateForm"
+          :isFlag="true"
+          @close="isDialogVisible = false"
+      />
+    </div>
   </div>
 </template>
 

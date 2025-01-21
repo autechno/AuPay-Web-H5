@@ -22,23 +22,23 @@
       </el-table-column>
       <el-table-column label="兑出币种" width="150">
         <template #default="scope">
-          {{ getCurrencyInfo(scope.row.cashOutCurrencyId).name }}
+          {{ getCurrencyChainsInfo(scope.row.cashOutCurrencyId, 'currencyChains').name }}
         </template>
       </el-table-column>
       <el-table-column label="兑出链" width="150">
         <template #default="scope">
-          {{ getCoinInfo(scope.row.cashOutChain).name }}
+          {{ getCurrencyChainsInfo(scope.row.cashOutChain, 'chains').name }}
         </template>
       </el-table-column>
       <el-table-column prop="cashOutAmount" label="兑出量" width="120"></el-table-column>
       <el-table-column prop="cashInCurrencyId" label="兑入币种" width="150">
         <template #default="scope">
-          {{ getCurrencyInfo(scope.row.cashInCurrencyId).name }}
+          {{ getCurrencyChainsInfo(scope.row.cashInCurrencyId, 'currencyChains').name }}
         </template>
       </el-table-column>
       <el-table-column label="兑入链" width="150">
         <template #default="scope">
-          {{ getCoinInfo(scope.row.cashInChain).name }}
+          {{ getCurrencyChainsInfo(scope.row.cashInChain, 'chains').name }}
         </template>
       </el-table-column>
       <el-table-column prop="cashInAmount" label="兑入量" width="120"></el-table-column>
@@ -101,7 +101,7 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
-import {getStatusText, getCoinInfo, formatDate, getCurrencyInfo} from "@/utils/formatUtils";
+import {getStatusText,formatDate } from "@/utils/formatUtils";
 
 const headers = getHeader();
 const { assetsApi } = useServer();

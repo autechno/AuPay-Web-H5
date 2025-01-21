@@ -30,8 +30,8 @@
         </div>
       </div>
 
-      <div class="container" v-if="activeStepId > 1">
-        <h2>支付密码</h2>
+      <div class="container" v-if="activeStepId == 2">
+        <h2>设置资金密码</h2>
         <div style="text-align: center; padding: 20px;">{{form.email}} 注册成功</div>
         <div class="register-status">
           <div class="status-item" v-for="item in statusList" :key="item.key">
@@ -43,17 +43,46 @@
         </div>
         <el-form v-if="activeStepId == 2" :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleSubmit">
           <el-form-item  prop="assetsPassword">
-            <el-input v-model="form.assetsPassword" placeholder="设置支付密码" />
+            <el-input v-model="form.assetsPassword" placeholder="资金密码" />
           </el-form-item>
           <el-form-item  class="social-login">
               <el-button  type="primary" native-type="submit">保存</el-button>
           </el-form-item>
         </el-form>
-        <div class="social-login" >
-          <el-button v-if="activeStepId == 3" type="primary" @click="confirmGoogleAuth(1)">绑定Google验证器</el-button>
-          <el-button v-if="activeStepId == 4" type="primary">Google账户绑定</el-button>
+        <div class="link-wrap">
+          <a href="javascript:void(0);" @click="nextTick">暂不设置下一步</a>
         </div>
-        <div class="link-wrap" v-if="activeStepId < 5">
+      </div>
+
+      <div class="container" v-if="activeStepId == 3">
+        <h2>绑定Google验证器</h2>
+        <div style="text-align: center; padding: 20px;">{{form.email}} 注册成功</div>
+        <div class="register-status">
+          <div class="status-item" v-for="item in statusList" :key="item.key">
+            <span>{{ item.name }}:</span>
+            <el-icon :size="20" v-if="item.key">
+              <component :is="item.status ? Check : Close" />
+            </el-icon>
+          </div>
+        </div>
+        <el-button type="primary" @click="confirmGoogleAuth(1)">绑定Google验证器</el-button>
+        <div class="link-wrap">
+          <a href="javascript:void(0);" @click="nextTick">暂不设置下一步</a>
+        </div>
+      </div>
+      <div class="container" v-if="activeStepId == 4">
+        <h2>绑定Google账户</h2>
+        <div style="text-align: center; padding: 20px;">{{form.email}} 注册成功</div>
+        <div class="register-status">
+          <div class="status-item" v-for="item in statusList" :key="item.key">
+            <span>{{ item.name }}:</span>
+            <el-icon :size="20" v-if="item.key">
+              <component :is="item.status ? Check : Close" />
+            </el-icon>
+          </div>
+        </div>
+        <el-button type="primary">Google账户绑定</el-button>
+        <div class="link-wrap">
           <a href="javascript:void(0);" @click="nextTick">暂不设置下一步</a>
         </div>
       </div>
@@ -87,11 +116,10 @@ const activeStepId = ref(route.query.stepId || 1);
 const headers = getHeader();
 const { userApi, systemApi } = useServer();
 
-// 表单引用
+// 基础变量
 const formRef: any = ref(null);
 const routeStr = ref("/user/register");
 const isAgreement = ref(false);
-
 // 表单数据
 const form = ref({
   email: '',
@@ -99,8 +127,7 @@ const form = ref({
   assetsPassword: '',
   emailCode: '',
 });
-
-// Google 验证码相关数据
+// 验证码相关数据
 const isDialogVisible = ref(false);
 const googleForm = ref({
   googleCode: '',
@@ -135,13 +162,16 @@ const confirmGoogleAuth = async (type: number) => {
       googleForm.value.qrCode = res.data.qr;
       isDialogVisible.value = true
     }else{
-      setUserInfo(4);
+      nextTick();
     }
   } else {
     ElMessage.error(res.message);
   }
 }
 
+/**
+ * 表单提交
+ */
 const handleSubmit = async () => {
   const valid = await formRef.value.validate();
     if (valid) {
@@ -154,7 +184,7 @@ const handleSubmit = async () => {
         if (res.code === 200) {
           const userStore = UseUserStore();
           userStore.setTokenState(res.data);
-          window.location.href = routeStr.value + '?stepId=2';
+          nextTick();
         } else {
           ElMessage.error(res.message || '注册失败');
         }
@@ -163,9 +193,9 @@ const handleSubmit = async () => {
        let resSetPass = await userApi.setAssetsPassword({ assetsPassword: form.value.assetsPassword }, headers);
         // 处理设置资产密码的结果
         if (resSetPass.code === 200) {
-          setUserInfo(3);
+          nextTick();
         } else {
-          ElMessage.error(resSetPass.message || '设置支付密码失败');
+          ElMessage.error(resSetPass.message || '设置资金密码失败');
         }
       }
     }
@@ -173,26 +203,28 @@ const handleSubmit = async () => {
 
 onMounted(() => {
   const userStore = UseUserStore();
-  if(activeStepId.value > 2 ) {
-    let userInfo  = userStore.userInfo
-    for (let i in statusList.value){
-      let key = statusList.value[i].key;
-      if( userInfo[key]){
-        statusList.value[i].status = userInfo[key];
-      }
+  let userInfo  = userStore.userInfo
+  for (let i in statusList.value){
+    let key = statusList.value[i].key;
+    if(userInfo && userInfo[key]){
+      statusList.value[i].status = userInfo[key];
     }
   }
 });
 /**
- * 设置userInfo
- * @param stepId
+ * 当前页设置
  */
-const setUserInfo = async(stepId: number) => {
+const nextTick = async() => {
   let resUser = await userApi.getUserInfo({}, headers);
   if (resUser.code === 200) {
     const userStore = UseUserStore();
     userStore.setUserInfo(resUser.data);
-    window.location.href = `${routeStr.value}?stepId=` + stepId;
+    // 将当前步数加1
+    const nextStepId = parseInt(activeStepId.value) + 1;
+    if(nextStepId > 4 ){
+      window.location.href = '/user/login?firstLogin=1';
+    }
+    window.location.href = `${routeStr.value}?stepId=${nextStepId}`;
   }
 }
 
@@ -200,20 +232,23 @@ const setUserInfo = async(stepId: number) => {
  * 跳过当前页设置
  * @param stepId
  */
-const nextTick = () => {
-  // 将当前步数加1
-  const nextStepId = parseInt(activeStepId.value) + 1;
-  if(nextStepId > 4 ){
-    window.location.href = `/user/login`;
-  }else{
-    window.location.href = `${routeStr.value}?stepId=${nextStepId}`;
-  }
-};
+// const nextTick = async () => {
+//   let resUser = await userApi.getUserInfo({}, headers);
+//   if (resUser.code === 200) {
+//     userStore.setUserInfo(resUser.data);
+//   }
+//
+//   if(nextStepId > 4 ){
+//     window.location.href = '/user/login?firstLogin=1';
+//   }else{
+//     window.location.href = `${routeStr.value}?stepId=${nextStepId}`;
+//   }
+// };
 
 // 状态数据
 const statusList = ref([
   { name: '注册', key: 'isLogin', status: true },
-  { name: '支付密码', key: 'setAssetsPassword', status: false },
+  { name: '资金密码', key: 'setAssetsPassword', status: false },
   { name: '绑定Google验证器', key: 'bindGoogleAuth', status: false },
   { name: '三方验证绑定', key: '', status: false },
   { name: 'Google验证', key: 'bindGoogleLogin', status: false },
@@ -221,9 +256,7 @@ const statusList = ref([
   { name: 'Telegram验证', key: 'bindFacebookLogin', status: false },
 ]);
 
-const bindGoogleCheck =  () => {
-
-}
+const bindGoogleCheck =  () => {}
 
 </script>
 

@@ -36,3 +36,13 @@ export const setHeadersAuth = (headers, form) => {
         console.error("form or form.value is undefined");
     }
 };
+// 返回传参
+export const getQueryParams = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    return {
+        currencyId: urlParams.get('currencyId'),
+        currencyChainId: urlParams.get('currencyChainId'),
+    };
+};
+

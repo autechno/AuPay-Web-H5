@@ -36,9 +36,6 @@
             <el-button type="primary" class="social-btn" native-type="submit">登录</el-button>
           </div>
         </el-form>
-        <div class="social-login" style="margin-top: 30px;">
-          <el-button type="primary" >Google账户登录</el-button>
-        </div>
       </div>
     </div>
     <!-- 真人验证弹窗 -->
@@ -60,12 +57,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { ElForm, ElMessage } from 'element-plus';
-import {useRouter, useRoute} from 'vue-router';
+import { useRoute} from 'vue-router';
 const { userApi } = useServer();
 const route = useRoute();
 const activeStepId = ref(route.query.stepId || 1);
+const firstLogin = ref(route.query.firstLogin || 0);
 import { rules } from '@/utils/validationRules';
 
 // 表单引用
@@ -126,7 +124,11 @@ const handleSliderChange = (value) => {
   if (value === 100) {
     ElMessage.success('验证成功！');
     setTimeout(() => {
-      window.location.href = '/user/info'
+      if(firstLogin.value == 1) {
+        window.location.href = '/assets-account'
+      }else{
+        window.location.href = '/user/info'
+      }
     }, 200); // 1秒后跳转
   }
 };

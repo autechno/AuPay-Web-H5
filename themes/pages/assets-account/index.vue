@@ -33,12 +33,12 @@
         </el-table-column>
         <el-table-column label="代币名称" sortable>
           <template #default="scope">
-            {{ getCurrencyInfo(scope.row.currencyId).title || '' }}
+            {{ getCurrencyChainsInfo(scope.row.currencyId, 'currencyChains').name || '' }}
           </template>
         </el-table-column>
-        <el-table-column label="代币协议" sortable>
+        <el-table-column label="链" sortable>
           <template #default="scope">
-            {{ getCoinInfo(scope.row.currencyChain)?.title || '' }}
+            {{ getCurrencyChainsInfo(scope.row.currencyChain, 'chains')?.name || '' }}
           </template>
         </el-table-column>
         <el-table-column prop="amount" label="数量" sortable />
@@ -68,7 +68,7 @@
           <el-row :gutter="20" v-if="item.currencyId === selectedCurrencyId">
             <el-col :span="18">
               <div class="h1">{{ item.currencyJson.title }}</div>
-              <div>{{ item.coinJson.title }}</div>
+              <div>{{ item.coinJson.name }}</div>
               <div @click="copyText(item.walletAddress)" class="copyable-text">
                 {{ item.walletAddress }}
               </div>
@@ -103,7 +103,14 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { getHeader } from "@/utils/storageUtils";
-import { formatCurrency, getCurrencyInfo, getCoinInfo, formatDate, getStatusText, getTransactionTypeName, getCurrencyByCode } from "@/utils/formatUtils";
+import {
+  formatCurrency,
+  formatDate,
+  getStatusText,
+  getTransactionTypeName,
+  getCurrencyByCode,
+  getCurrencyChainsInfo
+} from "@/utils/formatUtils";
 import CurrencyTabs from "@/composables/CurrencyTabs.vue";
 import {ElMessage} from "element-plus";
 import { copyText } from "@/utils/funcUtil";
@@ -129,16 +136,12 @@ const handleCurrencyChange = (currencyId: number) => {
   selectedCurrencyId.value = currencyId;
   if(selectedCurrencyId.value ==  0 ){
     accountAssetsData();
-  }else{
-    console.log(currencyItemData.value);
   }
-  console.log('Selected Currency ID:', currencyId);
 };
 
 // 金额是否显示
 const handleShowCurrencyChanged = (value) => {
   isShowCurrency.value = value;
-  console.log('Show Currency:', isShowCurrency.value);
 };
 
 // 表单数据
@@ -193,8 +196,8 @@ const fetchData = async () => {
         dataList.forEach(item => {
           item['totalBalanceUsdt'] = item['totalBalanceUsdt'] * exchangeRate;
           const { currencyId, currencyChain,  balance, freezeBalance, totalBalance, totalBalanceUsdt } = item;
-          let currencyKeyValue =  getCurrencyInfo(currencyId);
-          let coinKeyValue =  getCoinInfo(currencyChain);
+          let currencyKeyValue =  getCurrencyChainsInfo(currencyId, 'currencyChains');
+          let coinKeyValue =  getCurrencyChainsInfo(currencyChain, 'chains');
           let mergedStore  = { ...item, currencyJson: currencyKeyValue, coinJson: coinKeyValue };
           currencyItemData.value.push(mergedStore);
           if (!mergedData[currencyId]) {
