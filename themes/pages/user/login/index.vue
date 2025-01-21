@@ -125,9 +125,9 @@ const handleSliderChange = (value) => {
     ElMessage.success('验证成功！');
     setTimeout(() => {
       if(firstLogin.value == 1) {
-        window.location.href = '/assets-account'
-      }else{
         window.location.href = '/user/info'
+      }else{
+        window.location.href = '/assets-account'
       }
     }, 200); // 1秒后跳转
   }
