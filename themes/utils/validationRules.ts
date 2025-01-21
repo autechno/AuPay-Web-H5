@@ -52,10 +52,34 @@ export const rules = {
     country: [
         { required: true, message: "请选择国家", trigger: "change" }
     ],
-    currencyUnit: [{ required: true, message: '请选择货币单位', trigger: 'change' }],
-    showHide: [{ required: true, message: '请选择是否隐藏余额', trigger: 'change' }],
-    systemLanguage: [{ required: true, message: '请选择语言', trigger: 'change' }],
-    name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
-    address: [{ required: true, message: '地址不能为空', trigger: 'blur' }],
-    currencyChain: [{ required: true, message: '链不能为空', trigger: 'blur' }],
+    currencyUnit: [
+        { required: true, message: '请选择货币单位', trigger: 'change' }
+    ],
+    showHide: [
+        { required: true, message: '请选择是否隐藏余额', trigger: 'change' }
+    ],
+    systemLanguage: [
+        { required: true, message: '请选择语言', trigger: 'change' }
+    ],
+    name: [
+        { required: true, message: '名称不能为空', trigger: 'blur' }
+    ],
+    address: [
+        { required: true, message: '地址不能为空', trigger: 'blur' }
+    ],
+    toAddress: [
+        { required: true, message: '地址不能为空' }
+    ],
+    currencyChainId: [
+        { required: true, message: '链不能为空', trigger: 'blur' }
+    ],
+    currencyId: [
+        { required: true, message: '货币不能为空', trigger: 'blur' },
+    ],
+    inputAmount: [
+        { required: true, message: '数量不能为空', trigger: 'blur' },
+    ],
+    amount: [
+        { required: true, message: '数量不能为空', trigger: 'blur' },
+    ],
 };

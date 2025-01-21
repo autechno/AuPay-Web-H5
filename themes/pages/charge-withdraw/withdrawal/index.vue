@@ -23,13 +23,14 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { getHeader } from "@/utils/storageUtils";
+const headers = getHeader();
 import WithdrawalForm from '@/composables/WithdrawalForm.vue';
 import CheckPermissionDialog from '@/composables/CheckPermissionDialog.vue';
 import { setHeadersAuth } from "@/utils/funcUtil";
 import {ElMessage} from "element-plus";
 const activeIndex = ref('2');
 const dialogCheckVisible = ref(false);
-const { assetsApi } = useServer();
+const { assetsApi, userApi } = useServer();
 
 const form = ref({
   currencyId: null,
@@ -45,20 +46,26 @@ const form = ref({
 
 // 更新父组件的 form 数据
 const updateForm = async (newForm: Object) => {
-  form.value = newForm;
-  const headers = getHeader();
-  if(form.value.withdrawalStatus && form.value.permissionStatus) {
-    setHeadersAuth(headers,form);
-    form.value['currencyChain'] = form.value.currencyChainId;
-    let res = await assetsApi.getWithdrawApply(form.value, headers);
-    if (res.code == 200) {
-      ElMessage.success('提现成功');
-      window.location.reload();
-    } else {
-      ElMessage.error(res.message);
+  try{
+    form.value = newForm;
+    if(form.value.withdrawalStatus && form.value.permissionStatus) {
+      setHeadersAuth(headers,form);
+      let params = form.value;
+      params['currencyChain'] = params.currencyChainId;
+      let res = await assetsApi.getWithdrawApply(params, headers);
+      if (res.code == 200) {
+        ElMessage.success('提现成功');
+        window.location.reload();
+      } else {
+        ElMessage.error(res.message);
+      }
+    }else if(form.value.withdrawalStatus && !form.value.permissionStatus) {
+      console.log(form.value)
+      console.log(form.value)
+      dialogCheckVisible.value = true;
     }
-  }else if(form.value.withdrawalStatus && !form.value.permissionStatus) {
-    dialogCheckVisible.value = true;
+  } catch (error) {
+    ElMessage.error('请求失败，请重试');
   }
 };
 

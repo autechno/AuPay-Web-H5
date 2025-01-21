@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="title" v-model="props.isDialogVisible" @close="cancel">
+  <el-dialog :title="title" v-model="isSelfDialogVisible" @close="cancel">
     <el-form :model="checkForm" :rules="rules" ref="formRef"  @submit.prevent="handleSubmit">
       <el-form-item  v-if="activeStepId == 1" label="资金密码" prop="checkAssetsPassword">
         <el-input v-model="checkForm.checkAssetsPassword" type="password" placeholder="请转入资金密码" />
@@ -31,6 +31,7 @@ import { rules } from "@/utils/validationRules";
 const headers = getHeader();
 const activeStepId = ref(0);
 const title = ref('资金密码');
+const isSelfDialogVisible = ref(false);
 const props = defineProps({
   isDialogVisible: Boolean,
   form: Object,
@@ -53,6 +54,7 @@ const cancel = () => {
   checkForm.value.emailCode = '';
   checkForm.value.checkAssetsPassword = '';
   checkForm.value.googleCode = '';
+  isSelfDialogVisible.value = false;
   emit('close');
 };
 
@@ -121,6 +123,7 @@ const sendEmail = async () => {
 const processMethod = async () => {
   props.form.permissionStatus = true;
   props.form.optToken = checkForm.value.optToken;
+  isSelfDialogVisible.value = false;
   // 更新父组件的 form 数据
   console.log("-props.form-")
   console.log(props.form)
@@ -132,8 +135,11 @@ const processMethod = async () => {
 // 获取初始化信息
 const fetchData = async () => {
   try {
-    console.log(props.form);
-    let res = await systemApi.checkPermission({permissionId: props.permissionId}, headers);
+    let params = {permissionId: props.permissionId};
+    if(props.permissionId == 4){
+      params['data'] = { toAddress: props.form.toAddress }
+    }
+    let res = await systemApi.checkPermission(params, headers);
     if (res.code === 200) {
       checkForm.value.optToken = res.data.optToken;
       let verifyMethods = res.data.verifyMethods;
@@ -142,18 +148,20 @@ const fetchData = async () => {
       checkForm.value.bindEmail = verifyMethods.includes("EMAIL");
       if(checkForm.value.bindAssetsPassword){
         activeStepId.value = 1;
-      }
-      if(!checkForm.value.bindAssetsPassword && checkForm.value.bindEmail){
+      } else if(!checkForm.value.bindAssetsPassword && checkForm.value.bindEmail){
         activeStepId.value = 2;
         title.value = '邮箱验证码';
         sendEmail();
-      }
-      if(!checkForm.value.bindAssetsPassword && !checkForm.value.bindEmail && checkForm.value.bindGoogleAuth){
+      }else if(!checkForm.value.bindAssetsPassword && !checkForm.value.bindEmail && checkForm.value.bindGoogleAuth){
         activeStepId.value = 3;
         title.value = 'google验证码';
+      }else{
+        processMethod();
+        return;
       }
+      isSelfDialogVisible.value = true;
     } else {
-      ElMessage.error(res.message || '查询失败');
+      ElMessage.error(res.message);
     }
   } catch (error) {
     ElMessage.error('请求失败，请重试');
