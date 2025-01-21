@@ -5,13 +5,10 @@ const storeData = {
         { name: 'ERC-20', title: 'ERC-20', code: 2 },
         { name: 'TRC-20', title: 'TRC-20', code: 3 },
     ],
-    cryptocurrencies: [
-        { name: 'BTC', title: 'Bitcoin', code: 1 },
-        { name: 'ETH', title: 'Ethereum', code: 2 },
-        { name: 'USDT', title: 'TetherUS', code: 3 },
-        { name: 'TRX', title: 'TRON', code: 4 },
-        { name: 'OZC', title: 'OZCoin', code: 5 },
-        { name: 'TOTO', title: 'TOTO', code: 6 },
+    chains : [
+        { "code": 0, "name": "BTC", "title": "比特币链" },
+        {"code": 2, "name": "Ethereum", "title": "以太坊"  },
+        {"code": 3, "name": "TRON", "title": "波厂" }
     ],
     cryptocurrencies: [
         { name: 'BTC', title: 'Bitcoin', code: 1 },
@@ -147,6 +144,20 @@ export const getCurrencyByCode = (code: string, type: string) => {
         return currency[type];
     }
 };
+/**
+ * 获取货币信息
+ * @param {number} currencyId - 货币ID
+ * @returns {Object} 包含货币信息
+ */
+export const getCoinChainsInfo = (currencyId: number, type: string) => {
+    const currencyKeyValue = storeData[type].find(c => c.code === currencyId) || null;
+    return currencyKeyValue;
+};
+
+
+
+
+
 /**
  * 获取货币信息
  * @param {number} currencyId - 货币ID

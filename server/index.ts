@@ -76,7 +76,6 @@ class UserApi extends Http {
     public getFrequentlyWhiteCheck(params: any, headers: any): Promise<any> {
         return this.get('/aupay-user/address/white/check', params, headers)
     }
-
     /**
      * 删除常用地址
      */
@@ -216,8 +215,23 @@ class SystemApi extends Http {
     public sendResetValidateGoogle(params: any, headers: any): Promise<any> {
         return this.get('/aupay-user/password/validateResetPasswordGoogleAuth', params, headers)
     }
-    public sendResetValidateGoogle(params: any, headers: any): Promise<any> {
+    /**
+     * 获取国家
+     */
+    public getCountryList(params: any, headers: any): Promise<any> {
         return this.get('/aupay-operate/operation/getCountryCodes', params, headers)
+    }
+    /**
+     * 获取货币和琏
+     */
+    public getCoinList(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-operate/support/coins', params, headers)
+    }
+    public getCoinChainsList(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-operate/support/coinChains', params, headers)
+    }
+    public getChainsList(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-operate/support/chains', params, headers)
     }
 
     /**

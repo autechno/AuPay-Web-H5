@@ -12,7 +12,7 @@
       </el-table-column>
       <el-table-column label="链" >
         <template #default="scope">
-          {{ getCoinInfo(scope.row.currencyChain).title }}
+          {{ getCoinChainsInfo(scope.row.currencyId, 'chains').name }}
         </template>
       </el-table-column>
       <el-table-column prop="name" label="名称" > </el-table-column>
@@ -47,9 +47,9 @@
         <el-form-item label="名称" prop="name" >
           <el-input v-model="form.name" />
         </el-form-item>
-        <el-form-item label="链" prop="currencyChain">
-          <el-select v-model="form.currencyChain" placeholder="请选择链">
-            <el-option v-for="item in chainOptions" :key="item.code" :label="item.title" :value="item.code" />
+        <el-form-item label="链" prop="currencyId">
+          <el-select v-model="form.currencyId" placeholder="请选择链">
+            <el-option v-for="item in chainOptions" :key="item.chainId" :label="item.chainSymbol" :value="item.chainId" />
           </el-select>
         </el-form-item>
         <el-form-item label="是否白名单" prop="white">
@@ -95,23 +95,22 @@ import {ElForm, ElMessage} from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
 import { setHeadersAuth } from "@/utils/funcUtil";
 import { rules } from "@/utils/validationRules";
-import {getDataList, getCoinInfo} from "@/utils/formatUtils";
+import {getDataList, getCoinChainsInfo} from "@/utils/formatUtils";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
-
+const headers = getHeader();
+const { userApi, systemApi } = useServer();
 // 处理搜索
 const handleSearch = async () => {
   searchDialogVisible.value = false;
   fetchData();
 };
-const headers = getHeader();
-const { userApi } = useServer();
+
 // 初始化数据
 const initialFormValues = {
   id: '',
   name: '',
   white: false,
-  currencyId: '',
-  currencyChain: '',
+  currencyId: 1,
   address: '',
   remark: '',
   optToken: '',
@@ -125,7 +124,6 @@ const initialFormValues = {
 const query = ref({
   white: '',
   currencyId: '',
-  currencyChain: '',
 });
 // 表单数据
 const form = ref({ ...initialFormValues });
@@ -153,7 +151,7 @@ const dialogVisible = ref(false);
 const dialogCheckVisible = ref(false);
 const searchDialogVisible = ref(false);
 const statusOptions = ref(getDataList('searchStatus'));
-const chainOptions = ref(getDataList('coin'));
+const chainOptions = ref([]);
 const activeStepId = ref(1);
 const title = ref('创建地址');
 const opearType = ref(0);
@@ -166,7 +164,6 @@ const opearItemBtn = (obj: any, type: number) => {
     form.value.id = '';
     form.value.name = '';
     form.value.currencyId = '';
-    form.value.currencyChain = '';
     form.value.address = '';
     form.value.remark = '';
   } else if (type === 1) {
@@ -227,13 +224,21 @@ const deleteItem = async () => {
 // 获取初始化信息
 const fetchData = async () => {
   try {
+    // 初始化表单值
     form.value = { ...initialFormValues };
-    const res = await userApi.getFrequentlyList(query.value, headers);
-    if (res.code === 200) {
-      recordList.value = res.data;
-      console.log(recordList.value)
+    const [frequentlyListRes, chainsListRes] = await Promise.all([
+      userApi.getFrequentlyList(query.value, headers),
+      systemApi.getChainsList({}, headers),
+    ]);
+    // 常用列表
+    if (frequentlyListRes.code === 200) {
+      recordList.value = frequentlyListRes.data;
     } else {
-      ElMessage.error(res.message || '查询失败');
+      ElMessage.error(frequentlyListRes.message);
+    }
+    // 链列表
+    if (chainsListRes.code === 200) {
+       chainOptions.value = chainsListRes.data;
     }
   } catch (error) {
     ElMessage.error('请求失败，请重试');

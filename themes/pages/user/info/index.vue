@@ -42,7 +42,7 @@
         <!-- 国家 -->
         <el-form-item label="国家" prop="country">
           <el-select v-model="form.country" placeholder="请选择国家">
-            <el-option v-for="item in getDataList('country')" :key="item.code" :label="item.name" :value="item.code" />
+            <el-option v-for="item in countryList" :key="item.code31662" :label="item.officialNameCn" :value="item.code31662" />
           </el-select>
         </el-form-item>
         <!-- 个性签名 -->
@@ -74,14 +74,13 @@ import { ref, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import { getHeader } from "@/utils/storageUtils";
 import { rules } from "@/utils/validationRules";
-import { getDataList } from "@/utils/formatUtils";
 import { copyText } from "@/utils/funcUtil";
 import type { UploadProps } from 'element-plus';
 import QCcode from "@/composables/QCcode.vue";
 const { public: { API_HOST } } = useRuntimeConfig();
-
+const countryList = ref([]);
 const headers = getHeader();
-const { userApi } = useServer();
+const { userApi, systemApi } = useServer();
 const showQrDialog = ref(false);
 
 // 表单数据
@@ -138,14 +137,23 @@ const handleSubmit = async () => {
 // 获取初始化信息
 const fetchData = async () => {
   try {
-    const res = await userApi.getUserInfo({}, headers);
-    if (res.code === 200) {
-      form.value = res.data;
-      if(!res.data.headPortrait){
+    const [userInfoRes, countryListRes] = await Promise.all([
+      userApi.getUserInfo({}, headers),
+      systemApi.getCountryList({}, headers)
+    ]);
+    // 用户信息
+    if (userInfoRes.code === 200) {
+      form.value = userInfoRes.data;
+      // 设置默认头像
+      if (!userInfoRes.data.headPortrait) {
         form.value.headPortrait = '/image/header.png';
       }
+    }
+    // 国家列表
+    if (countryListRes.code === 200) {
+      countryList.value = countryListRes.data;
     } else {
-      ElMessage.error(res.message || '查询失败');
+      ElMessage.error(countryListRes.message || '获取国家列表失败');
     }
   } catch (error) {
     ElMessage.error('请求失败，请重试');
