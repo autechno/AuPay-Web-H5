@@ -2,6 +2,9 @@ import { ElNotification } from 'element-plus';
 
 export const copyText = async (text: string) => {
     try {
+        console.log("-text-");
+        console.log(text);
+        console.log("-text-");
         await navigator.clipboard.writeText(text);
         ElNotification({
             title: '成功',

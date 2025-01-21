@@ -66,7 +66,7 @@ const nextStep = () => {
   if (!selectedProtocol.value) {
     ElNotification({
       title: '警告',
-      message: '请选择代币协议',
+      message: '请选择链',
       type: 'warning',
     });
     return;
