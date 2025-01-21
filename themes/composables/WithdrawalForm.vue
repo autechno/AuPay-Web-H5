@@ -128,6 +128,7 @@ const validateInputAmount = async () => {
 const handleSubmit = async () => {
   const valid = await formRef.value.validate();
   if (valid) {
+    props.form.currencyChain = props.form.currencyChainId;
     props.form.withdrawalStatus = true;
     emit('update:form', { ...props.form });
   } else {

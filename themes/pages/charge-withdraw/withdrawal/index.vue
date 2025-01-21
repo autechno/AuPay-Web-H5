@@ -50,9 +50,7 @@ const updateForm = async (newForm: Object) => {
     form.value = newForm;
     if(form.value.withdrawalStatus && form.value.permissionStatus) {
       setHeadersAuth(headers,form);
-      let params = form.value;
-      params['currencyChain'] = params.currencyChainId;
-      let res = await assetsApi.getWithdrawApply(params, headers);
+      let res = await assetsApi.getWithdrawApply(form.value, headers);
       if (res.code == 200) {
         ElMessage.success('提现成功');
         window.location.reload();
