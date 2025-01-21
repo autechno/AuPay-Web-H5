@@ -67,7 +67,7 @@
       <div v-for="(item, index) in currencyItemData" class="container list-wrap" :key="index" >
           <el-row :gutter="20" v-if="item.currencyId === selectedCurrencyId">
             <el-col :span="18">
-              <div class="h1">{{ item.currencyJson.title }}</div>
+              <div class="h1">{{ item.currencyJson.name }}</div>
               <div>{{ item.coinJson.name }}</div>
               <div @click="copyText(item.walletAddress)" class="copyable-text">
                 {{ item.walletAddress }}
