@@ -28,7 +28,7 @@
       </el-table-column>
       <el-table-column label="操作" width="140">
         <template #default="scope">
-          <el-link :href="`/work-order/detail/${scope.row.id}`">{{ getStatusText(scope.row.status, 'WORK') }}</el-link>
+          <el-link :href="`/work-order/detail?id=${scope.row.id}`">{{ getStatusText(scope.row.status, 'WORK') }}</el-link>
         </template>
       </el-table-column>
     </el-table>
