@@ -81,23 +81,6 @@ export const StatusEnum = {
 
 };
 
-// 类型常量
-export const TransactionType = {
-    RECHARGE: { id: 1, name: "充值" },
-    WITHDRAW: { id: 2, name: "提款" },
-    FAST_SWAP_IN: { id: 71, name: "闪兑-兑入" },
-    FAST_SWAP_OUT: { id: 72, name: "闪兑-兑出" },
-    TRANSFER_IN: { id: 81, name: "转账-转入" },
-    TRANSFER_OUT: { id: 82, name: "转账-转出" },
-    FEE_IN: { id: 91, name: "费用-收入" },
-    FEE_OUT: { id: 92, name: "费用-支出" },
-    SYS_USER_TO_TRANSFER: { id: 3, name: "用户资金归集" },
-    SYS_TRANSFER_TO_WITHDRAW: { id: 4, name: "提款钱包补充资金" },
-    SYS_TRANSFER_TO_STORE: { id: 5, name: "中转钱包资产归集" },
-    SYS_GAS_TO_OPERATOR: { id: 6, name: "补充gas费" },
-    PLATFORM_IN: { id: 101, name: "平台注资" },
-};
-
 /**
  * 格式化数字为货币格式
  * @param {number} amount - 要格式化的数字
@@ -136,16 +119,6 @@ export const formatDate = (isoDate: string) => {
 };
 
 /**
- * 获取交易类型名称
- * @param {number} typeId - 类型ID
- * @returns {string} 类型名称
- */
-export const getTransactionTypeName = (typeId: number): string => {
-    const type = Object.values(TransactionType).find(t => t.id === typeId);
-    return type ? type.name : '未知类型';
-};
-
-/**
  * 根据 code 查询法定货币
  * @param code
  * @param type
@@ -161,7 +134,7 @@ export const getCurrencyByCode = (code: string, type: string) => {
  * @param {number} currencyId - 货币ID
  * @returns {Object} 包含货币信息
  */
-export const getCurrencyChainsInfo = (currencyId: number, type: string) => {
+export const getDataInfo = (currencyId: number, type: string) => {
     const currencyKeyValue = storeData[type].find(c => c.code === currencyId) || null;
     return currencyKeyValue;
 };

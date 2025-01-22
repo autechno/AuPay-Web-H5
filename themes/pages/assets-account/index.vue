@@ -19,7 +19,7 @@
         <el-table-column prop="tradeNo" label="订单ID" sortable />
         <el-table-column label="订单类型" >
           <template #default="scope">
-            {{ getTransactionTypeName(scope.row.tradeType) || '' }}
+            {{ getDataInfo(scope.row.tradeType, 'trade').name || '' }}
           </template>
         </el-table-column>
         <el-table-column label="发起时间" sortable >
@@ -34,12 +34,12 @@
         </el-table-column>
         <el-table-column label="代币名称" sortable>
           <template #default="scope">
-            {{ getCurrencyChainsInfo(scope.row.currencyId, 'currencyChains').name || '' }}
+            {{ getDataInfo(scope.row.currencyId, 'currencyChains').name || '' }}
           </template>
         </el-table-column>
         <el-table-column label="链" sortable>
           <template #default="scope">
-            {{ getCurrencyChainsInfo(scope.row.currencyChain, 'chains')?.name || '' }}
+            {{ getDataInfo(scope.row.currencyChain, 'chains')?.name || '' }}
           </template>
         </el-table-column>
         <el-table-column prop="amount" label="数量" sortable />
@@ -135,9 +135,8 @@ import {
   formatCurrency,
   formatDate,
   getStatusText,
-  getTransactionTypeName,
   getCurrencyByCode,
-  getCurrencyChainsInfo,
+  getDataInfo,
   getDataList
 } from "@/utils/formatUtils";
 import CurrencyTabs from "@/composables/CurrencyTabs.vue";
@@ -164,7 +163,6 @@ const isShowCurrency = ref(false);
 const applySearch = () => {
   form.value.pageNo = 1;
   accountAssetsData();
-  console.log(form.value)
   searchDialogVisible.value = false;
 };
 
@@ -234,8 +232,8 @@ const fetchData = async () => {
         dataList.forEach(item => {
           item['totalBalanceUsdt'] = item['totalBalanceUsdt'] * exchangeRate;
           const { currencyId, currencyChain,  balance, freezeBalance, totalBalance, totalBalanceUsdt } = item;
-          let currencyKeyValue =  getCurrencyChainsInfo(currencyId, 'currencyChains');
-          let coinKeyValue =  getCurrencyChainsInfo(currencyChain, 'chains');
+          let currencyKeyValue =  getDataInfo(currencyId, 'currencyChains');
+          let coinKeyValue =  getDataInfo(currencyChain, 'chains');
           let mergedStore  = { ...item, currencyJson: currencyKeyValue, coinJson: coinKeyValue };
           currencyItemData.value.push(mergedStore);
           if (!mergedData[currencyId]) {

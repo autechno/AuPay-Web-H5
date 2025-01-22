@@ -41,7 +41,7 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100">
           <template #default="scope">
-            {{ scope.row.isRead === 1 ? '未读' : '已读' }}
+            {{ scope.row.isRead === 0 ? '未读' : '已读' }}
           </template>
         </el-table-column>
       </el-table>

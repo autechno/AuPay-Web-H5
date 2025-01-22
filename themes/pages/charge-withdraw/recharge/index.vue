@@ -52,7 +52,7 @@ import { getHeader } from "~/utils/storageUtils";
 import { ElMessage } from "element-plus";
 import QCcode from "~/composables/QCcode.vue";
 import { copyText } from "@/utils/funcUtil";
-import { getCurrencyChainsInfo } from "@/utils/formatUtils";
+import { getDataInfo } from "@/utils/formatUtils";
 const showQrDialog = ref(false);
 const headers = getHeader();
 const { assetsApi } = useServer();
@@ -97,14 +97,14 @@ const fetchData = async () => {
         if (!currencyMap.has(item.currencyId)) {
           currencyMap.set(item.currencyId, {
             currencyId: item.currencyId,
-            currencyName: getCurrencyChainsInfo(item.currencyId, 'currencyChains')?.name,
+            currencyName: getDataInfo(item.currencyId, 'currencyChains')?.name,
             chains: [],
             walletAddress: item.walletAddress,
           });
         }
         currencyMap.get(item.currencyId).chains.push({
           currencyChainId: item.currencyChain,
-          currencyChainName: getCurrencyChainsInfo(item.currencyChain, 'chains')?.name,
+          currencyChainName: getDataInfo(item.currencyChain, 'chains')?.name,
           walletAddress: item.walletAddress,
         });
       });

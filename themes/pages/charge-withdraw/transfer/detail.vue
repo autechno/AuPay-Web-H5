@@ -39,7 +39,7 @@ import { ref, onMounted } from 'vue';
 import { getHeader } from "@/utils/storageUtils";
 import { useRoute } from 'vue-router';
 import {ElMessage} from "element-plus";
-import {formatCurrency, getCurrencyByCode, getCurrencyChainsInfo} from "@/utils/formatUtils";
+import {formatCurrency, getCurrencyByCode, getDataInfo} from "@/utils/formatUtils";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 import {setHeadersAuth} from "@/utils/funcUtil";
 
@@ -140,10 +140,10 @@ const initializeData = async () => {
     if (assetsRes.code == 200) {
       assetsRes.data.forEach(item => {
         if (item.currencyId == form.value.currencyId && item.currencyChain == form.value.currencyChainId) {
-          const currencyInfo = getCurrencyChainsInfo(item.currencyId, 'currencyChains');
+          const currencyInfo = getDataInfo(item.currencyId, 'currencyChains');
           currencyAccount.value.currencyName = currencyInfo?.name;
           currencyAccount.value.currencyTitle = currencyInfo?.title;
-          currencyAccount.value.currencyChainName = getCurrencyChainsInfo(item.currencyChain, 'chains')?.name;
+          currencyAccount.value.currencyChainName = getDataInfo(item.currencyChain, 'chains')?.name;
           currencyAccount.value.balance = item.balance;
           validateInputAmount();
           console.log("-item start-");

@@ -61,7 +61,7 @@
 import { ref, defineProps, onMounted } from 'vue';
 import { ElMessage } from "element-plus";
 import { getHeader } from "@/utils/storageUtils";
-import { getCurrencyChainsInfo } from "@/utils/formatUtils";
+import { getDataInfo } from "@/utils/formatUtils";
 const headers = getHeader();
 const { assetsApi } = useServer();
 
@@ -145,14 +145,14 @@ const assetsData = async () => {
         if (!currencyMap.has(item.currencyId)) {
           currencyMap.set(item.currencyId, {
             currencyId: item.currencyId,
-            currencyName: getCurrencyChainsInfo(item.currencyId, 'currencyChains')?.name,
+            currencyName: getDataInfo(item.currencyId, 'currencyChains')?.name,
             chains: [],
             walletAddress: item.walletAddress,
           });
         }
         currencyMap.get(item.currencyId).chains.push({
           currencyChainId: item.currencyChain,
-          currencyChainName: getCurrencyChainsInfo(item.currencyChain, 'chains')?.name,
+          currencyChainName: getDataInfo(item.currencyChain, 'chains')?.name,
           walletAddress: item.walletAddress,
           balance: item.balance,
           totalBalanceUsdt: item.totalBalanceUsdt,

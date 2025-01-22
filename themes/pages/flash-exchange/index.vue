@@ -186,13 +186,13 @@ const fetchData = async () => {
               balance,
               totalBalanceUsdt,
               currencyId,
-              currencyChain: [{ id: currencyChain, name: getCurrencyChainsInfo(currencyChain, 'chains')?.name }],
-              currency: [{ id: currencyId, name: getCurrencyChainsInfo(currencyId, 'currencyChains')?.name,}],
+              currencyChain: [{ id: currencyChain, name: getDataInfo(currencyChain, 'chains')?.name }],
+              currency: [{ id: currencyId, name: getDataInfo(currencyId, 'currencyChains')?.name,}],
             });
           } else {
             const existingData = mergedData.get(currencyId);
             if (!existingData.currencyChain.some(chain => chain.id === currencyChain)) {
-              existingData.currencyChain.push({ id: currencyChain, name: getCurrencyChainsInfo(currencyChain, 'chains')?.name });
+              existingData.currencyChain.push({ id: currencyChain, name: getDataInfo(currencyChain, 'chains')?.name });
             }
             existingData.balance += balance;
             existingData.totalBalanceUsdt += totalBalanceUsdt;
