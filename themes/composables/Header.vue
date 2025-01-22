@@ -13,12 +13,9 @@
       </a>
     </span>
     <!-- 消息通知图标 -->
-    <el-badge :is-dot="isReadMessage" class="item" style="position: relative; top: -2px;">
-      <a href="/message">
-        <el-avatar :size="20" class="mr-3" :icon="Message" />
-      </a>
+    <el-badge :is-dot="isReadMessage" class="item" >
+      <a href="/message"><el-avatar :size="20" class="mr-3" :icon="Message" /></a>
     </el-badge>
-    <!-- 用户头像 -->
     <el-dropdown style="padding-right:16px; margin-top: 5px;" @command="handleCommand">
       <el-avatar :size="20" class="mr-3" :icon="User" />
       <template #dropdown>
@@ -77,7 +74,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { Message, Money, Refresh, User } from '@element-plus/icons-vue';
 import { getHeader } from '@/utils/storageUtils';
@@ -184,24 +181,27 @@ const handleCommand = async (command: string) => {
 // 查询消息状态
 const fetchData = async () => {
   try {
-    let res = messageApi.messageCount({}, headers);
+    let res = await messageApi.messageCount({}, headers);
     if (res.code == 200) {
-      isReadMessage.value = res.data
+      isReadMessage.value = res.data > 0;
     }
-  } catch (error) {
-    ElMessage.error('请求失败，请重试');
+  }catch(err) {
+    console.log(err.message);
   }
 };
-
-// 初始化数据
 onMounted(() => {
   fetchData();
-})
+  const intervalId = setInterval(fetchData, 10000);
+  onBeforeUnmount(() => {
+    clearInterval(intervalId);
+  });
+});
 
 </script>
 
 <style scoped>
 .item {
+  position: relative; top: -2px;
   margin-top: 10px;
   margin-right: 30px; /* 设置间距 */
 }
