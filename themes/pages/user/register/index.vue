@@ -25,8 +25,8 @@
         </el-form>
         <div class="social-login" style="margin-top: 30px;">
           <el-button type="primary" @click="bindGoogleAuth">Google账户注册</el-button>
-  <!--        <el-button type="info">Apple账户注册</el-button>-->
-  <!--        <el-button type="info">Telegram账户注册</el-button>-->
+          <!--        <el-button type="info">Apple账户注册</el-button>-->
+          <!--        <el-button type="info">Telegram账户注册</el-button>-->
         </div>
       </div>
 
@@ -43,10 +43,10 @@
         </div>
         <el-form v-if="activeStepId == 2" :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleSubmit">
           <el-form-item  prop="assetsPassword">
-            <el-input v-model="form.assetsPassword" placeholder="资金密码" />
+            <el-input v-model="form.assetsPassword" type="password" placeholder="资金密码" />
           </el-form-item>
           <el-form-item  class="social-login">
-              <el-button  type="primary" native-type="submit">保存</el-button>
+            <el-button  type="primary" native-type="submit">保存</el-button>
           </el-form-item>
         </el-form>
         <div class="link-wrap">
@@ -174,31 +174,31 @@ const confirmGoogleAuth = async (type: number) => {
  */
 const handleSubmit = async () => {
   const valid = await formRef.value.validate();
-    if (valid) {
-      if (activeStepId.value == 1) {
-        if (!isAgreement.value) {
-          ElMessage.error('请先同意用户协议');
-          return;
-        }
-        let res = await userApi.register(form.value, {});
-        if (res.code === 200) {
-          const userStore = UseUserStore();
-          userStore.setTokenState(res.data);
-          nextTick();
-        } else {
-          ElMessage.error(res.message || '注册失败');
-        }
-      }else if(activeStepId.value == 2) {
-        // 设置资产密码
-       let resSetPass = await userApi.setAssetsPassword({ assetsPassword: form.value.assetsPassword }, headers);
-        // 处理设置资产密码的结果
-        if (resSetPass.code === 200) {
-          nextTick();
-        } else {
-          ElMessage.error(resSetPass.message || '设置资金密码失败');
-        }
+  if (valid) {
+    if (activeStepId.value == 1) {
+      if (!isAgreement.value) {
+        ElMessage.error('请先同意用户协议');
+        return;
+      }
+      let res = await userApi.register(form.value, {});
+      if (res.code === 200) {
+        const userStore = UseUserStore();
+        userStore.setTokenState(res.data);
+        nextTick();
+      } else {
+        ElMessage.error(res.message || '注册失败');
+      }
+    }else if(activeStepId.value == 2) {
+      // 设置资产密码
+      let resSetPass = await userApi.setAssetsPassword({ assetsPassword: form.value.assetsPassword }, headers);
+      // 处理设置资产密码的结果
+      if (resSetPass.code === 200) {
+        nextTick();
+      } else {
+        ElMessage.error(resSetPass.message || '设置资金密码失败');
       }
     }
+  }
 }
 
 onMounted(() => {
