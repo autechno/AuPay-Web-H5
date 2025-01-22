@@ -35,13 +35,13 @@
     <h4>概览</h4>
     <table class="table">
       <tr>
-        <td>兑入</td><td> {{assets.cashInAmount	}} {{ getDataInfo(assets.cashInCurrencyId, 'currencyChains')?.name }}  {{getDataInfo(assets.cashInChain, 'chains')?.name}}</td>
+        <td>兑出</td><td> {{assets.cashInAmount	}} {{ getDataInfo(assets.cashInCurrencyId, 'currencyChains')?.name }}  {{getDataInfo(assets.cashInChain, 'chains')?.name}}</td>
       </tr>
       <tr>
         <td>费用</td><td> {{assets.fee	}} {{ getDataInfo(assets.cashOutCurrencyId, 'currencyChains')?.name }}</td>
       </tr>
       <tr>
-        <td>兑出</td><td> {{assets.cashOutAmount	}}  {{ getDataInfo(assets.cashOutCurrencyId, 'currencyChains')?.name }}  {{getDataInfo(assets.cashOutChain, 'chains')?.name}}</td>
+        <td>兑入</td><td> {{assets.cashOutAmount	}}  {{ getDataInfo(assets.cashOutCurrencyId, 'currencyChains')?.name }}  {{getDataInfo(assets.cashOutChain, 'chains')?.name}}</td>
       </tr>
     </table>
   </div>
