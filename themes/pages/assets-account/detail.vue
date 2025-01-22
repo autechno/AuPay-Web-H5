@@ -135,15 +135,15 @@
     <h4>详情</h4>
     <table class="table">
       <tr><td>网络</td></tr>
-      <tr> <td>{{getDataInfo(assets.toCurrencyChain, 'chains')?.name}} {{getDataInfo(assets.formCurrencyChain, 'chains')?.name}}</td></tr>
+      <tr> <td>{{getDataInfo(assets.toCurrencyChain, 'chains')?.name}} {{getDataInfo(assets.fromCurrencyChain, 'chains')?.name}}</td></tr>
       <tr><td>数量</td></tr>
-      <tr> <td>+/- {{assets.toAmount}} </td> </tr>
+      <tr> <td>{{assets.toAmount}} </td> </tr>
       <tr><td>费用</td></tr>
-      <tr> <td>{{assets.fee}} {{getDataInfo(assets.fromCurrencyId, 'currencyChains')?.name}} {{getDataInfo(assets.formCurrencyChain, 'chains')?.name}}</td></tr>
+      <tr> <td>{{assets.fee}} {{getDataInfo(assets.fromCurrencyId, 'currencyChains')?.name}} {{getDataInfo(assets.fromCurrencyChain, 'chains')?.name}}</td></tr>
       <tr><td>实际到账/实际支出</td></tr>
       <tr> <td>{{assets.toAmount}} {{getDataInfo(assets.toCurrencyId, 'currencyChains')?.name}} </td></tr>
       <tr><td>发起</td></tr>
-      <tr v-if="assets.formWalletAddress"> <td>{{assets.formWalletAddress}} <button @click="copyText(assets.formWalletAddress)">copy</button> </td></tr>
+      <tr v-if="assets.fromWalletAddress"> <td>{{assets.fromWalletAddress}} <button @click="copyText(assets.fromWalletAddress)">copy</button> </td></tr>
       <tr><td>接收</td></tr>
       <tr v-if="assets.toWalletAddress"> <td>{{assets.toWalletAddress}} <button @click="copyText(assets.toWalletAddress)">copy</button> </td></tr>
       <tr><td>目标</td></tr>
