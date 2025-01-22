@@ -135,7 +135,6 @@ import {
   formatCurrency,
   formatDate,
   getStatusText,
-  getCurrencyByCode,
   getDataInfo,
   getDataList
 } from "@/utils/formatUtils";
@@ -262,7 +261,7 @@ const fetchData = async () => {
 onMounted(() => {
   const userStore = UseUserStore();
   currencyCode.value = userStore.userInfo.currencyUnit;
-  currencySign.value = getCurrencyByCode(currencyCode.value, 'sign');
+  currencySign.value = getDataInfo(currencyCode.value, 'currency')?.sign;
   fetchData();
   accountAssetsData();
 })

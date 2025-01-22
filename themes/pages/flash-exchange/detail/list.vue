@@ -22,26 +22,26 @@
       </el-table-column>
       <el-table-column label="兑出币种" width="150">
         <template #default="scope">
-          {{ getDataInfo(scope.row.cashOutCurrencyId, 'currencyChains').name }}
+          {{ getDataInfo(scope.row.cashInCurrencyId, 'currencyChains').name }}
         </template>
       </el-table-column>
       <el-table-column label="兑出链" width="150">
         <template #default="scope">
-          {{ getDataInfo(scope.row.cashOutChain, 'chains').name }}
+          {{ getDataInfo(scope.row.cashInChain, 'chains').name }}
         </template>
       </el-table-column>
-      <el-table-column prop="cashOutAmount" label="兑出量" width="120"></el-table-column>
-      <el-table-column prop="cashInCurrencyId" label="兑入币种" width="150">
+      <el-table-column prop="cashInAmount" label="兑出量" width="120"></el-table-column>
+      <el-table-column label="兑入币种" width="150">
         <template #default="scope">
-          {{ getDataInfo(scope.row.cashInCurrencyId, 'currencyChains').name }}
+          {{ getDataInfo(scope.row.cashOutCurrencyId, 'currencyChains').name }}
         </template>
       </el-table-column>
       <el-table-column label="兑入链" width="150">
         <template #default="scope">
-          {{ getDataInfo(scope.row.cashInChain, 'chains').name }}
+          {{ getDataInfo(scope.row.cashOutChain, 'chains').name }}
         </template>
       </el-table-column>
-      <el-table-column prop="cashInAmount" label="兑入量" width="120"></el-table-column>
+      <el-table-column prop="cashOutAmount" label="兑入量" width="120"></el-table-column>
       <el-table-column label="状态" width="100">
         <template #default="scope">
           {{ getStatusText(scope.row.status, 'FLASH') }}

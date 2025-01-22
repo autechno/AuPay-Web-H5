@@ -119,17 +119,6 @@ export const formatDate = (isoDate: string) => {
 };
 
 /**
- * 根据 code 查询法定货币
- * @param code
- * @param type
- */
-export const getCurrencyByCode = (code: string, type: string) => {
-    const currency = storeData.currency.find(item => item.code === code);
-    if(currency){
-        return currency[type];
-    }
-};
-/**
  * 获取货币信息
  * @param {number} currencyId - 货币ID
  * @returns {Object} 包含货币信息

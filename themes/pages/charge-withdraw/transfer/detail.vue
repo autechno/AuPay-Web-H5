@@ -39,7 +39,7 @@ import { ref, onMounted } from 'vue';
 import { getHeader } from "@/utils/storageUtils";
 import { useRoute } from 'vue-router';
 import {ElMessage} from "element-plus";
-import {formatCurrency, getCurrencyByCode, getDataInfo} from "@/utils/formatUtils";
+import {formatCurrency, getDataInfo} from "@/utils/formatUtils";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 import {setHeadersAuth} from "@/utils/funcUtil";
 
@@ -216,7 +216,7 @@ const validateInputAmount = async () => {
 onMounted(() => {
   const userStore = UseUserStore();
   currency.value.code = userStore.userInfo.currencyUnit;
-  currency.value.sign = getCurrencyByCode(currency.value.code, 'sign');
+  currency.value.sign = getDataInfo(currency.value.code, 'currency')?.sign;
   form.value.qr = route.query.qr;
   form.value.currencyId = route.query.currencyId;
   form.value.currencyChainId = route.query.currencyChainId;
