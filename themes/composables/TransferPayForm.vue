@@ -107,7 +107,7 @@ const validateInputAmount = async () => {
   // 去非数字
   const value = props.form.amount;
   const sanitizedValue = value.replace(/[^0-9.]/g, '');
-  props.form.amount = parseInt(sanitizedValue);
+  props.form.amount = parseFloat(sanitizedValue);
 
   let res = await assetsApi.getTransferRateFee({
     currencyId: props.form.currencyId,
