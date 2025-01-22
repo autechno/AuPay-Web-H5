@@ -2,8 +2,8 @@
   <div class="page">
     <div class="payment-container">
       <el-form :model="form" ref="formRef" :rules="rules" @submit.prevent="handleSubmit">
-        <el-form-item label="AuPayId" prop="transferQR">
-          <el-input v-model="form.transferQR" placeholder="请输入 AuPayId" />
+        <el-form-item label="auPayId" prop="transferQR">
+          <el-input v-model="form.transferQR" placeholder="请输入auPayId" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" native-type="submit">确认</el-button>

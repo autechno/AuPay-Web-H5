@@ -8,9 +8,6 @@
       <tr>
         <td>订单类型: </td><td>{{ getDataInfo(assets.tradeType, 'trade')?.name }}</td>
       </tr>
-<!--      <tr>-->
-<!--        <td>发起人: </td><td>{{assets.optUserId}}</td>-->
-<!--      </tr>-->
       <tr>
         <td>当前状态: </td><td>{{getStatusText(assets.status, 'ACCOUNT')}}</td>
       </tr>
@@ -140,7 +137,7 @@
       <tr> <td>{{assets.toAmount}} </td> </tr>
       <tr><td>费用</td></tr>
       <tr> <td>{{assets.fee}} {{getDataInfo(assets.fromCurrencyId, 'currencyChains')?.name}} {{getDataInfo(assets.fromCurrencyChain, 'chains')?.name}}</td></tr>
-      <tr><td>实际到账/实际支出</td></tr>
+      <tr><td><span v-if="assets.tradeType == 2">实际到账</span><span v-if="assets.tradeType == 1"> </span></td></tr>
       <tr> <td>{{assets.toAmount}} {{getDataInfo(assets.toCurrencyId, 'currencyChains')?.name}} </td></tr>
       <tr><td>发起</td></tr>
       <tr v-if="assets.fromWalletAddress"> <td>{{assets.fromWalletAddress}} <button @click="copyText(assets.fromWalletAddress)">copy</button> </td></tr>

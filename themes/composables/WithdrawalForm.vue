@@ -1,12 +1,12 @@
 <template>
   <div class="sub-page">
     <el-form :model="form" :rules="rules" ref="formRef">
-      <el-form-item label="货币" prop="currencyId">
+      <el-form-item label="币种" prop="currencyId">
         <el-select
             style="margin-bottom: 20px;"
             id="currency-select"
             v-model="form.currencyId"
-            placeholder="请选择货币"
+            placeholder="请选择币种"
             @change="handleCurrencyChain">
           <el-option
               v-for="currency in currencyList"
@@ -16,7 +16,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="货币链" prop="currencyChainId" >
+      <el-form-item label="链" prop="currencyChainId" >
         <el-select
             v-model="form.currencyChainId"
             placeholder="请选择链">
@@ -38,7 +38,7 @@
       </el-form-item>
       <el-form-item label="数量" prop="amount">
         <el-input
-            v-model.number="form.amount"
+            v-model="form.amount"
             @input="validateInputAmount"
         ></el-input>
       </el-form-item>
@@ -109,6 +109,12 @@ const handleCurrencyChain = () => {
 
 // 验证输入金额
 const validateInputAmount = async () => {
+
+  // 去非数字
+  const value = props.form.amount;
+  const sanitizedValue = value.replace(/[^0-9.]/g, '');
+  props.form.amount = sanitizedValue;
+  // 将处理后的值赋回
   let res = await assetsApi.getWithdrawRateFee({
     currencyId: props.form.currencyId,
     currencyChain: props.form.currencyChainId,
