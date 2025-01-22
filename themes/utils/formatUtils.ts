@@ -33,7 +33,23 @@ const storeData = {
     country: [
         { name: "中国", code: "China" },
         { name: "美国", code: "USA" },
-    ]
+    ],
+    trade: [
+        { code: 1, name: "充值", title: "RECHARGE" },
+        { code: 2, name: "提款", title: "WITHDRAW" },
+        { code: 71, name: "闪兑-兑入", title: "FAST_SWAP_IN" },
+        { code: 72, name: "闪兑-兑出", title: "FAST_SWAP_OUT" },
+        { code: 81, name: "转账-转入", title: "TRANSFER_IN" },
+        { code: 82, name: "转账-转出", title: "TRANSFER_OUT" },
+        { code: 91, name: "费用-收入", title: "FEE_IN" },
+        { code: 92, name: "费用-支出", title: "FEE_OUT" },
+        { code: 3, name: "用户资金归集", title: "SYS_USER_TO_TRANSFER" },
+        { code: 4, name: "提款钱包补充资金", title: "SYS_TRANSFER_TO_WITHDRAW" },
+        { code: 5, name: "中转钱包资产归集", title: "SYS_TRANSFER_TO_STORE" },
+        { code: 6, name: "补充gas费", title: "SYS_GAS_TO_OPERATOR" },
+        { code: 101, name: "平台注资", title: "PLATFORM_IN" },
+    ],
+
 };
 
 // 状态常量
@@ -61,7 +77,8 @@ export const StatusEnum = {
         1: '兑换中',
         2: '兑换成功',
         3: '兑换失败',
-    }
+    },
+
 };
 
 // 类型常量
@@ -148,7 +165,6 @@ export const getCurrencyChainsInfo = (currencyId: number, type: string) => {
     const currencyKeyValue = storeData[type].find(c => c.code === currencyId) || null;
     return currencyKeyValue;
 };
-
 /**
  * 获取数据列表
  */

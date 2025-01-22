@@ -13,7 +13,7 @@
       </a>
     </span>
     <!-- 消息通知图标 -->
-    <el-badge is-dot class="item" style="position: relative; top: -2px;">
+    <el-badge :is-dot="isReadMessage" class="item" style="position: relative; top: -2px;">
       <a href="/message">
         <el-avatar :size="20" class="mr-3" :icon="Message" />
       </a>
@@ -77,17 +77,18 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { Message, Money, Refresh, User } from '@element-plus/icons-vue';
 import { getHeader } from '@/utils/storageUtils';
 import {ElMessage} from "element-plus";
 const headers = getHeader();
-const { userApi } = useServer();
+const { userApi, messageApi } = useServer();
 
 // 使用路由和路由实例
 const router = useRouter();
 const route = useRoute();
+const isReadMessage = ref(false);
 
 // 定义下拉菜单项
 const userItems = [
@@ -179,6 +180,24 @@ const handleCommand = async (command: string) => {
     router.push(command);
   }
 };
+
+// 查询消息状态
+const fetchData = async () => {
+  try {
+    let res = messageApi.messageCount({}, headers);
+    if (res.code == 200) {
+      isReadMessage.value = res.data
+    }
+  } catch (error) {
+    ElMessage.error('请求失败，请重试');
+  }
+};
+
+// 初始化数据
+onMounted(() => {
+  fetchData();
+})
+
 </script>
 
 <style scoped>

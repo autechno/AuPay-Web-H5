@@ -9,6 +9,7 @@
       <div style="text-align: right; margin-top: 20px; font-weight: bold;">
         总资产：{{!isShowCurrency?'******':formatCurrency(totalAssets) }}{{currencySign}}
       </div>
+      <el-button type="primary" @click="searchDialogVisible = true">搜索</el-button>
       <el-table :data="accountAssetsList" style="width: 100%">
         <el-table-column label="序号" width="60">
           <template #default="scope">
@@ -49,7 +50,7 @@
         </el-table-column>
         <el-table-column label="操作" width="100">
           <template #default="scope">
-            <a href="/assets-account/detail/1">查看详情</a>
+            <a :href="`/assets-account/detail?id=${scope.row.id}`">查看详情</a>
           </template>
         </el-table-column>
       </el-table>
@@ -97,6 +98,33 @@
         <el-button type="primary" >提现</el-button>
       </div>
     </div>
+
+    <el-dialog title="搜索" v-model="searchDialogVisible" @close="searchDialogVisible = false">
+      <el-form :model="form">
+        <el-form-item label="代币名称">
+          <el-select v-model="form.conditions.currencyId" placeholder="请选择链">
+            <el-option v-for="item in getDataList('currencyChains')" :key="item.code" :label="item.name" :value="item.code" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="链">
+          <el-select v-model="form.conditions.currencyChain" placeholder="请选择链">
+            <el-option v-for="item in getDataList('chains')" :key="item.code" :label="item.name" :value="item.code" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="交易类型">
+          <el-select v-model="form.conditions.tradeType" placeholder="请选择交易类型">
+            <el-option v-for="item in getDataList('trade')" :key="item.code" :label="item.name" :value="item.code" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="数量">
+          <el-input v-model="form.conditions.amount" placeholder="请输入数量"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="searchDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="applySearch">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -109,12 +137,13 @@ import {
   getStatusText,
   getTransactionTypeName,
   getCurrencyByCode,
-  getCurrencyChainsInfo
+  getCurrencyChainsInfo,
+  getDataList
 } from "@/utils/formatUtils";
 import CurrencyTabs from "@/composables/CurrencyTabs.vue";
 import {ElMessage} from "element-plus";
 import { copyText } from "@/utils/funcUtil";
-
+const searchDialogVisible = ref(false);
 const headers = getHeader();
 const { assetsApi, systemApi } = useServer();
 const selectedCurrencyId = ref(0);
@@ -130,6 +159,14 @@ const currencyItemData = ref([]);
 const currencyMergedData = ref([]);
 const totalAssets = ref(0);
 const isShowCurrency = ref(false);
+
+// 应用搜索条件
+const applySearch = () => {
+  form.value.pageNo = 1;
+  accountAssetsData();
+  console.log(form.value)
+  searchDialogVisible.value = false;
+};
 
 // 切换tabs
 const handleCurrencyChange = (currencyId: number) => {
@@ -149,6 +186,9 @@ const form = ref({
   pageNo: 1,
   pageSize: 10,
   conditions: {
+    currencyId: '',
+    currencyChain: '',
+    tradeType: '',
   }
 })
 
@@ -175,17 +215,15 @@ const accountAssetsData = async () => {
 
 const fetchData = async () => {
   try {
-    // 使用 Promise.all 来并行处理两个 API 请求
     const [rateResponse, assetsResponse] = await Promise.all([
       assetsApi.getRateU2Currency({ currency: currencyCode.value }, headers),
       assetsApi.accountAssets({}, headers)
     ]);
     // 处理汇率响应
-    if (rateResponse.code != 200) {
-      ElMessage.error(rateResponse.message || '获取汇率失败');
-      return;
+    let exchangeRate = 1;
+    if (rateResponse.code == 200) {
+      exchangeRate = rateResponse.data
     }
-    const exchangeRate = rateResponse.data || 1;
     // 处理资产响应
     if (assetsResponse.code == 200) {
       const mergedData = {};

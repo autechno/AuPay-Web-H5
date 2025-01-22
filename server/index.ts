@@ -119,6 +119,18 @@ class MessageApi extends Http {
         return this.post('/aupay-message/message/list', params, headers)
     }
     /**
+     * 全部标记已读
+     */
+    public messageReadAll(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-message/message/readAll', params, headers)
+    }
+    /**
+     * 未读个数
+     */
+    public messageCount(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-message/message/count', params, headers)
+    }
+    /**
      * 获取工单列表
      */
     public ticketList(params: any, headers: any): Promise<any> {

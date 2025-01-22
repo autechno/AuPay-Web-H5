@@ -8,8 +8,10 @@
       </el-tabs>
       <!-- 按钮组 -->
       <div class="button-group">
-        <el-button type="primary" @click="viewBusiness(1)">查看未读</el-button>
-        <el-button type="primary" @click="viewBusiness(0)">全部标记已读</el-button>
+        <el-button type="primary" @click="viewBusiness(2)">查看全部</el-button>
+        <el-button type="primary" @click="viewBusiness(0)">查看未读</el-button>
+        <el-button type="primary" @click="viewBusiness(1)">查看已读</el-button>
+        <el-button type="warning" @click="handleReadAll">全部标记已读</el-button>
       </div>
     </div>
     <div class="tabs-content">
@@ -95,6 +97,20 @@ const fetchData = async () => {
   } finally {
   }
 }
+const handleReadAll = async () => {
+  try {
+    const res = await messageApi.messageReadAll(form.value, headers);
+    if (res.code === 200) {
+      ElMessage.success("成功")
+      fetchData();
+    } else {
+      ElMessage.error(res.message)
+    }
+  } catch (error) {
+    ElMessage.error('请求失败，请重试')
+  } finally {
+  }
+}
 
 const handleClick = (tab: TabsPaneContext) => {
   let type = parseInt(tab.index) + 1
@@ -104,8 +120,14 @@ const handleClick = (tab: TabsPaneContext) => {
 }
 
 // 查看未读消息的处理函数
-const viewBusiness = (type: number) => {
-  form.value.conditions.isRead = type;
+const viewBusiness = (status: number) => {
+  if(status == 2){
+    form.value.conditions = {
+      type: form.value.conditions.type,
+    }
+  }else{
+    form.value.conditions.isRead = status
+  }
   form.value.pageNo = 1;
   fetchData();
 }

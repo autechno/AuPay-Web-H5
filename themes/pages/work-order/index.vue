@@ -106,7 +106,6 @@ const fetchData = async () => {
     if (res.code === 200) {
       workList.value = res.data.records;
       totalWork.value = res.data.total;
-      console.log(res.data.records);
     } else {
       ElMessage.error(res.message || '查询失败');
     }
