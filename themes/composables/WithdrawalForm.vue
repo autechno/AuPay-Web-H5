@@ -122,7 +122,7 @@ const validateInputAmount = async () => {
   }, headers);
   if (res.code === 200) {
     fee.value = res.data.fee;
-    actualTransferAmount.value = props.form.amount + res.data.fee;
+    actualTransferAmount.value = parseFloat(props.form.amount) + parseFloat(res.data.fee);
   }
   if (props.form.amount > actualTransferAmount.value) {
     props.form.amount = actualTransferAmount.value;
