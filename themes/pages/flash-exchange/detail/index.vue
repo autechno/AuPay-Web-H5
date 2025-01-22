@@ -3,10 +3,10 @@
     <h4>基本信息</h4>
     <table class="table">
       <tr>
-        <td>闪兑单ID: </td><td>{{assets.tradeNo}}</td>
+        <td>闪兑单ID: </td><td>{{assets.inId}}</td>
       </tr>
       <tr>
-        <td>关联订单: </td><td>{{assets.id}}</td>
+        <td>关联订单: </td><td>{{assets.outId}}</td>
       </tr>
       <tr>
         <td>发起人: </td><td>{{assets.optUserId}}</td>
@@ -35,13 +35,13 @@
     <h4>概览</h4>
     <table class="table">
       <tr>
-        <td>兑出</td><td>数量:  {{assets.cashOutAmount	}} 代币名称: {{ getDataInfo(assets.cashOutCurrencyId, 'currencyChains')?.name }} 链: {{getDataInfo(assets.cashOutChain, 'chains')?.name}}</td>
+        <td>兑入</td><td> {{assets.cashInAmount	}} {{ getDataInfo(assets.cashInCurrencyId, 'currencyChains')?.name }}  {{getDataInfo(assets.cashInChain, 'chains')?.name}}</td>
       </tr>
       <tr>
         <td>费用</td><td> {{assets.fee	}} {{ getDataInfo(assets.cashOutCurrencyId, 'currencyChains')?.name }}</td>
       </tr>
       <tr>
-        <td>兑入</td><td>数量:  {{assets.cashInAmount	}} 代币名称: {{ getDataInfo(assets.cashInCurrencyId, 'currencyChains')?.name }} 链: {{getDataInfo(assets.cashInChain, 'chains')?.name}}</td>
+        <td>兑出</td><td> {{assets.cashOutAmount	}}  {{ getDataInfo(assets.cashOutCurrencyId, 'currencyChains')?.name }}  {{getDataInfo(assets.cashOutChain, 'chains')?.name}}</td>
       </tr>
     </table>
   </div>
