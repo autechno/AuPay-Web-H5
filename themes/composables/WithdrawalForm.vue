@@ -113,7 +113,7 @@ const validateInputAmount = async () => {
   // 去非数字
   const value = props.form.amount;
   const sanitizedValue = value.replace(/[^0-9.]/g, '');
-  props.form.amount = sanitizedValue;
+  props.form.amount = parseInt(sanitizedValue);
   // 将处理后的值赋回
   let res = await assetsApi.getWithdrawRateFee({
     currencyId: props.form.currencyId,
