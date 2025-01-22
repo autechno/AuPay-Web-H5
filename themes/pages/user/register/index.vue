@@ -202,6 +202,9 @@ const handleSubmit = async () => {
 }
 
 onMounted(() => {
+  if(activeStepId.value > 4 ){
+    window.location.href = '/user/login?firstLogin=1';
+  }
   const userStore = UseUserStore();
   let userInfo  = userStore.userInfo
   for (let i in statusList.value){
@@ -221,9 +224,6 @@ const nextTick = async() => {
     userStore.setUserInfo(resUser.data);
     // 将当前步数加1
     const nextStepId = parseInt(activeStepId.value) + 1;
-    if(nextStepId > 4 ){
-      window.location.href = '/user/login?firstLogin=1';
-    }
     window.location.href = `${routeStr.value}?stepId=${nextStepId}`;
   }
 }
