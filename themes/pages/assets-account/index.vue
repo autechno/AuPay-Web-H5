@@ -32,7 +32,7 @@
             {{ formatDate(scope.row.finishTime) || '' }}
           </template>
         </el-table-column>
-        <el-table-column label="代币名称" sortable>
+        <el-table-column label="币种" sortable>
           <template #default="scope">
             {{ getDataInfo(scope.row.currencyId, 'currencyChains').name || '' }}
           </template>

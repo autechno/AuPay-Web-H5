@@ -7,6 +7,48 @@
           <div class="select-container">
             <el-select
                 style="margin-bottom: 20px;"
+                id="currency-select-to"
+                v-model="form.selectedCurrencyToId"
+                placeholder="请选择货币"
+                @change="updateCurrencyChain('to')">
+              <el-option
+                  v-for="currency in currencyMergedData"
+                  :key="currency.currencyId"
+                  :label="currency.currency[0].name"
+                  :value="currency.currencyId"
+              />
+            </el-select>
+            <el-select
+                id="chain-select-to"
+                style="margin-bottom: 20px;"
+                v-model="form.selectedChainTo"
+                placeholder="请选择链">
+              <el-option
+                  v-for="chain in form.selectedCurrencyChainTo"
+                  :key="chain.id"
+                  :label="chain.name"
+                  :value="chain.id"
+              />
+            </el-select>
+            <!-- 输入框部分 -->
+            <div class="input-container">
+              <el-input
+                  v-model="form.inputAmountTo"
+                  placeholder="请输入金额"
+                  type="number"
+                  @input="syncInputAmountTo"
+              />
+              <span style="padding-left: 20px;">{{ form.selectedCurrencyTo }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="button-container">
+          <el-button @click="swapCurrencies">交换</el-button>
+        </div>
+        <div class="exchange-container">
+          <div class="select-container">
+            <el-select
+                style="margin-bottom: 20px;"
                 id="currency-select"
                 v-model="form.selectedCurrencyId"
                 placeholder="请选择货币"
@@ -43,48 +85,6 @@
             <!-- 显示余额 -->
             <div class="balance-display">
               <span>可兑换余额: {{ form.bigNumCost }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="button-container">
-          <el-button @click="swapCurrencies">交换</el-button>
-        </div>
-        <div class="exchange-container">
-          <div class="select-container">
-            <el-select
-                style="margin-bottom: 20px;"
-                id="currency-select-to"
-                v-model="form.selectedCurrencyToId"
-                placeholder="请选择货币"
-                @change="updateCurrencyChain('to')">
-              <el-option
-                  v-for="currency in currencyMergedData"
-                  :key="currency.currencyId"
-                  :label="currency.currency[0].name"
-                  :value="currency.currencyId"
-              />
-            </el-select>
-            <el-select
-                id="chain-select-to"
-                style="margin-bottom: 20px;"
-                v-model="form.selectedChainTo"
-                placeholder="请选择链">
-              <el-option
-                  v-for="chain in form.selectedCurrencyChainTo"
-                  :key="chain.id"
-                  :label="chain.name"
-                  :value="chain.id"
-              />
-            </el-select>
-            <!-- 输入框部分 -->
-            <div class="input-container">
-              <el-input
-                  v-model="form.inputAmountTo"
-                  placeholder="请输入金额"
-                  type="number"
-                  @input="syncInputAmountTo"
-              />
-              <span style="padding-left: 20px;">{{ form.selectedCurrencyTo }}</span>
             </div>
           </div>
         </div>
