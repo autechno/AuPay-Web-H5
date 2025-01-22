@@ -108,7 +108,9 @@ const validateInputAmount = async () => {
   const value = props.form.amount;
   const sanitizedValue = value.replace(/[^0-9.]/g, '');
   props.form.amount = sanitizedValue;
-
+  if(!sanitizedValue){
+    return;
+  }
   let res = await assetsApi.getTransferRateFee({
     currencyId: props.form.currencyId,
     currencyChain: props.form.currencyChainId,
@@ -116,7 +118,7 @@ const validateInputAmount = async () => {
   }, headers);
   if (res.code === 200) {
     fee.value = res.data.fee;
-    actualTransferAmount.value = parseFloat(props.form.amount) + parseFloat(res.data.fee);
+    actualTransferAmount.value = props.form.amount + res.data.fee;
   }
   if (props.form.amount > actualTransferAmount.value) {
     props.form.amount = actualTransferAmount.value; // 将输入金额限制为实际转账数量
