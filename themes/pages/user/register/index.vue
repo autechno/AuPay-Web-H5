@@ -78,9 +78,7 @@ const navigateToLogin = () => {
   font-size: 14px;
 }
 .page {
-  height: 100vh;
   position: relative;
-  padding: 32px;
 }
 .logo {
   width: 179px;

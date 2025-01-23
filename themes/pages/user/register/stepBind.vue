@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import vector from '~~/public/images/Vector3.png';
+import vector from '@@/public/images/Vector3.png';
 import { rules } from "@/utils/validationRules";
 import {ElForm, ElMessage} from "element-plus";
 import { ref, onMounted} from "vue";
@@ -99,7 +99,7 @@ const handleSubmit = async () => {
         ElMessage.error(resSetPass.message || '设置资金密码失败');
       }
     } else if(activeStepId.value === 2) {
-      confirmGoogleAuth(1);
+       confirmGoogleAuth(1);
     }else {
         window.location.href = '/user/login?firstLogin=1';
     }
@@ -110,15 +110,20 @@ const nextTick = async () => {
   activeStepId.value = parseInt(activeStepId.value) + 1;
   if( activeStepId.value == 2){
     submitText.value = '绑定Google验证器';
-    let resUser = await userApi.getUserInfo({}, headers);
-    if (resUser.code === 200) {
-      const userStore = UseUserStore();
-      userStore.setUserInfo(resUser.data);
-    }
   }else if(activeStepId.value == 3){
     submitText.value = '确认完成';
   }
+  let res = await userApi.getUserInfo({}, headers);
+  if (res.code === 200) {
+    statusList.value.forEach(item => {
+      if (item.key && res.data[item.key] !== undefined) {
+        console.log(res.data[item.key]);
+        item.status = res.data[item.key];
+      }
+    });
+  }
 }
+
 // 绑定第三方登录
 const bindGoogleAuth = () => {}
 
@@ -127,17 +132,19 @@ const bindGoogleAuth = () => {}
  */
 const confirmGoogleAuth = async (type: number) => {
   googleForm.value.type = type;
-  let res = await systemApi.bindGoogleAuth(googleForm.value, headers);
-  if (res.code === 200) {
-    if( type == 1){
+  if( type == 1){
+    let res = await systemApi.bindGoogleAuth(googleForm.value, headers);
+    if (res.code === 200) {
       googleForm.value.googleSecret = res.data.googleSecret;
       googleForm.value.qrCode = res.data.qr;
       isDialogVisible.value = true
-    }else{
+    }
+  }else{
+    let res = await systemApi.bindGoogleFirstAuth(googleForm.value, headers);
+    if (res.code === 200) {
+      isDialogVisible.value = false
       nextTick();
     }
-  } else {
-    ElMessage.error(res.message);
   }
 }
 
@@ -158,7 +165,6 @@ onMounted(() => {
   background: url('@@/public/images/star3.png') 45% 14% no-repeat;
   background-size: 52%;
   position: relative;
-  padding: 32px;
 }
 .logo {
   width: 100px;
@@ -181,28 +187,6 @@ onMounted(() => {
   text-align: center;
 }
 
-.input_box{
-  :deep .el-input{
-    width: 100%;
-    height: 56px;
-    border-radius: 16px;
-    font-size: 16px;
-    border: 0;
-  }
-  :deep .el-input__wrapper {
-    border-radius: 16px;
-    border: 3px #C8DCE8 solid;
-  }
-  :deep .checkbox__label{
-    color: #dcdcdc !important;
-  }
-  :deep .el-form-item__error{
-    padding-left: 14px;
-  }
-  :deep .el-checkbox__label{
-    font-weight: normal !important;
-  }
-}
 .mt-30{
   margin-top: 32px;
 }

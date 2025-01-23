@@ -1,6 +1,6 @@
 <template>
   <Header v-if="!isFilteredRoute"></Header>
-  <main class="page">
+  <main>
     <slot></slot>
 <!--    <div class="affix-container">-->
 <!--      <el-affix target=".affix-container" :offset="80">-->
@@ -27,11 +27,10 @@ const isFilteredRoute = computed(() => {
 <style>
 body {
   margin: 0!important;
-  padding: 0!important;
   height: 100vh;
+  padding: 28px;
   background: linear-gradient(to bottom, #EAF7FF, #FFFFFF);
 }
-
 .affix-container {
   position: fixed;
   bottom: 100px;

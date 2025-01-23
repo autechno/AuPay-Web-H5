@@ -203,6 +203,9 @@ class SystemApi extends Http {
             return this.put('/aupay-user/bindGoogleAuth/'+params.optToken+'?googleSecret='+params.googleSecret+'&googleCode='+params.googleCode, {}, headers)
         }
     }
+    public bindGoogleFirstAuth(params: any, headers: any): Promise<any> {
+        return this.put('/aupay-user/bindGoogleAuthFirstTime?googleSecret='+params.googleSecret+'&googleCode='+params.googleCode, {}, headers)
+    }
     /**
      * 发送注册邮箱验证码
      */

@@ -71,7 +71,6 @@ const handleSubmit = async () => {
 }
 .page {
   position: relative;
-  padding: 32px;
 }
 .logo {
   width: 179px;
