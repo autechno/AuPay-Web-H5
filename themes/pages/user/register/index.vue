@@ -25,9 +25,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import logo from '@@/public/images/LOGO3.png';
-import google from '@@/public/images/Google.png';
-import apple from '@@/public/images/apple.png';
-import telegram from '@@/public/images/telegram.png';
+import google from '@@/public/images/Google2.png';
+import apple from '@@/public/images/apple2.png';
+import telegram from '@@/public/images/telegram2.png';
 import { rules } from "@/utils/validationRules";
 import { ElForm } from "element-plus";
 import { useRouter } from "vue-router";
