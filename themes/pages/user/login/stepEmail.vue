@@ -103,7 +103,7 @@ const sendEamil = async () => {
  * 导航到登录页面
  */
 const navigateToLogin = () => {
-  router.push('/user/login'); // 跳转到 /user/login
+  router.push('/user/login');
 };
 
 onMounted(() => {

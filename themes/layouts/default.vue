@@ -19,7 +19,7 @@ import { useRoute } from 'vue-router';
 // 获取当前路由
 const route = useRoute();
 const isFilteredRoute = computed(() => {
-  const filteredRoutes = [ '/user/login', '/user/forgot-password', '/user/register', '/user/register/stepReg', '/user/register/stepBind', '/user/login/stepEmail'];
+  const filteredRoutes = [ '/', '/user/login', '/user/forgot-password', '/user/register', '/user/register/stepReg', '/user/register/stepBind', '/user/login/stepEmail'];
   return filteredRoutes.includes(route.path);
 });
 </script>
