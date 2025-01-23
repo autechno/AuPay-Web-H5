@@ -1,184 +1,132 @@
 <template>
   <div class="page">
-    <div class="login-container">
-      <h2>登录</h2>
-      <div v-if="activeStepId == 1">
-        <el-form :model="form" :rules="rules" ref="formRef" @submit.prevent="handleSubmit">
-          <el-form-item label="" prop="email">
-            <el-input v-model="form.email" placeholder="请输入邮箱" />
-          </el-form-item>
-          <el-form-item label="" prop="loginPassword">
-            <el-input v-model="form.loginPassword" type="password" placeholder="请输入密码" />
-          </el-form-item>
-          <div style="height: 30px;">
-            <div class="links" >
-              <a class="left-link" href="/user/register">注册新账号</a>
-              <a class="right-link" href="/user/forgot-password">忘记密码</a>
-            </div>
-          </div>
-          <div class="social-login">
-            <el-button type="primary" class="social-btn" native-type="submit">账户密码登录</el-button>
-          </div>
-        </el-form>
-        <div class="social-login" style="margin-top: 30px;">
-          <el-button type="primary" >Google账户登录</el-button>
-        </div>
+    <img class="logo" :src="logo" alt="logo" />
+    <div class="regTips">登录您的auPayID</div>
+    <el-form :model="form" :rules="rules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
+      <el-form-item prop="email" >
+        <el-input v-model="form.email" placeholder="邮箱"  />
+      </el-form-item>
+      <el-form-item label="" prop="password">
+        <el-input v-model="form.password" type="password" placeholder="密码" />
+      </el-form-item>
+      <div class="href-text" >
+        <a href="/user/register">注册新账号</a>
+        <a href="/user/forgot-password">忘记密码?</a>
       </div>
-      <div v-if="activeStepId == 2">
-        <el-form :model="form" :rules="rules" ref="formRef" @submit.prevent="handleSubmit">
-          <el-form-item label="" prop="email">
-            <el-input v-model="form.email" disabled placeholder="请输入邮箱" />
-          </el-form-item>
-          <el-form-item label="" prop="code" >
-            <el-input v-model="form.emailCode" placeholder="请输入邮箱验证码" />
-          </el-form-item>
-          <div class="social-login">
-            <el-button type="primary" class="social-btn" native-type="submit">登录</el-button>
-          </div>
-        </el-form>
-      </div>
-    </div>
-    <!-- 真人验证弹窗 -->
-    <el-dialog
-        title="真人验证"
-        v-model="dialogVisible"
-        width="300px"
-        height="500px"
-    >
-      <div>
-        <p>请拖动滑块进行验证</p>
-        <el-slider v-model="sliderValue" :min="0" :max="100" @change="handleSliderChange" />
-      </div>
-      <span slot="footer" class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-        </span>
-    </el-dialog>
+      <el-form-item>
+        <el-button class="custom-button" native-type="submit">账户密码登录</el-button>
+      </el-form-item>
+    </el-form>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { ElForm, ElMessage } from 'element-plus';
-import { useRoute} from 'vue-router';
-const { userApi } = useServer();
-const route = useRoute();
-const activeStepId = ref(route.query.stepId || 1);
-const firstLogin = ref(route.query.firstLogin || 0);
-import { rules } from '@/utils/validationRules';
-
-// 表单引用
+import logo from '@@/public/images/LOGO3.png';
+import { rules } from "@/utils/validationRules";
+import {ElForm, ElMessage} from "element-plus";
+import { ref} from "vue";
+const { userApi  } = useServer();
 const formRef: any = ref(null);
-const dialogVisible = ref(false);
-const sliderValue = ref(0);
-
+import { useRouter, useRoute } from "vue-router";
+const router = useRouter();
+const route = useRoute();
+const firstLogin = ref(route.query.firstLogin || 0);
 // 表单数据
 const form = ref({
   email: '',
-  loginPassword: '',
-  validateKey: '',
-  emailCode: '',
+  password: '',
 });
 
+/**
+ * 表单提交
+ */
 const handleSubmit = async () => {
   const valid = await formRef.value.validate();
-  const userStore = UseUserStore();
-  try {
-    if (valid) {
-      if (activeStepId.value == 1) {
-        let res = await userApi.login({
-          password: form.value.loginPassword,
-          username: form.value.email,
-        }, {});
-        if (res.code === 200) {
-          activeStepId.value = 2;
-          form.value.validateKey = res.data
-          ElMessage.success('邮箱验证码已发送到您邮箱');
-        } else {
-          ElMessage.error(res.message || '登录失败'); // 错误提示
-        }
-      } else {
-        let res = await userApi.loginValidateEmail({
-          validateKey: form.value.validateKey,
-          emailCode: form.value.emailCode,
-        }, {});
-        if (res.code === 200) {
-          userStore.setTokenState(res.data);
-          let result = await userStore.fetchUserInfo();
-          if(result){
-            dialogVisible.value = true;
-          }
-        } else {
-          ElMessage.error(res.message || '登录失败'); // 错误提示
-        }
+  if (valid) {
+    let res = await userApi.login({
+      password: form.value.password,
+      username: form.value.email,
+    }, {});
+    if (res.code === 200) {
+      ElMessage.success('email发送成功');
+      let str = '?validateKey='+ res.data + '&email=' + form.value.email
+      if(firstLogin.value == 1){
+        str = str + '&firstLogin=1'
       }
+      setTimeout(() => {
+        router.push('/user/login/stepEmail' + str);
+      }, 300);
     } else {
-      console.error('输入无效');
-      return false;
+      ElMessage.error(res.message || '登录失败');
     }
-  } catch (error) {
-    ElMessage.error('请求失败，请重试');
   }
-};
-
-const handleSliderChange = (value) => {
-  if (value === 100) {
-    ElMessage.success('验证成功！');
-    setTimeout(() => {
-      if(firstLogin.value == 1) {
-        window.location.href = '/user/info'
-      }else{
-        window.location.href = '/assets-account'
-      }
-    }, 200); // 1秒后跳转
-  }
-};
+}
 
 </script>
 
 <style scoped>
-.login-container {
-  width: 340px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  margin: auto;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
+*{
+  font-size: 14px;
+}
+.page {
+  position: relative;
+  padding: 32px;
+}
+.logo {
+  width: 179px;
+  height: 57px;
+  margin-top: 170px;
+}
+.regTips {
+  height: 25px;
+  font-size: 18px;
+  font-weight: 400;
+  padding-bottom: 28px;
 }
 
-.links {
-  display: flex;
-  justify-content: space-between; /* 左右两边对齐 */
-  margin: 0 0 30px 0;
+.input_box{
+  :deep .el-input{
+    width: 100%;
+    height: 56px;
+    border-radius: 16px;
+    font-size: 16px;
+    border: 0;
+  }
+  :deep .el-input__wrapper {
+    border-radius: 16px;
+    border: 3px #C8DCE8 solid;
+  }
+  :deep .checkbox__label{
+    color: #dcdcdc !important;
+  }
+  :deep .el-form-item__error{
+    padding-left: 14px;
+  }
+  :deep .el-checkbox__label{
+    font-weight: normal !important;
+  }
 }
 
-.left-link, .right-link {
+.custom-button{
+  background: #5686E1;
+  width: 100%;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 22.5px;
+  height: 56px;
+  color: #fff;
+  border: 0;
+  border-radius: 16px;
+}
+.href-text{
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0 15px 0;
+}
+.href-text a{
+  color: #657087;
   text-decoration: none;
-  font-size: 12px;
 }
 
-.social-login {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.social-btn {
-  background-color: #4285f4;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 10px;
-  cursor: pointer;
-}
-
-.social-btn:hover {
-  background-color: #357ae8;
-}
 </style>

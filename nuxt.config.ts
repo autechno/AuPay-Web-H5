@@ -40,14 +40,14 @@ export default defineNuxtConfig({
   nitro: {
     devProxy: {
       '/app/v1': {
-        target: 'http://192.168.1.253:9000',
+        target: 'http://192.168.1.131:9000',
         changeOrigin: true,
         prependPath: true
       }
     },
     routeRules: {
       '/app/v1/**': {
-        proxy: 'http://192.168.1.253:9000/**'
+        proxy: 'http://192.168.1.131:9000/**'
       }
     }
   },

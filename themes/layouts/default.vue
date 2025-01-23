@@ -1,14 +1,14 @@
 <template>
   <Header v-if="!isFilteredRoute"></Header>
-  <main class="container" style="min-height: calc(100vh - 365px); margin-top: 24px">
+  <main class="page">
     <slot></slot>
-    <div class="affix-container">
-      <el-affix target=".affix-container" :offset="80">
-        <a href="/work-order">
-          <el-button type="primary" class="break-text">客服中心</el-button>
-        </a>
-      </el-affix>
-    </div>
+<!--    <div class="affix-container">-->
+<!--      <el-affix target=".affix-container" :offset="80">-->
+<!--        <a href="/work-order">-->
+<!--          <el-button type="primary" class="break-text">客服中心</el-button>-->
+<!--        </a>-->
+<!--      </el-affix>-->
+<!--    </div>-->
   </main>
 </template>
 
@@ -19,12 +19,19 @@ import { useRoute } from 'vue-router';
 // 获取当前路由
 const route = useRoute();
 const isFilteredRoute = computed(() => {
-  const filteredRoutes = [ '/user/login', '/user/forgot-password', '/user/register', '/' ];
+  const filteredRoutes = [ '/user/login', '/user/forgot-password', '/user/register', '/user/register/stepReg', '/user/register/stepBind', '/user/login/stepEmail'];
   return filteredRoutes.includes(route.path);
 });
 </script>
 
-<style scoped>
+<style>
+body {
+  margin: 0!important;
+  padding: 0!important;
+  height: 100vh;
+  background: linear-gradient(to bottom, #EAF7FF, #FFFFFF);
+}
+
 .affix-container {
   position: fixed;
   bottom: 100px;

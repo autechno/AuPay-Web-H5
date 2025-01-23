@@ -191,10 +191,10 @@ const fetchData = async () => {
 };
 onMounted(() => {
   fetchData();
-  const intervalId = setInterval(fetchData, 10000);
-  onBeforeUnmount(() => {
-    clearInterval(intervalId);
-  });
+  // const intervalId = setInterval(fetchData, 10000);
+  // onBeforeUnmount(() => {
+  //   clearInterval(intervalId);
+  // });
 });
 
 </script>

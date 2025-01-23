@@ -1,173 +1,45 @@
 <template>
   <div class="page">
-    <div class="login-container">
-      <div class="container" v-if=" activeStepId == 1">
-        <h2>注册</h2>
-        <el-form :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleSubmit">
-          <el-form-item prop="email">
-            <el-input v-model="form.email" placeholder="请输入邮箱" />
-          </el-form-item>
-          <div class="link-wrap link-wrap-text">
-            <a href="javascript: void(0);" @click="sendEamil">点击获取邮箱验证码</a>
-          </div>
-          <el-form-item label="" prop="emailCode">
-            <el-input v-model="form.emailCode" placeholder="请输入邮箱验证码" />
-          </el-form-item>
-          <el-form-item label="" prop="password">
-            <el-input v-model="form.password" type="password" placeholder="设置登录密码" />
-          </el-form-item>
-          <el-form-item class="link-wrap link-wrap-text">
-            <el-checkbox v-model="isAgreement">用户协议</el-checkbox>
-          </el-form-item>
-          <el-form-item label="" prop="code">
-            <el-button type="primary" native-type="submit">注册</el-button>
-          </el-form-item>
-        </el-form>
-        <div class="social-login" style="margin-top: 30px;">
-          <el-button type="primary" @click="bindGoogleAuth">Google账户注册</el-button>
-          <!--        <el-button type="info">Apple账户注册</el-button>-->
-          <!--        <el-button type="info">Telegram账户注册</el-button>-->
-        </div>
-      </div>
-
-      <div class="container" v-if="activeStepId == 2">
-        <h2>设置资金密码</h2>
-        <div style="text-align: center; padding: 20px;">{{form.email}} 注册成功</div>
-        <div class="register-status">
-          <div class="status-item" v-for="item in statusList" :key="item.key">
-            <span>{{ item.name }}:</span>
-            <el-icon :size="20" v-if="item.key">
-              <component :is="item.status ? Check : Close" />
-            </el-icon>
-          </div>
-        </div>
-        <el-form v-if="activeStepId == 2" :model="form" :rules="rules" ref="formRef"  @submit.prevent="handleSubmit">
-          <el-form-item  prop="assetsPassword">
-            <el-input v-model="form.assetsPassword" type="password" placeholder="资金密码" />
-          </el-form-item>
-          <el-form-item  class="social-login">
-            <el-button  type="primary" native-type="submit">保存</el-button>
-          </el-form-item>
-        </el-form>
-        <div class="link-wrap">
-          <a href="javascript:void(0);" @click="nextTick">暂不设置下一步</a>
-        </div>
-      </div>
-
-      <div class="container" v-if="activeStepId == 3">
-        <h2>绑定Google验证器</h2>
-        <div style="text-align: center; padding: 20px;">{{form.email}} 注册成功</div>
-        <div class="register-status">
-          <div class="status-item" v-for="item in statusList" :key="item.key">
-            <span>{{ item.name }}:</span>
-            <el-icon :size="20" v-if="item.key">
-              <component :is="item.status ? Check : Close" />
-            </el-icon>
-          </div>
-        </div>
-        <el-button type="primary" @click="confirmGoogleAuth(1)">绑定Google验证器</el-button>
-        <div class="link-wrap">
-          <a href="javascript:void(0);" @click="nextTick">暂不设置下一步</a>
-        </div>
-      </div>
-      <div class="container" v-if="activeStepId == 4">
-        <h2>绑定Google账户</h2>
-        <div style="text-align: center; padding: 20px;">{{form.email}} 注册成功</div>
-        <div class="register-status">
-          <div class="status-item" v-for="item in statusList" :key="item.key">
-            <span>{{ item.name }}:</span>
-            <el-icon :size="20" v-if="item.key">
-              <component :is="item.status ? Check : Close" />
-            </el-icon>
-          </div>
-        </div>
-        <el-button type="primary">Google账户绑定</el-button>
-        <div class="link-wrap">
-          <a href="javascript:void(0);" @click="nextTick">暂不设置下一步</a>
-        </div>
-      </div>
-    </div>
-    <!-- Google 验证码弹出窗口 -->
-    <el-dialog v-model="isDialogVisible" title="设置Google验证码">
-      <div style="text-align: center;">
-        <img :src="googleForm.qrCode" alt="Google QR Code" style="width: 150px; height: 150px;" />
-        <el-form :model="googleForm" label-position="top" style="margin-top: 20px;">
-          <el-form-item label="" prop="googleCode">
-            <el-input v-model="googleForm.googleCode" placeholder="请输入Google验证码" />
-          </el-form-item>
-        </el-form>
-      </div>
-      <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="confirmGoogleAuth(2)">确认</el-button>
-        </span>
-    </el-dialog>
+    <img class="logo" :src="logo" alt="logo" />
+    <div class="regTips">注册auPayID</div>
+    <el-form :model="form" :rules="rules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
+      <el-form-item prop="email" >
+        <el-input v-model="form.email" placeholder="请输入邮箱"  />
+      </el-form-item>
+      <el-form-item class="agreement">
+        <el-checkbox v-model="isAgreement">我同意</el-checkbox><span style="color:#5686E1; font-weight: normal">《auPay用户协议》</span>
+      </el-form-item>
+      <el-form-item>
+        <el-button class="custom-button" native-type="submit">注册</el-button>
+      </el-form-item>
+    </el-form>
+    <div class="href-text" @click="navigateToLogin">已有账户<span style="color: #5686E1">直接登录</span></div>
+    <el-row :gutter="20" class="icon-container">
+      <el-col :span="8"><img class="icon" :src="google" width="36" /></el-col>
+      <el-col :span="8"><img class="icon" :src="apple" width="36" /></el-col>
+      <el-col :span="8"><img class="icon" :src="telegram" width="36" /></el-col>
+    </el-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted} from 'vue';
-import {ElForm, ElMessage} from 'element-plus';
-import { getHeader } from '@/utils/storageUtils';
-import { useRoute } from 'vue-router';
-import { Check, Close } from '@element-plus/icons-vue';
-import { rules } from '@/utils/validationRules';
-const route = useRoute();
-const activeStepId = ref(route.query.stepId || 1);
-const headers = getHeader();
-const { userApi, systemApi } = useServer();
-
-// 基础变量
+import { ref } from "vue";
+import logo from '@@/public/images/LOGO3.png';
+import google from '@@/public/images/Google.png';
+import apple from '@@/public/images/apple.png';
+import telegram from '@@/public/images/telegram.png';
+import { rules } from "@/utils/validationRules";
+import { ElForm } from "element-plus";
+import { useRouter } from "vue-router";
+const router = useRouter();
+const {  systemApi } = useServer();
 const formRef: any = ref(null);
-const routeStr = ref("/user/register");
 const isAgreement = ref(false);
+
 // 表单数据
 const form = ref({
   email: '',
-  password: '',
-  assetsPassword: '',
-  emailCode: '',
 });
-// 验证码相关数据
-const isDialogVisible = ref(false);
-const googleForm = ref({
-  googleCode: '',
-  googleSecret: '',
-  qrCode: '',
-  type: 1,
-});
-
-/**
- * 发送EMAIL
- */
-const sendEamil = async () => {
-  let res = await systemApi.sendRegEmail({email: form.value.email}, {});
-  if (res.code === 200) {
-    ElMessage.success('email发送成功');
-  } else {
-    ElMessage.error(res.message);
-  }
-}
-
-const bindGoogleAuth = () => {}
-
-/**
- * 提交绑定Google地址
- */
-const confirmGoogleAuth = async (type: number) => {
-  googleForm.value.type = type;
-  let res = await systemApi.bindGoogleAuth(googleForm.value, headers);
-  if (res.code === 200) {
-    if( type == 1){
-      googleForm.value.googleSecret = res.data.googleSecret;
-      googleForm.value.qrCode = res.data.qr;
-      isDialogVisible.value = true
-    }else{
-      nextTick();
-    }
-  } else {
-    ElMessage.error(res.message);
-  }
-}
 
 /**
  * 表单提交
@@ -175,128 +47,98 @@ const confirmGoogleAuth = async (type: number) => {
 const handleSubmit = async () => {
   const valid = await formRef.value.validate();
   if (valid) {
-    if (activeStepId.value == 1) {
       if (!isAgreement.value) {
-        ElMessage.error('请先同意用户协议');
+        ElMessage.error('请先同意auPay用户协议');
         return;
       }
-      let res = await userApi.register(form.value, {});
+      let res = await systemApi.sendRegEmail({email: form.value.email}, {});
       if (res.code === 200) {
-        const userStore = UseUserStore();
-        userStore.setTokenState(res.data);
-        nextTick();
+        ElMessage.success('email发送成功');
+        setTimeout(() => {
+          router.push('/user/register/stepReg?email='+ form.value.email);
+          }, 300);
       } else {
-        ElMessage.error(res.message || '注册失败');
-      }
-    }else if(activeStepId.value == 2) {
-      // 设置资产密码
-      let resSetPass = await userApi.setAssetsPassword({ assetsPassword: form.value.assetsPassword }, headers);
-      // 处理设置资产密码的结果
-      if (resSetPass.code === 200) {
-        nextTick();
-      } else {
-        ElMessage.error(resSetPass.message || '设置资金密码失败');
+        ElMessage.error(res.message);
       }
     }
-  }
 }
 
-onMounted(() => {
-  if(activeStepId.value > 4 ){
-    window.location.href = '/user/login?firstLogin=1';
-  }
-  const userStore = UseUserStore();
-  let userInfo  = userStore.userInfo
-  for (let i in statusList.value){
-    let key = statusList.value[i].key;
-    if(userInfo && userInfo[key]){
-      statusList.value[i].status = userInfo[key];
-    }
-  }
-});
-/**
- * 当前页设置
- */
-const nextTick = async() => {
-  let resUser = await userApi.getUserInfo({}, headers);
-  if (resUser.code === 200) {
-    const userStore = UseUserStore();
-    userStore.setUserInfo(resUser.data);
-    // 将当前步数加1
-    const nextStepId = parseInt(activeStepId.value) + 1;
-    window.location.href = `${routeStr.value}?stepId=${nextStepId}`;
-  }
-}
 
 /**
- * 跳过当前页设置
- * @param stepId
+ * 导航到登录页面
  */
-// const nextTick = async () => {
-//   let resUser = await userApi.getUserInfo({}, headers);
-//   if (resUser.code === 200) {
-//     userStore.setUserInfo(resUser.data);
-//   }
-//
-//   if(nextStepId > 4 ){
-//     window.location.href = '/user/login?firstLogin=1';
-//   }else{
-//     window.location.href = `${routeStr.value}?stepId=${nextStepId}`;
-//   }
-// };
-
-// 状态数据
-const statusList = ref([
-  { name: '注册', key: 'isLogin', status: true },
-  { name: '资金密码', key: 'setAssetsPassword', status: false },
-  { name: '绑定Google验证器', key: 'bindGoogleAuth', status: false },
-  { name: '三方验证绑定', key: '', status: false },
-  { name: 'Google验证', key: 'bindGoogleLogin', status: false },
-  { name: 'Apple验证', key: 'bindAppleLogin', status: false },
-  { name: 'Telegram验证', key: 'bindFacebookLogin', status: false },
-]);
-
-const bindGoogleCheck =  () => {}
+const navigateToLogin = () => {
+  router.push('/user/login');
+};
 
 </script>
 
 <style scoped>
-.login-container {
-  width: 340px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  margin: auto;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
+*{
+  font-size: 14px;
 }
-.link-wrap-text{
-  position: relative; top: -15px;
+.page {
+  height: 100vh;
+  position: relative;
+  padding: 32px;
 }
-.link-wrap{
-  text-align:right;
-  font-size: 12px;
+.logo {
+  width: 179px;
+  height: 57px;
+  margin-top: 170px;
 }
-.social-login {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.regTips {
+  height: 25px;
+  font-size: 18px;
+  font-weight: 400;
+  padding-bottom: 28px;
 }
-.el-form-item__content button{
+.agreement{
+  font-weight: normal;
+  font-size: 12px !important;
+  position: relative;
+  top: -10px;
+}
+.input_box{
+  :deep .el-input{
+    width: 100%;
+    height: 56px;
+    border-radius: 16px;
+    font-size: 16px;
+    border: 0;
+  }
+  :deep .el-input__wrapper {
+    border-radius: 16px;
+    border: 3px #C8DCE8 solid;
+  }
+  :deep .checkbox__label{
+    color: #dcdcdc !important;
+  }
+  :deep .el-form-item__error{
+    padding-left: 14px;
+  }
+  :deep .el-checkbox__label{
+    font-weight: normal !important;
+  }
+}
+.icon-container{
+  padding: 0 50px ;
+  margin: 160px auto;
+  text-align: center;
+}
+.custom-button{
+  background: #5686E1;
   width: 100%;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 22.5px;
+  height: 56px;
+  color: #fff;
+  border: 0;
+  border-radius: 16px;
 }
-.social-login .el-button+.el-button{
-  margin-left: 0 !important;
+.href-text{
+  text-align: center;
 }
-.status-item {
-  display: flex;
-  justify-content: space-between;
-  margin: 10px 0;
-}
+
 </style>
