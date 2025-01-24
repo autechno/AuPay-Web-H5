@@ -1,5 +1,5 @@
 <template>
-  <Header v-if="!isFilteredRoute"></Header>
+<!--  <Header v-if="!isFilteredRoute"></Header>-->
   <main>
     <slot></slot>
 <!--    <div class="affix-container">-->
@@ -27,9 +27,10 @@ const isFilteredRoute = computed(() => {
 <style>
 body {
   margin: 0!important;
-  height: 100vh;
   padding: 28px;
   background: linear-gradient(to bottom, #EAF7FF, #FFFFFF);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 .affix-container {
   position: fixed;

@@ -7,7 +7,7 @@
           <el-input v-model="form.email" disabled placeholder="请输入邮箱"  />
         </el-form-item>
         <el-form-item label="" prop="emailCode">
-          <el-input v-model="form.emailCode" placeholder="请输入邮箱验证码" />
+          <el-input v-model="form.emailCode" placeholder="邮箱验证码" />
         </el-form-item>
         <el-form-item label="" prop="password">
           <el-input v-model="form.password" type="password" placeholder="设置登录密码" />

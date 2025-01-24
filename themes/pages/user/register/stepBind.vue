@@ -14,7 +14,7 @@
     </div>
     <el-form :model="form" :rules="rules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
       <el-form-item v-if="activeStepId == 1"  prop="assetsPassword">
-        <el-input v-model="form.assetsPassword" type="password" placeholder="资金密码" />
+        <el-input v-model="form.assetsPassword" type="password" placeholder="设置资金密码" />
       </el-form-item>
       <div v-else class="mt-30"></div>
       <el-form-item>
@@ -73,9 +73,9 @@ const statusList = ref([
   { name: '资金密码', key: 'setAssetsPassword', status: false },
   { name: '绑定Google验证器', key: 'bindGoogleAuth', status: false },
   { name: '三方验证绑定', key: '', status: false },
-  { name: 'Google验证', key: 'bindGoogleLogin', status: false },
-  { name: 'Apple验证', key: 'bindAppleLogin', status: false },
-  { name: 'Telegram验证', key: 'bindFacebookLogin', status: false },
+  { name: 'Google account', key: 'bindGoogleLogin', status: false },
+  { name: 'Apple ID', key: 'bindAppleLogin', status: false },
+  { name: 'Telegram', key: 'bindFacebookLogin', status: false },
 ]);
 
 // 表单数据

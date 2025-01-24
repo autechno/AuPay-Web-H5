@@ -4,7 +4,7 @@
     <div class="regTips">登录您的auPayID</div>
     <el-form :model="form" :rules="rules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
       <el-form-item prop="email" >
-        <el-input v-model="form.email" placeholder="邮箱"  />
+        <el-input v-model="form.email" placeholder="请输入邮箱"  />
       </el-form-item>
       <el-form-item label="" prop="password">
         <el-input v-model="form.password" type="password" placeholder="密码" />
@@ -17,6 +17,26 @@
         <el-button class="custom-button" native-type="submit">账户密码登录</el-button>
       </el-form-item>
     </el-form>
+    <el-row :gutter="20" class="icon-container">
+      <el-col :span="8">
+        <div class="icon-wrapper">
+          <img class="icon" :src="google" width="36" />
+          <span>Google<br />账户注册</span>
+        </div>
+      </el-col>
+      <el-col :span="8">
+        <div class="icon-wrapper">
+          <img class="icon" :src="apple" width="36" />
+          <span>Apple<br />账户注册</span>
+        </div>
+      </el-col>
+      <el-col :span="8">
+        <div class="icon-wrapper">
+          <img class="icon" :src="telegram" width="36" />
+          <span>Telegram<br />账户注册</span>
+        </div>
+      </el-col>
+    </el-row>
 
   </div>
 </template>
@@ -29,6 +49,9 @@ import { ref} from "vue";
 const { userApi  } = useServer();
 const formRef: any = ref(null);
 import { useRouter, useRoute } from "vue-router";
+import google from "~~/public/images/Google2.png";
+import apple from "~~/public/images/apple2.png";
+import telegram from "~~/public/images/telegram2.png";
 const router = useRouter();
 const route = useRoute();
 const firstLogin = ref(route.query.firstLogin || 0);
@@ -66,9 +89,6 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-*{
-  font-size: 14px;
-}
 .page {
   position: relative;
 }
@@ -106,7 +126,21 @@ const handleSubmit = async () => {
     font-weight: normal !important;
   }
 }
-
+.icon-container{
+  padding: 0 8% ;
+  margin: 160px auto;
+  text-align: center;
+  color: #999999;
+  font-size: 12px;
+}
+.icon-wrapper {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+}
+.icon {
+  margin-bottom: 8px; /* Space between image and text */
+}
 .custom-button{
   background: #5686E1;
   width: 100%;

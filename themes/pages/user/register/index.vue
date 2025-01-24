@@ -15,9 +15,24 @@
     </el-form>
     <div class="href-text" @click="navigateToLogin">已有账户<span style="color: #5686E1">直接登录</span></div>
     <el-row :gutter="20" class="icon-container">
-      <el-col :span="8"><img class="icon" :src="google" width="36" /></el-col>
-      <el-col :span="8"><img class="icon" :src="apple" width="36" /></el-col>
-      <el-col :span="8"><img class="icon" :src="telegram" width="36" /></el-col>
+      <el-col :span="8">
+        <div class="icon-wrapper">
+          <img class="icon" :src="google" width="36" />
+          <span>Google<br />账户注册</span>
+        </div>
+      </el-col>
+      <el-col :span="8">
+        <div class="icon-wrapper">
+          <img class="icon" :src="apple" width="36" />
+          <span>Apple<br />账户注册</span>
+        </div>
+      </el-col>
+      <el-col :span="8">
+        <div class="icon-wrapper">
+          <img class="icon" :src="telegram" width="36" />
+          <span>Telegram<br />账户注册</span>
+        </div>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -63,7 +78,6 @@ const handleSubmit = async () => {
     }
 }
 
-
 /**
  * 导航到登录页面
  */
@@ -74,16 +88,13 @@ const navigateToLogin = () => {
 </script>
 
 <style scoped>
-*{
-  font-size: 14px;
-}
 .page {
   position: relative;
 }
 .logo {
   width: 179px;
   height: 57px;
-  margin-top: 170px;
+  margin-top: 140px;
 }
 .regTips {
   height: 25px;
@@ -120,9 +131,19 @@ const navigateToLogin = () => {
   }
 }
 .icon-container{
-  padding: 0 50px ;
+  padding: 0 8% ;
   margin: 160px auto;
   text-align: center;
+  color: #999999;
+  font-size: 12px;
+}
+.icon-wrapper {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+}
+.icon {
+  margin-bottom: 8px; /* Space between image and text */
 }
 .custom-button{
   background: #5686E1;
