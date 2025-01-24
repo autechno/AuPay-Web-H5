@@ -116,6 +116,7 @@ onMounted(() => {
 
 .page {
   position: relative;
+  padding: 0 10px;
 }
 .logo {
   width: 179px;
@@ -123,7 +124,6 @@ onMounted(() => {
   margin-top: 170px;
 }
 .regTips {
-  height: 25px;
   font-size: 18px;
   font-weight: 400;
   padding-bottom: 28px;

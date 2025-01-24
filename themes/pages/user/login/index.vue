@@ -91,6 +91,7 @@ const handleSubmit = async () => {
 <style scoped>
 .page {
   position: relative;
+  padding: 0 10px;
 }
 .logo {
   width: 179px;
@@ -156,6 +157,7 @@ const handleSubmit = async () => {
   display: flex;
   justify-content: space-between;
   margin: 10px 0 15px 0;
+  font-size: 12px;
 }
 .href-text a{
   color: #657087;

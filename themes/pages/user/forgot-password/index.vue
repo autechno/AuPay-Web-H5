@@ -149,6 +149,7 @@ const sendEamil = async () => {
 }
 .page {
   position: relative;
+  padding: 0 10px;
 }
 .logo {
   width: 179px;
