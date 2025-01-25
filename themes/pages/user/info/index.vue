@@ -23,8 +23,9 @@
           <el-input  :disabled="isNikename" v-model="form.nickname" placeholder="请输入昵称" />
         </el-form-item>
         <!-- 生日 -->
-        <el-form-item label="生日" :disabled="isBirthday"  prop="birthday">
+        <el-form-item label="生日"  prop="birthday">
           <el-date-picker
+              :disabled="isBirthday"
               v-model="form.birthday"
               type="date"
               placeholder="请选择生日"
