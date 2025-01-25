@@ -55,6 +55,7 @@ import telegram from "@@/public/images/telegram2.png";
 const router = useRouter();
 const route = useRoute();
 const userStore = UseUserStore();
+const { public: { API_HOST } } = useRuntimeConfig();
 const firstLogin = ref(route.query.firstLogin || 0);
 // 表单数据
 const form = ref({
@@ -91,7 +92,7 @@ const handleSubmit = async () => {
  * Google 绑定
  */
 const googleBind = async () => {
-  await userApi.googleAuth({action: 'register'}, {});
+  window.location.href = API_HOST + 'oz-client-auth/oauth2/authorize/google?action=register'
 }
 // 初始化Google 登录
 onMounted(async ()=>{

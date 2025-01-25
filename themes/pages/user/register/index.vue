@@ -47,7 +47,8 @@ import { rules } from "@/utils/validationRules";
 import { ElForm } from "element-plus";
 import { useRouter } from "vue-router";
 const router = useRouter();
-const {  systemApi, userApi } = useServer();
+const {  systemApi } = useServer();
+const { public: { API_HOST } } = useRuntimeConfig();
 const formRef: any = ref(null);
 const isAgreement = ref(false);
 
@@ -82,7 +83,7 @@ const handleSubmit = async () => {
  * Google 绑定
  */
 const googleBind = async () => {
-  await userApi.googleAuth({action: 'register'}, {});
+  window.location.href = API_HOST + 'oz-client-auth/oauth2/authorize/google?action=register'
 }
 
 /**
