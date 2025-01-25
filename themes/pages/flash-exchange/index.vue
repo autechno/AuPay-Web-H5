@@ -277,12 +277,11 @@ const fastRateFee = async (inputAmountTo: number, inputAmount: number, maxInputA
     if(curRes.code == 200 && maxRes.code == 200) {
       let curAmount = (inputAmountTo + curRes.data.fee).toFixed(8);
       let maxAmount = (maxInputAmount - maxRes.data.fee).toFixed(8);
-      if(curAmount > maxAmount){
-        curAmount = maxAmount;
-        fee = maxRes.data.fee;
-      }else{
-        fee = curRes.data.fee;
-      }
+      // if(curAmount > maxAmount){
+      //   curAmount = maxAmount;
+      //   fee = maxRes.data.fee;
+      // }
+      fee = curRes.data.fee;
       if(inputAmountTo <= curAmount){
         form.value.inputAmountTo = inputAmountTo;
       }else{
@@ -314,10 +313,8 @@ const syncInputAmount = () => {
 const syncInputAmountTo = (isFlag: boolean) => {
   const rate = rateExchange.value.rate;
   let inputAmountTo = parseFloat(form.value.inputAmountTo);
-  // let inputAmount = parseInt(form.value.inputAmount);
   if(isFlag){
     inputAmountTo = parseFloat(form.value.inputAmount);
-    // inputAmount = parseInt(form.value.inputAmountTo);
   }
   const maxInputAmount = form.value.bigNumCost;
   if (!isNaN(inputAmountTo) && !isNaN(rate)) {
