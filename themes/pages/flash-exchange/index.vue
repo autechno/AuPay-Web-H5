@@ -36,7 +36,7 @@
                   v-model="form.inputAmountTo"
                   placeholder="请输入金额"
                   type="number"
-                  @input="syncInputAmountTo"
+                  @input="syncInputAmountTo(0)"
               />
               <span style="padding-left: 20px;">{{ form.selectedCurrencyTo }}</span>
             </div>
@@ -117,7 +117,6 @@ const { assetsApi } = useServer();
 // 处理整合数据列表
 const currencyMergedData = ref([]);
 const  dialogCheckVisible = ref(false);
-const  bindGoogleAuth = ref(false);
 const  rateExchange = ref({
   content: '',
   rate: 1,
@@ -146,7 +145,6 @@ const form = ref({
   inputAmountTo: '',
   bigNumCostTo: 0,
 
-  bindGoogleAuth: false,
   bindPassword: false,
   googleCode: '',
   assetsPassword: '',
@@ -261,22 +259,34 @@ const fetchRateExchange = async () => {
   }
 };
 
-// 获取数据的函数
-const fastRateFee = async () => {
+// 手续费
+const fastRateFee = async (inputAmountTo: number, inputAmount: number, maxInputAmount: number, rate: number) => {
   try {
-    let res = await assetsApi.getFastRateFee({
-      currencyId: form.value.selectedCurrencyToId,
-      currencyChain: form.value.selectedChainTo,
-      amount: form.value.inputAmountTo,
-    }, headers);
-    if(res.code == 200) {
-      cost.value.content = res.data.fee + ' ' + form.value.selectedCurrencyTo
-      cost.value.amount = res.data.fee
-    }else{
-      ElMessage.error(res.message || '查询失败');
+    const [curRes, maxRes] = await Promise.all([
+      assetsApi.getFastRateFee({
+        currencyId: form.value.selectedCurrencyToId, currencyChain: form.value.selectedChainTo, amount: inputAmountTo,
+      }, headers),
+      assetsApi.getFastRateFee({
+        currencyId: form.value.selectedCurrencyToId, currencyChain: form.value.selectedChainTo, amount: maxInputAmount,
+      }, headers)
+    ]);
+    let fee = 0;
+    if(curRes.code == 200 && maxRes.code == 200) {
+      let curAmount = (inputAmountTo + curRes.data.fee).toFixed(8);
+      let maxAmount = (maxInputAmount - maxRes.data.fee).toFixed(8);
+      if(curAmount > maxAmount){
+        curAmount = maxAmount;
+        fee = maxRes.data.fee;
+      }
+      form.value.inputAmountTo = curAmount;
+      cost.value.content = fee + ' ' + form.value.selectedCurrencyTo
+      cost.value.amount = fee;
+      form.value.inputAmount = (inputAmountTo * rate).toFixed(8);
+      loading.value = false;
     }
   } catch (error) {
     ElMessage.error('请求失败，请重试');
+    loading.value = false;
   }
 };
 
@@ -288,29 +298,28 @@ const syncInputAmount = () => {
     // 保留 8 位小数
     form.value.inputAmountTo = (inputAmount / rate).toFixed(8);
   } else {
-    form.value.inputAmountTo = ''; // 如果无效输入则清空
+    form.value.inputAmountTo = '';
   }
 };
 // 输出框同步输入金额
-const syncInputAmountTo = () => {
+const syncInputAmountTo = (isFlag: number) => {
   const rate = parseFloat(rateExchange.value.rate);
-  const inputAmountTo = parseFloat(form.value.inputAmountTo);
+  let inputAmountTo = parseFloat(form.value.inputAmountTo);
+  let inputAmount = parseFloat(form.value.inputAmount);
+  if(isFlag){
+    inputAmountTo = parseFloat(form.value.inputAmount);
+    inputAmount = parseFloat(form.value.inputAmountTo);
+  }
   const maxInputAmount = form.value.bigNumCost;
   if (!isNaN(inputAmountTo) && !isNaN(rate)) {
-    // 限制输入金额不超过最大值
-    if (inputAmountTo > maxInputAmount) {
-      form.value.inputAmountTo = maxInputAmount; // 超过最大值则设置为最大值
-    }
-    form.value.inputAmount = (inputAmountTo * rate).toFixed(8);
-  } else {
+    fastRateFee(inputAmountTo, inputAmount, maxInputAmount, rate);
+  }else{
     form.value.inputAmount = '';
   }
-  fastRateFee();
 };
 // 初始化数据
 onMounted(() => {
   const userStore = UseUserStore();
-  bindGoogleAuth.value = userStore.userInfo.bindGoogleAuth;
   fetchData();
 });
 
@@ -327,7 +336,6 @@ const swapCurrencies = async () => {
   form.value.selectedChain = form.value.selectedChainTo;
   form.value.selectedCurrencyChain = form.value.selectedCurrencyChainTo;
 
-  form.value.inputAmount = '';
   form.value.selectedCurrencyToId = selectedCurrencyId;
   form.value.selectedCurrencyTo = selectedCurrency;
   form.value.selectedChainTo = selectedChain;
@@ -335,8 +343,7 @@ const swapCurrencies = async () => {
 
   await fetchRateExchange();
   setTimeout(() => {
-    syncInputAmountTo();
-    loading.value = false;
+    syncInputAmountTo(1);
   }, 200);
 };
 

@@ -12,15 +12,15 @@
         </el-icon>
       </div>
     </div>
-    <div v-if="activeStepId == 3" @click="googleBind">
-      <el-button :class="['custom-button', { 'display': bindGoogleLogin }]">Google账户绑定</el-button>
-    </div>
 
     <el-form :model="form" :rules="rules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
       <el-form-item v-if="activeStepId == 1"  prop="assetsPassword">
         <el-input v-model="form.assetsPassword" type="password" placeholder="设置资金密码" />
       </el-form-item>
       <div v-else class="mt-30"></div>
+      <div v-if="activeStepId == 3" @click="googleBind">
+        <el-button :class="['custom-button mb-20', { 'display': bindGoogleLogin }]">Google账户绑定</el-button>
+      </div>
       <el-form-item>
         <el-button class="custom-button" native-type="submit">{{ submitText }}</el-button>
       </el-form-item>
@@ -204,7 +204,9 @@ onMounted(() => {
   line-height: 28px;
   text-align: center;
 }
-
+.mb-20{
+  margin-bottom: 20px;
+}
 .mt-30{
   margin-top: 32px;
 }

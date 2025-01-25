@@ -40,9 +40,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import logo from '@@/public/images/LOGO3.png';
-import google from '@@/public/images/Google2.png';
-import apple from '@@/public/images/apple2.png';
-import telegram from '@@/public/images/telegram2.png';
+import google from '@@/public/images/Google.svg';
+import apple from '@@/public/images/apple.svg';
+import telegram from '@@/public/images/telegram.svg';
 import { rules } from "@/utils/validationRules";
 import { ElForm } from "element-plus";
 import { useRouter } from "vue-router";
