@@ -125,7 +125,9 @@ const nextTick = async () => {
 }
 
 // 绑定第三方登录
-const bindGoogleAuth = () => {}
+const bindGoogleAuth = async () => {
+  await userApi.googleAuth({action: 'bind'}, {});
+}
 
 /**
  * 提交绑定Google地址
