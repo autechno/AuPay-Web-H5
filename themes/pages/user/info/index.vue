@@ -20,7 +20,7 @@
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <!-- 昵称 -->
         <el-form-item label="昵称" prop="nickname">
-          <el-input v-if="isNikename" :disabled="isNikename" v-model="form.nickname" placeholder="请输入昵称" />
+          <el-input  :disabled="isNikename" v-model="form.nickname" placeholder="请输入昵称" />
         </el-form-item>
         <!-- 生日 -->
         <el-form-item label="生日" :disabled="isBirthday"  prop="birthday">
@@ -146,10 +146,9 @@ const fetchData = async () => {
     // 用户信息
     if (userInfoRes.code === 200) {
       form.value = userInfoRes.data;
-       isNikename.value = userInfoRes.data.propsModifyVO.nickname;
-       isBirthday.value = userInfoRes.data.propsModifyVO.birthday;
-       isTransferQr.value = userInfoRes.data.propsModifyVO.transferQr;
-
+       isNikename.value = userInfoRes.data.propsModifyVO.nikename > 0;
+       isBirthday.value = userInfoRes.data.propsModifyVO.birthday > 0;
+       isTransferQr.value = userInfoRes.data.propsModifyVO.transferQr > 0;
       // 设置默认头像
       if (!userInfoRes.data.headPortrait) {
         form.value.headPortrait = '/image/header.png';
