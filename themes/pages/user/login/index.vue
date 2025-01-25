@@ -45,7 +45,7 @@
 import logo from '@@/public/images/LOGO3.png';
 import { rules } from "@/utils/validationRules";
 import {ElForm, ElMessage} from "element-plus";
-import { ref} from "vue";
+import { ref, onMounted} from "vue";
 const { userApi  } = useServer();
 const formRef: any = ref(null);
 import { useRouter, useRoute } from "vue-router";
@@ -102,10 +102,10 @@ onMounted(async ()=>{
     userStore.setTokenState(token);
     let result = await userStore.fetchUserInfo();
     if(result){
-      if(userStore.loginTime == '' || userStore.loginTime == null) {
-        window.location.href = '/user/info'
-      }else{
+      if(userStore.loginTime != '') {
         window.location.href = '/assets-account'
+      }else{
+        window.location.href = '/user/info'
       }
     }
   }

@@ -12,6 +12,10 @@
         </el-icon>
       </div>
     </div>
+    <div v-if="activeStepId == 3" @click="googleBind">
+      <el-button :class="['custom-button', { 'display': bindGoogleLogin }]">Google账户绑定</el-button>
+    </div>
+
     <el-form :model="form" :rules="rules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
       <el-form-item v-if="activeStepId == 1"  prop="assetsPassword">
         <el-input v-model="form.assetsPassword" type="password" placeholder="设置资金密码" />
@@ -23,7 +27,6 @@
     </el-form>
 
     <div class="href-text" v-if="activeStepId != 3" @click="nextTick">“暂不设置”下一步</div>
-
     <!-- Google 验证码弹出窗口 -->
     <el-dialog v-model="isDialogVisible" title="设置Google验证码" width="90%">
       <div style="text-align: center;">
@@ -51,8 +54,9 @@ import { useRouter, useRoute } from "vue-router";
 import {getHeader} from "@/utils/storageUtils";
 import {Select, CloseBold} from "@element-plus/icons-vue";
 const { userApi, systemApi } = useServer();
+const { public: { API_HOST } } = useRuntimeConfig();
 const formRef: any = ref(null);
-const router = useRouter();
+const bindGoogleLogin = ref(true);
 const route = useRoute();
 const headers = getHeader();
 const submitText = ref('确 定')
@@ -113,20 +117,26 @@ const nextTick = async () => {
   }else if(activeStepId.value == 3){
     submitText.value = '确认完成';
   }
+  updateStatus();
+}
+
+// 更新显示按钮状态
+const updateStatus = async () => {
   let res = await userApi.getUserInfo({}, headers);
-  if (res.code === 200) {
-    statusList.value.forEach(item => {
-      if (item.key && res.data[item.key] !== undefined) {
-        console.log(res.data[item.key]);
-        item.status = res.data[item.key];
+  statusList.value.forEach(item => {
+    if (item.key && res.data[item.key] !== undefined) {
+      if(item.key == 'bindGoogleLogin'){
+        bindGoogleLogin.value = res.data[item.key];
       }
-    });
-  }
+      item.status = res.data[item.key];
+    }
+  });
 }
 
 // 绑定第三方登录
-const bindGoogleAuth = async () => {
-  await userApi.googleAuth({action: 'bind'}, {});
+const googleBind = async () => {
+  if(bindGoogleLogin.value){ return; }
+  window.location.href = API_HOST + 'oz-client-auth/oauth2/authorize/google?action=bind'
 }
 
 /**
@@ -152,7 +162,9 @@ const confirmGoogleAuth = async (type: number) => {
 
 // 初始化
 onMounted(() => {
+
   if(activeStepId.value == 3){
+    updateStatus();
     submitText.value = '确认完成';
   }
 });
@@ -162,6 +174,9 @@ onMounted(() => {
 <style scoped>
 *{
   font-size: 14px;
+}
+.display{
+  background: #dcdcdc !important;
 }
 .page {
   background: url('@@/public/images/star3.png') 45% 14% no-repeat;
