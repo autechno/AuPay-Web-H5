@@ -92,7 +92,7 @@ const handleSubmit = async () => {
  * Google 绑定
  */
 const googleBind = async () => {
-  window.location.href = API_HOST + 'oz-client-auth/oauth2/authorize/google?action=register'
+  window.location.href = API_HOST + '/oz-client-auth/oauth2/authorize/google?action=register'
 }
 // 初始化Google 登录
 onMounted(async ()=>{
