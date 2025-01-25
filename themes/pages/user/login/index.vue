@@ -91,7 +91,7 @@ const handleSubmit = async () => {
  * Google 绑定
  */
 const googleBind = async () => {
-  await userApi.googleAuth({action: 'login'}, {});
+  await userApi.googleAuth({action: 'register'}, {});
 }
 // 初始化Google 登录
 onMounted(async ()=>{
