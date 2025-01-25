@@ -92,7 +92,7 @@ const handleSubmit = async () => {
  * Google 绑定
  */
 const googleBind = async () => {
-  window.location.href = API_HOST + '/oz-client-auth/oauth2/authorize/google?action=register'
+  window.location.href = API_HOST + '/oz-client-auth/oauth2/authorize/google?action=login'
 }
 // 初始化Google 登录
 onMounted(async ()=>{
@@ -102,10 +102,10 @@ onMounted(async ()=>{
     userStore.setTokenState(token);
     let result = await userStore.fetchUserInfo();
     if(result){
-      if(userStore.loginTime != '') {
-        window.location.href = '/assets-account'
-      }else{
+      if(userStore.userInfo.country == '' || userStore.userInfo.nickname == '') {
         window.location.href = '/user/info'
+      }else{
+        window.location.href = '/assets-account'
       }
     }
   }

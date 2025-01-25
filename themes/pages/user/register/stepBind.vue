@@ -61,6 +61,7 @@ const route = useRoute();
 const headers = getHeader();
 const submitText = ref('确 定')
 const activeStepId = ref(route.query.stepId || 1);
+const userStore = UseUserStore();
 
 // 验证码相关数据
 const isDialogVisible = ref(false);
@@ -161,12 +162,19 @@ const confirmGoogleAuth = async (type: number) => {
 }
 
 // 初始化
-onMounted(() => {
-
+onMounted(async () => {
+  if(activeStepId.value == 1) {
+    let action = route.query.action || '';
+    let token = route.query.token || '';
+    if (action && token) {
+      userStore.setTokenState(token);
+      await userStore.fetchUserInfo();
+    }
+  }
   if(activeStepId.value == 3){
-    updateStatus();
     submitText.value = '确认完成';
   }
+  updateStatus();
 });
 
 </script>

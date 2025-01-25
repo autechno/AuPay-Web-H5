@@ -36,7 +36,7 @@
                   v-model="form.inputAmountTo"
                   placeholder="请输入金额"
                   type="number"
-                  @input="syncInputAmountTo(0)"
+                  @input="syncInputAmountTo(false)"
               />
               <span style="padding-left: 20px;">{{ form.selectedCurrencyTo }}</span>
             </div>
@@ -91,7 +91,7 @@
       </div>
       <div style="text-align: right;">
         <div>当前兑换汇率：{{ rateExchange.content }}</div>
-        <div v-if="cost.amount != 0">费用：{{ cost.content }}</div>
+        <div v-if="cost.amount">费用：{{ cost.content }}</div>
       </div>
     </div>
     <el-button @click="dialogCheckVisible = true" type="primary" >确认兑换</el-button>
@@ -277,10 +277,15 @@ const fastRateFee = async (inputAmountTo: number, inputAmount: number, maxInputA
       if(curAmount > maxAmount){
         curAmount = maxAmount;
         fee = maxRes.data.fee;
+      }else{
+        fee = curRes.data.fee;
       }
       form.value.inputAmountTo = curAmount;
       cost.value.content = fee + ' ' + form.value.selectedCurrencyTo
       cost.value.amount = fee;
+      console.log(curAmount)
+      console.log(cost.value)
+      console.log(form.value)
       form.value.inputAmount = (inputAmountTo * rate).toFixed(8);
       loading.value = false;
     }
@@ -302,7 +307,7 @@ const syncInputAmount = () => {
   }
 };
 // 输出框同步输入金额
-const syncInputAmountTo = (isFlag: number) => {
+const syncInputAmountTo = (isFlag: boolean) => {
   const rate = parseFloat(rateExchange.value.rate);
   let inputAmountTo = parseFloat(form.value.inputAmountTo);
   let inputAmount = parseFloat(form.value.inputAmount);
@@ -344,7 +349,7 @@ const swapCurrencies = async () => {
 
   await fetchRateExchange();
   setTimeout(() => {
-    syncInputAmountTo(1);
+    syncInputAmountTo(true);
   }, 200);
 };
 

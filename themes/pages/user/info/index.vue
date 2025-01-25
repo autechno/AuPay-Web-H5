@@ -20,10 +20,10 @@
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <!-- 昵称 -->
         <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="form.nickname" placeholder="请输入昵称" />
+          <el-input v-if="isNikename" :disabled="isNikename" v-model="form.nickname" placeholder="请输入昵称" />
         </el-form-item>
         <!-- 生日 -->
-        <el-form-item label="生日" prop="birthday">
+        <el-form-item label="生日" :disabled="isBirthday"  prop="birthday">
           <el-date-picker
               v-model="form.birthday"
               type="date"
@@ -51,7 +51,7 @@
         </el-form-item>
         <!-- auPay收款码 -->
         <el-form-item label="auPay收款码"  prop="transferQR">
-          <el-input v-model="form.transferQR" placeholder="auPay收款码" />
+          <el-input v-model="form.transferQR" :disabled="isTransferQr" placeholder="auPay收款码" />
           <el-button size="small" @click="copyText(form.transferQR)">复制</el-button>
           <el-button size="small" @click="showQrDialog = true">二维码</el-button>
         </el-form-item>
@@ -82,7 +82,9 @@ const countryList = ref([]);
 const headers = getHeader();
 const { userApi, systemApi } = useServer();
 const showQrDialog = ref(false);
-
+const isNikename = ref(false);
+const isBirthday = ref(false);
+const isTransferQr = ref(false);
 // 表单数据
 const form = ref({
   email: "",
@@ -144,6 +146,10 @@ const fetchData = async () => {
     // 用户信息
     if (userInfoRes.code === 200) {
       form.value = userInfoRes.data;
+       isNikename.value = userInfoRes.data.propsModifyVO.nickname;
+       isBirthday.value = userInfoRes.data.propsModifyVO.birthday;
+       isTransferQr.value = userInfoRes.data.propsModifyVO.transferQr;
+
       // 设置默认头像
       if (!userInfoRes.data.headPortrait) {
         form.value.headPortrait = '/image/header.png';
