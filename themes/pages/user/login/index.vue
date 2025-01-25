@@ -19,7 +19,7 @@
     </el-form>
     <el-row :gutter="20" class="icon-container">
       <el-col :span="8">
-        <div class="icon-wrapper">
+        <div class="icon-wrapper" @click="googleBind">
           <img class="icon" :src="google" width="36" />
           <span>Google<br />账户登录</span>
         </div>
@@ -49,11 +49,12 @@ import { ref} from "vue";
 const { userApi  } = useServer();
 const formRef: any = ref(null);
 import { useRouter, useRoute } from "vue-router";
-import google from "~~/public/images/Google2.png";
-import apple from "~~/public/images/apple2.png";
-import telegram from "~~/public/images/telegram2.png";
+import google from "@@/public/images/Google2.png";
+import apple from "@@/public/images/apple2.png";
+import telegram from "@@/public/images/telegram2.png";
 const router = useRouter();
 const route = useRoute();
+const userStore = UseUserStore();
 const firstLogin = ref(route.query.firstLogin || 0);
 // 表单数据
 const form = ref({
@@ -85,6 +86,29 @@ const handleSubmit = async () => {
     }
   }
 }
+
+/**
+ * Google 绑定
+ */
+const googleBind = async () => {
+  await userApi.googleAuth({action: 'login'}, {});
+}
+// 初始化Google 登录
+onMounted(async ()=>{
+  let action = route.query.action || '';
+  let token = route.query.token || '';
+  if(action && token){
+    userStore.setTokenState(token);
+    let result = await userStore.fetchUserInfo();
+    if(result){
+      if(userStore.loginTime == '' || userStore.loginTime == null) {
+        window.location.href = '/user/info'
+      }else{
+        window.location.href = '/assets-account'
+      }
+    }
+  }
+})
 
 </script>
 

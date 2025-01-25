@@ -91,7 +91,7 @@
       </div>
       <div style="text-align: right;">
         <div>当前兑换汇率：{{ rateExchange.content }}</div>
-        <div v-if="cost">费用：{{ cost }}</div>
+        <div v-if="cost.amount != 0">费用：{{ cost.content }}</div>
       </div>
     </div>
     <el-button @click="dialogCheckVisible = true" type="primary" >确认兑换</el-button>
@@ -122,7 +122,10 @@ const  rateExchange = ref({
   content: '',
   rate: 1,
 });
-const cost = ref('');
+const cost = ref({
+  content: '',
+  amount: 0,
+});
 
 const loading = ref(false); // Add loading state
 
@@ -223,7 +226,7 @@ const updateCurrencyChain = (formType: string) => {
   // 切换清空金额内容
   form.value.inputAmountTo = '';
   form.value.inputAmount = '';
-  cost.value = '';
+  cost.value = { amount: 0, content: '' };
   const selectedCurrencyData = formType === 'form'
       ? currencyMergedData.value.find(currency => currency.currencyId === form.value.selectedCurrencyId)
       : currencyMergedData.value.find(currency => currency.currencyId === form.value.selectedCurrencyToId);
@@ -267,11 +270,8 @@ const fastRateFee = async () => {
       amount: form.value.inputAmountTo,
     }, headers);
     if(res.code == 200) {
-      cost.value = res.data.fee + ' ' + form.value.selectedCurrencyTo
-      // let mergeNum = form.value.inputAmountTo + (res.data.fee).toFixed(8);
-      // if(mergeNum > form.value.bigNumCost){
-      //   form.value.inputAmountTo = mergeNum;
-      // }
+      cost.value.content = res.data.fee + ' ' + form.value.selectedCurrencyTo
+      cost.value.amount = res.data.fee
     }else{
       ElMessage.error(res.message || '查询失败');
     }
@@ -327,7 +327,6 @@ const swapCurrencies = async () => {
   form.value.selectedChain = form.value.selectedChainTo;
   form.value.selectedCurrencyChain = form.value.selectedCurrencyChainTo;
 
-  form.value.inputAmountTo = form.value.inputAmount;
   form.value.inputAmount = '';
   form.value.selectedCurrencyToId = selectedCurrencyId;
   form.value.selectedCurrencyTo = selectedCurrency;
@@ -338,7 +337,7 @@ const swapCurrencies = async () => {
   setTimeout(() => {
     syncInputAmountTo();
     loading.value = false;
-  }, 100);
+  }, 200);
 };
 
 

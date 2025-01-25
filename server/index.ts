@@ -15,6 +15,12 @@ class UserApi extends Http {
         return this.post('/oz-client-auth/auth/logout', params, headers)
     }
     /**
+     * Google 登录注册
+     */
+    public googleAuth(params: any, headers: any): Promise<any> {
+        return this.get('/oz-client-auth/oauth2/authorize/google', params, headers)
+    }
+    /**
      * 注册
      */
     public register(params: any, headers: any): Promise<any> {
