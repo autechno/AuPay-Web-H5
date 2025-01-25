@@ -16,6 +16,8 @@
     "@nuxtjs/i18n": "^8.0.0-rc.5",
     "@pinia-plugin-persistedstate/nuxt": "^1.2.0",
     "@pinia/nuxt": "^0.5.1",
+    "less": "^4.2.2",
+    "less-loader": "^12.2.0",
     "nuxt": "^3.15.0",
     "pinia": "^2.1.7",
     "vue": "latest",
