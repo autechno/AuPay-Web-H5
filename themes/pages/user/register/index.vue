@@ -16,7 +16,7 @@
     <div class="href-text" @click="navigateToLogin">已有账户<span style="color: #5686E1">直接登录</span></div>
     <el-row :gutter="20" class="icon-container">
       <el-col :span="8">
-        <div class="icon-wrapper">
+        <div class="icon-wrapper" @click="googleBind">
           <img class="icon" :src="google" width="36" />
           <span>Google<br />账户注册</span>
         </div>
@@ -47,7 +47,7 @@ import { rules } from "@/utils/validationRules";
 import { ElForm } from "element-plus";
 import { useRouter } from "vue-router";
 const router = useRouter();
-const {  systemApi } = useServer();
+const {  systemApi, userApi } = useServer();
 const formRef: any = ref(null);
 const isAgreement = ref(false);
 
@@ -76,6 +76,13 @@ const handleSubmit = async () => {
         ElMessage.error(res.message);
       }
     }
+}
+
+/**
+ * Google 绑定
+ */
+const googleBind = async () => {
+  await userApi.googleAuth({action: 'register'}, {});
 }
 
 /**
