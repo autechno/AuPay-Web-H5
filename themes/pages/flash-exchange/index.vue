@@ -277,10 +277,10 @@ const fastRateFee = async (inputAmountTo: number, inputAmount: number, maxInputA
     if(curRes.code == 200 && maxRes.code == 200) {
       let curAmount = (inputAmountTo + curRes.data.fee).toFixed(8);
       let maxAmount = (maxInputAmount - maxRes.data.fee).toFixed(8);
-      // if(curAmount > maxAmount){
-      //   curAmount = maxAmount;
-      //   fee = maxRes.data.fee;
-      // }
+      if(curAmount > maxAmount){
+        curAmount = maxAmount;
+        // fee = maxRes.data.fee;
+      }
       fee = curRes.data.fee;
       if(inputAmountTo <= curAmount){
         form.value.inputAmountTo = inputAmountTo;
