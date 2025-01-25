@@ -1,219 +1,117 @@
 <template>
   <div class="page">
-    <CurrencyTabs :currency-tabs="currencyTabData" @currency-changed="handleCurrencyChange" @show-currency-changed="handleShowCurrencyChanged" />
-    <div v-if="selectedCurrencyId == 0">
-      <el-row v-for="(item, index) in currencyMergedData" :key="index" class="asset-item">
-        <el-col :span="12">{{ item.currencyJson.name }}</el-col>
-        <el-col :span="12" style="text-align: right;">{{ !isShowCurrency?'******':formatCurrency(item.balance) }}</el-col>
+    <div class="avatar-header">
+      <div class="avatar" style="float: left"><img v-if="userInfo.headPortrait" style="width: 100%;"  :src="userInfo.headPortrait" /></div>
+      <span class="name">{{userInfo.name}}</span>
+      <div class="avatar" style="float: right">
+        <img :src="scan" class="scan" />
+      </div>
+    </div>
+    <div class="main">
+      <div @click="setConfigShow">
+        <span style="color: #6E6E6E; font-size: 14px;">你的总资产<img :src="eye"  style="vertical-align: middle; width: 16px;"></span>
+        <p style="height: 49px; font-weight: bold; font-size: 36px; line-height: 49px;">
+          {{!isShowCurrency ? '******' : userInfo.currencySign + formatCurrency(totalAssets) }}
+        </p>
+      </div>
+      <el-row :gutter="20" class="icon-container">
+        <el-col :span="6">
+          <p class="icon-text">
+            <i class="i1"></i>
+            <span>充值</span>
+          </p>
+        </el-col>
+        <el-col :span="6">
+          <p class="icon-text">
+            <i class="i2"></i>
+            <span>提现</span>
+          </p>
+        </el-col>
+        <el-col :span="6">
+          <p class="icon-text">
+            <i class="i3"></i>
+            <span>转帐</span>
+          </p>
+        </el-col>
+        <el-col :span="6">
+          <p class="icon-text">
+            <i class="i4"></i>
+            <span>转帐</span>
+          </p>
+        </el-col>
       </el-row>
-      <div style="text-align: right; margin-top: 20px; font-weight: bold;">
-        总资产：{{!isShowCurrency?'******':formatCurrency(totalAssets) }}{{currencySign}}
-      </div>
-      <el-button type="primary" @click="searchDialogVisible = true">搜索</el-button>
-      <el-table :data="accountAssetsList" style="width: 100%">
-        <el-table-column label="序号" width="60">
-          <template #default="scope">
-            {{scope.$index + 1 }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="tradeNo" label="订单ID" sortable />
-        <el-table-column label="订单类型" >
-          <template #default="scope">
-            {{ getDataInfo(scope.row.tradeType, 'trade').name || '' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="发起时间" sortable >
-          <template #default="scope">
-            {{ formatDate(scope.row.createTime) || '' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="完成时间" sortable >
-          <template #default="scope">
-            {{ formatDate(scope.row.finishTime) || '' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="币种" sortable>
-          <template #default="scope">
-            {{ getDataInfo(scope.row.currencyId, 'currencyChains').name || '' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="链" sortable>
-          <template #default="scope">
-            {{ getDataInfo(scope.row.currencyChain, 'chains')?.name || '' }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="amount" label="数量" sortable />
-        <el-table-column label="交易状态" sortable>
-          <template #default="scope">
-            {{ getStatusText(scope.row.status, 'ACCOUNT') || '' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="100">
-          <template #default="scope">
-            <a :href="`/assets-account/detail?id=${scope.row.id}`">查看详情</a>
-          </template>
-        </el-table-column>
-      </el-table>
-      <!-- 分页组件 -->
-      <el-pagination
-          background
-          layout="prev, pager, next"
-          :total="accountAssetsTotal"
-          :page-size="form.pageSize"
-          :current-page="form.pageNo"
-          @current-change="handlePageChange"
-      />
-    </div>
-    <div v-else>
-      <div v-for="(item, index) in currencyItemData" class="container list-wrap" :key="index" >
-          <el-row :gutter="20" v-if="item.currencyId === selectedCurrencyId">
-            <el-col :span="18">
-              <div class="h1">{{ item.currencyJson.name }}</div>
-              <div>{{ item.coinJson.name }}</div>
-              <div @click="copyText(item.walletAddress)" class="copyable-text">
-                {{ item.walletAddress }}
-              </div>
-            </el-col>
-            <el-col :span="6">
-              <el-row class="right-column" type="flex" justify="end" align="middle">
-                <el-col :span="12">
-                  <div class="right-content">
-                    <p class="left-width">{{ !isShowCurrency?'******':formatCurrency(item.balance) }}</p>
-                    <p> 1%</p>
-                  </div>
-                </el-col>
-                <el-col :span="12">
-                  <div class="right-content">
-                    <p class="left-width">{{ item.currencyJson.name }}</p>
-                    <p>{{ !isShowCurrency?'******':formatCurrency(item.totalBalanceUsdt) }}{{currencySign}}</p>
-                  </div>
-                </el-col>
-              </el-row>
-            </el-col>
-          </el-row>
-      </div>
-      <div class="button-group">
-        <el-button type="primary" >转账</el-button>
-        <el-button type="primary" >充值</el-button>
-        <el-button type="primary" >提现</el-button>
+      <div class="banner"> <img :src="banner" /> </div>
+      <div class="table-title"><span style="font-size: 18px;">我的代币</span><span style="font-size: 12px; color: #FDC92E">所有代币</span></div>
+      <div class="table-list">
+        <div class="item" v-for="(item, index) in currencyMergedData" :key="index">
+          <div class="left-column">
+            <div class="currency-wrap"></div>
+          </div>
+          <div class="right-column">
+            <p class="row"><span class="title">{{ item.currencyJson.name }}</span> <span class="title">{{formatCurrency(totalAssets)}}</span></p>
+            <p class="row"><span class="text">{{!isShowCurrency ? '******' : userInfo.currencySign + formatCurrency(item.balance) }}</span> <span class="text" style="color: #0F9A50">+2000U</span></p>
+          </div>
+        </div>
       </div>
     </div>
-
-    <el-dialog title="搜索" v-model="searchDialogVisible" @close="searchDialogVisible = false">
-      <el-form :model="form">
-        <el-form-item label="代币名称">
-          <el-select v-model="form.conditions.currencyId" placeholder="请选择链">
-            <el-option v-for="item in getDataList('currencyChains')" :key="item.code" :label="item.name" :value="item.code" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="链">
-          <el-select v-model="form.conditions.currencyChain" placeholder="请选择链">
-            <el-option v-for="item in getDataList('chains')" :key="item.code" :label="item.name" :value="item.code" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="交易类型">
-          <el-select v-model="form.conditions.tradeType" placeholder="请选择交易类型">
-            <el-option v-for="item in getDataList('trade')" :key="item.code" :label="item.name" :value="item.code" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="数量">
-          <el-input v-model="form.conditions.amount" placeholder="请输入数量"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="searchDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="applySearch">确 定</el-button>
-      </span>
-    </el-dialog>
+    <el-row :gutter="20" class="home-container" style="margin-left:0; margin-right: 0">
+      <el-col :span="6">
+        <p class="icon-text">
+          <i class="i1"></i>
+          <span>首页</span>
+        </p>
+      </el-col>
+      <el-col :span="6">
+        <p class="icon-text">
+          <i class="cur2"></i>
+          <span>资产</span>
+        </p>
+      </el-col>
+      <el-col :span="6">
+        <p class="icon-text">
+          <i class="i3"></i>
+          <span>行情</span>
+        </p>
+      </el-col>
+      <el-col :span="6">
+        <p class="icon-text">
+          <i class="i4"></i>
+          <span>用户</span>
+        </p>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
+import banner from '@@/public/images/banner.png';
 import { getHeader } from "@/utils/storageUtils";
+import eye from "@@/public/images/eye3x.svg";
+import scan from "@@/public/images/Scan.svg";
 import {
   formatCurrency,
-  formatDate,
-  getStatusText,
   getDataInfo,
-  getDataList
 } from "@/utils/formatUtils";
-import CurrencyTabs from "@/composables/CurrencyTabs.vue";
 import {ElMessage} from "element-plus";
-import { copyText } from "@/utils/funcUtil";
-const searchDialogVisible = ref(false);
 const headers = getHeader();
 const { assetsApi, systemApi } = useServer();
-const selectedCurrencyId = ref(0);
-const currencyTabData = ref([{
-  currencyId: 0,
-  name: '余额总揽'
-}]);
-const currencyCode = ref();
-const currencySign = ref("$");
-const accountAssetsList = ref([]);
-const accountAssetsTotal= ref(0);
 const currencyItemData = ref([]);
 const currencyMergedData = ref([]);
 const totalAssets = ref(0);
 const isShowCurrency = ref(false);
-
-// 应用搜索条件
-const applySearch = () => {
-  form.value.pageNo = 1;
-  accountAssetsData();
-  searchDialogVisible.value = false;
-};
-
-// 切换tabs
-const handleCurrencyChange = (currencyId: number) => {
-  selectedCurrencyId.value = currencyId;
-  if(selectedCurrencyId.value ==  0 ){
-    accountAssetsData();
-  }
-};
-
-// 金额是否显示
-const handleShowCurrencyChanged = (value) => {
-  isShowCurrency.value = value;
-};
-
-// 表单数据
-const form = ref({
-  pageNo: 1,
-  pageSize: 10,
-  conditions: {
-    currencyId: '',
-    currencyChain: '',
-    tradeType: '',
-  }
+const userInfo = ref({
+  headPortrait: '',
+  name: '',
+  currencyCode: 'USD',
+  currencySign: '$'
 })
 
-// 资金分页
-const handlePageChange = (page: number) => {
-  form.value.pageNo = page;
-  accountAssetsData();
-}
-// 资金分页列表
-const accountAssetsData = async () => {
-  try {
-    const res = await assetsApi.accountAssetsList(form.value, headers);
-    if (res.code === 200) {
-      accountAssetsList.value = res.data.records;
-      accountAssetsTotal.value = res.data.total;
-    } else {
-      ElMessage.error(res.message || '查询失败')
-    }
-  } catch (error) {
-    ElMessage.error('请求失败，请重试')
-  } finally {
-  }
-}
-
+//
 const fetchData = async () => {
   try {
     const [rateResponse, assetsResponse] = await Promise.all([
-      assetsApi.getRateU2Currency({ currency: currencyCode.value }, headers),
+      assetsApi.getRateU2Currency({ currency: userInfo.value.currencyCode }, headers),
       assetsApi.accountAssets({}, headers)
     ]);
     // 处理汇率响应
@@ -237,7 +135,6 @@ const fetchData = async () => {
           currencyItemData.value.push(mergedStore);
           if (!mergedData[currencyId]) {
             mergedData[currencyId] = mergedStore;
-            currencyTabData.value.push({ currencyId: currencyId, name: currencyKeyValue.name });
           }else{
             mergedData[currencyId].balance += balance;
             mergedData[currencyId].freezeBalance += freezeBalance;
@@ -253,55 +150,233 @@ const fetchData = async () => {
       ElMessage.error(assetsResponse.message || '查询失败');
     }
   } catch (error) {
+    console.log(error)
+    console.log(error)
+    console.log(error)
     ElMessage.error('请求失败，请重试');
   }
 };
-
+// 显示隐藏
+const setConfigShow = async () => {
+   isShowCurrency.value = !isShowCurrency.value;
+}
 // 初始化数据
 onMounted(() => {
   const userStore = UseUserStore();
-  currencyCode.value = userStore.userInfo.currencyUnit;
-  currencySign.value = getDataInfo(currencyCode.value, 'currency')?.sign;
+  userInfo.value.headPortrait = userStore.userInfo.headPortrait;
+  userInfo.value.currencyCode = userStore.userInfo.currencyUnit;
+  userInfo.value.name = userStore.userInfo.nickname;
+  userInfo.value.currencySign = getDataInfo(userInfo.value.currencyCode, 'currency')?.sign;
   fetchData();
-  accountAssetsData();
 })
 
 </script>
+<style scoped>
+*{
+  margin:0;
+  padding: 0;
+  font-size: 12px;
+}
+.page {
+  position: relative;
+  color: #0D0D0D;
+  padding-bottom: 100px;
+}
+.avatar-header{
+  margin-top: 30px;
+  width: 100%;
+  height: 46px;
+}
+.avatar-header .name{
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 46px;
+  padding-left: 5px;
+}
+.avatar-header .avatar{
+  Width: 46px;
+  Height: 46px;
+  background: #F4F4F4;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.avatar-header .scan {
+  object-fit: cover;
+  width: 24px;
+  height: 24px;
+}
+.main{
+  margin-top: 32px;
+}
+.icon-container{
+  margin-top: 22px;
+  width: 106%;
+  text-align: center;
+}
+.icon-container .icon-text{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 70px;
+  height: 64px;
+  background: #EAF3FA;
+  overflow: hidden;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 12px!important;
+}
+.icon-container  i{
+  display: block;
+  width: 28px;
+  height: 28px;
+  margin: 7px auto 4px auto;
+}
+.icon-container  i.i1{
+  background: url(@@/public/images/cz2.png)  no-repeat;
+  background-size: 100%;
+}
+.icon-container  i.i2{
+  background: url(@@/public/images/tx@2x.png)  no-repeat;
+  background-size: 100%;
+}
+.icon-container  i.i3{
+  background: url(@@/public/images/zh2x.png)  no-repeat;
+  background-size: 100%;
+}
+.icon-container  i.i4{
+  background: url(@@/public/images/sd2x.png)  no-repeat;
+  background-size: 100%;
+}
+.icon-container i img{
+  width: 28px;
+  height: 28px;
+  margin-bottom: 3px;
+}
 
-<style>
-  .button-group {
-    display: flex;
-    gap: 10px; /* Space between buttons */
-  }
-  .asset-item {
-    width: 80%;
-    background: #f1f1f1;
-    margin-bottom: 10px;
-  }
-  .copyable-text {
-    cursor: pointer;
-    color: blue;
-    text-decoration: underline;
-    margin-bottom: 5px;
-  }
-  .right-column {
-    display: flex;
-    justify-content: flex-end;
-  }
-  .right-content {
-    text-align: right;
-  }
-  .list-wrap {
-    background: #dcdcdc;
-    margin-bottom: 20px;
-  }
-  .left-width {
-    width: 100%;
-  }
-  .button-group {
-    text-align: right;
-  }
-  .dialog-footer {
-    margin-top: 20px;
-  }
+.home-container{
+  width: calc(100% - 36px);
+  text-align: center;
+  background: #ffffff;
+  height: 88px;
+  border-radius: 30px;
+  box-shadow: 0 12px 20px rgba(109, 110, 124, 0.2);
+  position: fixed;
+  bottom: 16px;
+  left: 18px;
+}
+.home-container .icon-text{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 10px;
+  width: 70px;
+  height: 64px;
+  overflow: hidden;
+  font-weight: bold;
+  font-size: 12px!important;
+  color: #1C63FF;
+}
+.home-container  i{
+  display: block;
+  width: 28px;
+  height: 28px;
+  margin: 7px auto 4px auto;
+}
+.home-container  i.i1{
+  background: url(@@/public/images/Home@2x.png)  no-repeat;
+  background-size: 100%;
+}
+.home-container  i.i2{
+  background: url(@@/public/images/zichan@2x.png)  no-repeat;
+  background-size: 100%;
+}
+.home-container  i.i3{
+  background: url(@@/public/images/hangqing@2x.png)  no-repeat;
+  background-size: 100%;
+}
+.home-container  i.i4{
+  background: url(@@/public/images/wo@2x.png)  no-repeat;
+  background-size: 100%;
+}
+.home-container  i.cur1{
+  background: url(@@/public/images/Home2@3x.png)  no-repeat;
+  background-size: 100%;
+}
+.home-container  i.cur2{
+  background: url(@@/public/images/zichan2@2x.png)  no-repeat;
+  background-size: 100%;
+}
+.home-container  i.cur3{
+  background: url(@@/public/images/hangqing2@2x.png)  no-repeat;
+  background-size: 100%;
+}
+.home-container  i.cur4{
+  background: url(@@/public/images/yonghu2@2x.png)  no-repeat;
+  background-size: 100%;
+}
+.home-container i img{
+  width: 28px;
+  height: 28px;
+}
+
+.table-title {
+  line-height: 20px;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+}
+.banner{
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+.banner img{
+  width: 100%;
+}
+.table-list{
+  position: relative;
+  margin-top: 10px;
+}
+.table-list .item{
+  display: flex;
+  height: 52px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f1f1;
+  overflow: hidden;
+}
+.left-column {
+  width: 48px;
+  height: 48px;
+}
+.left-column .currency-wrap{
+  width: 100%;
+  height: 100%;
+  background-color: #eaeaea;
+  border-radius: 48px;
+}
+.right-column {
+  padding-left: 10px;
+  flex: 1;
+  padding-top: 5px;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+.right-column .row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.right-column .row .title {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.right-column .row .text {
+  color: #6E6E6E;
+}
 </style>
