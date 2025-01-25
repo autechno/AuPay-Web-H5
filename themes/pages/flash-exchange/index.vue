@@ -251,6 +251,9 @@ const fetchRateExchange = async () => {
     if(res.code == 200) {
       rateExchange.value.content = '1 ' + form.value.selectedCurrencyTo + ' ≈ ' + res.data + ' ' +form.value.selectedCurrency;
       rateExchange.value.rate = res.data
+      console.log("---rateExchange--");
+      console.log(rateExchange.value);
+      console.log("---rateExchange--");
     }else{
       ElMessage.error(res.message || '查询失败');
     }
@@ -260,7 +263,7 @@ const fetchRateExchange = async () => {
 };
 
 // 手续费
-const fastRateFee = async (inputAmountTo: number, inputAmount: number, maxInputAmount: number, rate: number) => {
+const fastRateFee = async (inputAmountTo: number, inputAmount: number, maxInputAmount: number, rate: number, isFlag: boolean) => {
   try {
     const [curRes, maxRes] = await Promise.all([
       assetsApi.getFastRateFee({
@@ -280,13 +283,14 @@ const fastRateFee = async (inputAmountTo: number, inputAmount: number, maxInputA
       }else{
         fee = curRes.data.fee;
       }
-      form.value.inputAmountTo = curAmount;
+      if(inputAmountTo <= curAmount){
+        form.value.inputAmountTo = inputAmountTo;
+      }else{
+        form.value.inputAmountTo = curAmount;
+      }
       cost.value.content = fee + ' ' + form.value.selectedCurrencyTo
       cost.value.amount = fee;
-      console.log(curAmount)
-      console.log(cost.value)
-      console.log(form.value)
-      form.value.inputAmount = (inputAmountTo * rate).toFixed(8);
+      form.value.inputAmount = (form.value.inputAmountTo * rate).toFixed(8);
       loading.value = false;
     }
   } catch (error) {
@@ -308,16 +312,16 @@ const syncInputAmount = () => {
 };
 // 输出框同步输入金额
 const syncInputAmountTo = (isFlag: boolean) => {
-  const rate = parseFloat(rateExchange.value.rate);
+  const rate = rateExchange.value.rate;
   let inputAmountTo = parseFloat(form.value.inputAmountTo);
-  let inputAmount = parseFloat(form.value.inputAmount);
+  // let inputAmount = parseInt(form.value.inputAmount);
   if(isFlag){
     inputAmountTo = parseFloat(form.value.inputAmount);
-    inputAmount = parseFloat(form.value.inputAmountTo);
+    // inputAmount = parseInt(form.value.inputAmountTo);
   }
   const maxInputAmount = form.value.bigNumCost;
   if (!isNaN(inputAmountTo) && !isNaN(rate)) {
-    fastRateFee(inputAmountTo, inputAmount, maxInputAmount, rate);
+    fastRateFee(inputAmountTo, 0, maxInputAmount, rate, isFlag);
   }else{
     form.value.inputAmount = '';
     loading.value = false;
@@ -325,7 +329,6 @@ const syncInputAmountTo = (isFlag: boolean) => {
 };
 // 初始化数据
 onMounted(() => {
-  const userStore = UseUserStore();
   fetchData();
 });
 
@@ -341,16 +344,19 @@ const swapCurrencies = async () => {
   form.value.selectedCurrency = form.value.selectedCurrencyTo;
   form.value.selectedChain = form.value.selectedChainTo;
   form.value.selectedCurrencyChain = form.value.selectedCurrencyChainTo;
-
   form.value.selectedCurrencyToId = selectedCurrencyId;
   form.value.selectedCurrencyTo = selectedCurrency;
   form.value.selectedChainTo = selectedChain;
   form.value.selectedCurrencyChainTo = selectedCurrencyChain;
 
-  await fetchRateExchange();
+  // 重新计算汇率
+  const  selectedCurrencyData = currencyMergedData.value.find(currency => currency.currencyId === form.value.selectedCurrencyToId)
+  form.value.bigNumCost = selectedCurrencyData.balance
+  fetchRateExchange();
+  // 延迟200毫秒
   setTimeout(() => {
     syncInputAmountTo(true);
-  }, 200);
+  }, 500);
 };
 
 
