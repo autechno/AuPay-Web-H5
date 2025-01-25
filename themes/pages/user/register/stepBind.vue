@@ -168,13 +168,16 @@ onMounted(async () => {
     let token = route.query.token || '';
     if (action && token) {
       userStore.setTokenState(token);
-      await userStore.fetchUserInfo();
+      let result = await userStore.fetchUserInfo();
+      if(result){
+        updateStatus();
+      }
     }
   }
   if(activeStepId.value == 3){
     submitText.value = '确认完成';
+    updateStatus();
   }
-  updateStatus();
 });
 
 </script>
