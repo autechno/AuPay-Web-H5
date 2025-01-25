@@ -315,6 +315,7 @@ const syncInputAmountTo = (isFlag: number) => {
     fastRateFee(inputAmountTo, inputAmount, maxInputAmount, rate);
   }else{
     form.value.inputAmount = '';
+    loading.value = false;
   }
 };
 // 初始化数据
