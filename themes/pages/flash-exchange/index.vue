@@ -27,6 +27,7 @@ import fx from '@@/public/images/fx.svg';
 .page-content{
   position: relative;
 }
+
 .exchange-container {
   border-radius: 16px;
   border: 3px #C8DCE8 solid;
