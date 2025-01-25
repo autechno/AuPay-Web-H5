@@ -1,5 +1,5 @@
 <template>
-  <Header v-if="!isFilteredRoute"></Header>
+<!--  <Header v-if="!isFilteredRoute"></Header>-->
   <main>
     <slot></slot>
 <!--    <div class="affix-container">-->
