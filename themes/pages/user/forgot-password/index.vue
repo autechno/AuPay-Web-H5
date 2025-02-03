@@ -195,17 +195,6 @@ const sendEamil = async () => {
   margin: 160px auto;
   text-align: center;
 }
-.custom-button{
-  background: #5686E1;
-  width: 100%;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 22.5px;
-  height: 56px;
-  color: #fff;
-  border: 0;
-  border-radius: 16px;
-}
 .href-text{
   text-align: center;
 }

@@ -1,20 +1,12 @@
 <template>
-<!--  <Header v-if="!isFilteredRoute"></Header>-->
   <main>
     <slot></slot>
-<!--    <div class="affix-container">-->
-<!--      <el-affix target=".affix-container" :offset="80">-->
-<!--        <a href="/work-order">-->
-<!--          <el-button type="primary" class="break-text">客服中心</el-button>-->
-<!--        </a>-->
-<!--      </el-affix>-->
-<!--    </div>-->
   </main>
 </template>
 
 <script setup lang="ts">
-import Header from "@/composables/Header.vue";
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
+import AffixContainer from '@/composables/AffixContainer.vue';
 import { useRoute } from 'vue-router';
 // 获取当前路由
 const route = useRoute();
@@ -22,32 +14,42 @@ const isFilteredRoute = computed(() => {
   const filteredRoutes = [ '/', '/user/login', '/user/forgot-password', '/user/register', '/user/register/stepReg', '/user/register/stepBind', '/user/login/stepEmail'];
   return filteredRoutes.includes(route.path);
 });
+onMounted(() => {
+  document.body.className = isFilteredRoute.value ? 'default-body' : 'filtered-body';
+});
 </script>
 
 <style>
-body {
-  margin: 0!important;
-  padding: 18px;
+.default-body {
+  margin: 0 !important;
+  padding: 0 18px;
   background: linear-gradient(to bottom, #EAF7FF, #FFFFFF);
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
-.affix-container {
-  position: fixed;
-  bottom: 100px;
-  width: 40px;
-  right: 0px;
-  text-align: center;
-  border-radius: 4px;
-  background: var(--el-color-primary-light-9);
-  z-index: 1000;
+.filtered-body {
+  margin: 0 !important;
+  padding: 0 18px;
+  background: radial-gradient(circle at top left, #EAF7FF, #FFFFFF);
+  background-size: 90% 30%;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  height: auto;
+  overflow: auto;
+}
+.page{
+  padding-top: 18px;
+}
+.custom-button{
+  background: #5686E1;
+  width: 100%;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 22.5px;
+  height: 56px;
+  color: #fff;
+  border: 0;
+  border-radius: 16px;
 }
 
-.break-text {
-  white-space: pre-wrap;
-  word-break: break-all;
-  line-height: 1;
-  font-size: 16px;
-  height: 180px;
-}
 </style>

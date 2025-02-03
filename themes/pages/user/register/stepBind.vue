@@ -225,17 +225,7 @@ onMounted(async () => {
 .mt-30{
   margin-top: 32px;
 }
-.custom-button{
-  background: #5686E1;
-  width: 100%;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 22.5px;
-  height: 56px;
-  color: #fff;
-  border: 0;
-  border-radius: 16px;
-}
+
 .register-status{
   color: #657087;
   margin-top: 47px;

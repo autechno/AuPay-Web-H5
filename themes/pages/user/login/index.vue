@@ -167,17 +167,6 @@ onMounted(async ()=>{
 .icon {
   margin-bottom: 8px; /* Space between image and text */
 }
-.custom-button{
-  background: #5686E1;
-  width: 100%;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 22.5px;
-  height: 56px;
-  color: #fff;
-  border: 0;
-  border-radius: 16px;
-}
 .href-text{
   display: flex;
   justify-content: space-between;
