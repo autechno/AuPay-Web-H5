@@ -21,6 +21,7 @@ onMounted(() => {
 
 <style>
 .default-body {
+  position: relative;
   margin: 0 !important;
   padding: 0 18px;
   background: linear-gradient(to bottom, #EAF7FF, #FFFFFF);
@@ -28,6 +29,7 @@ onMounted(() => {
   background-repeat: no-repeat;
 }
 .filtered-body {
+  position: relative;
   margin: 0 !important;
   padding: 0 18px;
   background: radial-gradient(circle at top left, #EAF7FF, #FFFFFF);
