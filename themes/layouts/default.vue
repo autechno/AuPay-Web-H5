@@ -1,11 +1,14 @@
 <template>
+  <Header v-if="!isFilteredRoute"></Header>
   <main>
     <slot></slot>
+    <AffixContainer />
   </main>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
+import Header from '@/composables/Header.vue';
 import AffixContainer from '@/composables/AffixContainer.vue';
 import { useRoute } from 'vue-router';
 // 获取当前路由
