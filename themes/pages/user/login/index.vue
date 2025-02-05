@@ -102,11 +102,11 @@ onMounted(async ()=>{
     userStore.setTokenState(token);
     let result = await userStore.fetchUserInfo();
     if(result){
-      if(userStore.userInfo.country == '' || userStore.userInfo.nickname == '') {
-        window.location.href = '/user/info'
-      }else{
+      // if(userStore.userInfo.country == '' || userStore.userInfo.nickname == '') {
+      //   window.location.href = '/user/info'
+      // }else{
         window.location.href = '/assets-account'
-      }
+      // }
     }
   }
 })
@@ -161,11 +161,11 @@ onMounted(async ()=>{
 }
 .icon-wrapper {
   display: flex;
-  flex-direction: column; /* Stack items vertically */
-  align-items: center; /* Center items horizontally */
+  flex-direction: column;
+  align-items: center;
 }
 .icon {
-  margin-bottom: 8px; /* Space between image and text */
+  margin-bottom: 8px;
 }
 .href-text{
   display: flex;

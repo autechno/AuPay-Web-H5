@@ -74,11 +74,11 @@ const handleSubmit = async () => {
       userStore.setTokenState(res.data);
       let result = await userStore.fetchUserInfo();
       if(result){
-        if(firstLogin.value == 1) {
-          window.location.href = '/user/info'
-        }else{
+        // if(firstLogin.value == 1) {
+        //   window.location.href = '/user/info'
+        // }else{
           window.location.href = '/assets-account'
-        }
+        // }
       }
     } else {
       ElMessage.error(res.message || '登录失败'); // 错误提示

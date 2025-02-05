@@ -151,12 +151,6 @@ onMounted(() => {
   font-weight: 400;
   padding-bottom: 28px;
 }
-.agreement{
-  font-weight: normal;
-  font-size: 12px !important;
-  position: relative;
-  top: -10px;
-}
 
 .input_box{
   :deep .el-input{
