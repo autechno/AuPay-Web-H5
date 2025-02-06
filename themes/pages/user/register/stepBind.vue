@@ -58,7 +58,6 @@ const { public: { API_HOST } } = useRuntimeConfig();
 const formRef: any = ref(null);
 const bindGoogleLogin = ref(true);
 const route = useRoute();
-const headers = getHeader();
 const submitText = ref('确 定')
 const activeStepId = ref(route.query.stepId || 1);
 const userStore = UseUserStore();
@@ -93,6 +92,7 @@ const form = ref({
  * 表单提交
  */
 const handleSubmit = async () => {
+  const headers = getHeader();
   const valid = await formRef.value.validate();
   if (valid) {
     if(activeStepId.value === 1) {
@@ -123,6 +123,7 @@ const nextTick = async () => {
 
 // 更新显示按钮状态
 const updateStatus = async () => {
+  const headers = getHeader();
   let res = await userApi.getUserInfo({}, headers);
   statusList.value.forEach(item => {
     if (item.key && res.data[item.key] !== undefined) {
@@ -144,6 +145,7 @@ const googleBind = async () => {
  * 提交绑定Google地址
  */
 const confirmGoogleAuth = async (type: number) => {
+  const headers = getHeader();
   googleForm.value.type = type;
   if( type == 1){
     let res = await systemApi.bindGoogleAuth(googleForm.value, headers);
@@ -173,16 +175,7 @@ onMounted(async () => {
         if(!userStore.userInfo.propsModifyVO.showInitSet){
           window.location.href = '/assets-account'
         }else{
-          let res = userStore.userInfo;
-            statusList.value.forEach(item => {
-              if (item.key && res[item.key] !== undefined) {
-                if(item.key == 'bindGoogleLogin'){
-                  bindGoogleLogin.value = res[item.key];
-                }
-                item.status = res[item.key];
-              }
-            });
-          console.log("google auth updateStatus");
+          updateStatus();
         }
       }
     }
