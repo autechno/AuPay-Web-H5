@@ -89,11 +89,11 @@ const form = ref({
  */
 const handleSubmit = async () => {
   const valid = await formRef.value.validate();
+  if (countdown.value == 0) {
+    sendEamil();
+    return;
+  }
   if (valid) {
-    if (countdown.value == 0) {
-      sendEamil();
-      return;
-    }
     let res = await userApi.register(form.value, {});
     if (res.code === 200) {
       const userStore = UseUserStore();
