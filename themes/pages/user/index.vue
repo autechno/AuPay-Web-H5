@@ -142,6 +142,8 @@ const statusList = ref([
 const updateForm = (newForm: Object) => {
   form.value = newForm;
   if(form.value.paramType === 'password') {
+    form.value.password = '';
+    form.value.confirmPassword = '';
     isPassDialogVisible.value = true;
   }else if(form.value.paramType === 'delGoogle'){
     deleteGoogleAuth();

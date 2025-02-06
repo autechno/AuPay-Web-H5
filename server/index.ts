@@ -362,6 +362,14 @@ class AssetsApi extends Http {
     public getWithdrawApply(params: any, headers: any): Promise<any> {
         return this.post('/aupay-trade/withdraw/apply/'+params.optToken, params, headers)
     }
+
+    /**
+     * 转换
+     */
+    public calculate(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-operate/rate/calculate', params, headers);
+    }
+
 }
 
 export default {
