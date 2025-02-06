@@ -227,11 +227,10 @@ const handleSubmit = async () => {
           res = await userApi.updateAssetsPassword(params, headers);
         }
         if (res.code === 200) {
+          isPassDialogVisible.value = false;
           setTimeout(() => {
             if(permissionId.value == 3){
               logout();
-            }else{
-              window.location.reload();
             }
           }, 300);
           ElMessage.success("密码重置成功");

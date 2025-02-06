@@ -137,6 +137,8 @@ const processMethod = async () => {
 // 获取初始化信息
 const fetchData = async () => {
   try {
+    const userStore = UseUserStore();
+    const userInfo = userStore.userInfo;
     let params = {permissionId: props.permissionId};
     if(props.permissionId == 4){
       params['data'] = { toAddress: props.form.toAddress }
@@ -149,6 +151,13 @@ const fetchData = async () => {
       checkForm.value.bindGoogleAuth = verifyMethods.includes("GOOGLEAUTHENICATOR");
       checkForm.value.bindEmail = verifyMethods.includes("EMAIL");
       if(checkForm.value.bindAssetsPassword){
+        if(!userInfo.setAssetsPassword){
+          ElMessage.error('您暂未设置资金密码!');
+          setTimeout(() => {
+            window.location.href = '/user';
+          }, 500);
+          return;
+        }
         activeStepId.value = 1;
       } else if(!checkForm.value.bindAssetsPassword && checkForm.value.bindEmail){
         activeStepId.value = 2;
