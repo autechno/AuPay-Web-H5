@@ -91,6 +91,8 @@ const handleSubmit = async () => {
         } else {
           processMethod();
         }
+      }else{
+        ElMessage.error(sendValidateEmailRes.message);
       }
       return;
     }

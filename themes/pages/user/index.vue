@@ -248,7 +248,7 @@ const logout = async () => {
   if (res.code === 200) {
     const userStore = UseUserStore();
     userStore.clearUserState()
-    router.push("/");
+    router.push("/user/login");
   }
 };
 
