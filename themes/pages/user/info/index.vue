@@ -142,7 +142,23 @@ const beforeAvatarUpload = (rawFile) => {
 // 提交表单
 const handleSubmit = async () => {
   try {
-    const res = await userApi.setUserInfo(form.value, headers);
+    let params = {
+      sex: form.value.sex,
+      country: form.value.country,
+      sign: form.value.sign,
+      headPortrait: form.value.headPortrait,
+    };
+
+    if(!isTransferQr.value) {
+      params['transferQR'] = form.value.transferQR;
+    }
+    if(!isNickName.value && form.value.nickname != '') {
+      params['nickname'] = form.value.nickname;
+    }
+    if(!isBirthday.value && form.value.birthday != '') {
+      params['birthday'] = form.value.birthday;
+    }
+    const res = await userApi.setUserInfo(params, headers);
     if (res.code === 200) {
       ElMessage.success('保存成功');
     } else {

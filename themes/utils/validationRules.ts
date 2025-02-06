@@ -47,7 +47,12 @@ export const rules = {
     ],
     transferQR: [
         { required: true, message: "请输入auPay收款码", trigger: "blur" },
-        { min: 7, max: 22, message: "auPay收款码长度必须在 7 到 20 个字符之间", trigger: "blur" }
+        { min: 7, max: 22, message: "auPay收款码长度必须在 7 到 20 个字符之间", trigger: "blur" },
+        {
+            pattern: /^[A-Za-z0-9]{7,20}$/,
+            message: "收款码只能包含数字和大小写字母",
+            trigger: "blur"
+        }
     ],
     country: [
         { required: true, message: "请选择国家", trigger: "change" }

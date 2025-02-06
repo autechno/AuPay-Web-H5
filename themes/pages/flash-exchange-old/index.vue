@@ -19,6 +19,11 @@
       <div class="exchange-container" style="height: 90px; margin-top:12px;">
         <div class="title">兑入</div>
         <div class="currency">22,684.02</div>
+        <div class="box-wrap" @click="exchange(2)">
+          <div class="img"></div>
+          <div class="text-wrap">BTC</div>
+          <el-icon size="12" class="icon"> <ArrowDownBold /> </el-icon>
+        </div>
       </div>
     </div>
     <div class="tips">
@@ -30,7 +35,6 @@
       <span>10 USDT</span>
     </div>
     <el-button class="custom-button" native-type="submit">确认</el-button>
-
     <el-drawer class="custom-title" v-model="drawerSearch"
                :title="title"
                :show-close="false"
@@ -52,8 +56,16 @@
           </div>
         </div>
       </div>
-
     </el-drawer>
+
+    <!-- 密码验证对话框 -->
+    <CheckPermissionDialog
+        :form="form"
+        @update:form="updateForm"
+        :permissionId="6"
+        :isDialogVisible="dialogCheckVisible"
+        @close="dialogCheckVisible = false"
+    />
   </div>
 </template>
 <script setup lang="ts">
@@ -61,6 +73,23 @@ import { ref, onMounted } from 'vue';
 import fx from '@@/public/images/fx.svg';
 import GoBack from "@/composables/GoBack.vue";
 import {ArrowDownBold,  Search} from "@element-plus/icons-vue";
+import {getHeader} from "@/utils/storageUtils";
+import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
+
+const headers = getHeader();
+const { assetsApi } = useServer();
+
+// 整合数据列表
+const currencyMergedData = ref([]);
+const  dialogCheckVisible = ref(false);
+const  rateExchange = ref({
+  content: '',
+  rate: 1,
+});
+const cost = ref({
+  content: '',
+  amount: 0,
+});
 const drawerSearch = ref(false);
 const searchText = ref('');
 const title = ref('兑出');
@@ -69,10 +98,113 @@ const dialogSource = ref({
   2: {name: '兑入', id: 2},
 });
 const exchange = (type: number) => {
-  console.log(dialogSource.value[type].name)
   title.value = dialogSource.value[type].name
   drawerSearch.value = true;
 }
+
+const loading = ref(false);
+
+// 状态合并到一个对象中
+const form = ref({
+  selectedCurrencyId: null,
+  selectedCurrency: null,
+  selectedChain: null,
+  selectedCurrencyChain: [],
+  inputAmount: '',
+  bigNumCost: 0,
+
+  selectedCurrencyToId: null,
+  selectedCurrencyTo: null,
+  selectedChainTo: null,
+  selectedCurrencyChainTo: [],
+  inputAmountTo: '',
+  bigNumCostTo: 0,
+
+  bindPassword: false,
+  googleCode: '',
+  assetsPassword: '',
+  passwordToken: '',
+  googleToken: '',
+  optToken: '',
+  permissionStatus: false,
+});
+
+// 更新父组件的 form 数据
+const updateForm = async (newForm: Object) => {
+  try {
+    form.value = newForm;
+    dialogCheckVisible.value = false;
+    if(form.value.permissionStatus){
+      setHeadersAuth(headers, form);
+      let res = await assetsApi.fastSwapApply({
+        optToken: form.value.optToken,
+        outCurrencyId: form.value.selectedCurrencyToId,
+        outChain: form.value.selectedChainTo,
+        inCurrencyId: form.value.selectedCurrencyId,
+        inChain: form.value.selectedChain,
+        transOutAmount: form.value.inputAmountTo,
+        transInAmount: form.value.inputAmount,
+      }, headers);
+      if(res.code == 200) {
+        ElMessage.success("闪兑成功")
+      }else{
+        ElMessage.error(res.message)
+      }
+    }
+  } catch (error) {
+    ElMessage.error('请求失败，请重试');
+  }
+};
+
+// 获取数据
+const fetchData = async () => {
+  try {
+    let res = await assetsApi.accountAssets({}, headers);
+    if (res.code === 200) {
+      const mergedData = new Map();
+      const dataList = res.data;
+      if (dataList?.length) {
+        dataList.forEach(item => {
+          const { currencyId, currencyChain, balance, totalBalanceUsdt } = item;
+          // 检查是否已存在该货币数据
+          if (!mergedData.has(currencyId)) {
+            mergedData.set(currencyId, {
+              balance,
+              totalBalanceUsdt,
+              currencyId,
+              currencyChain: [{ id: currencyChain, name: getDataInfo(currencyChain, 'chains')?.name }],
+              currency: [{ id: currencyId, name: getDataInfo(currencyId, 'currencyChains')?.name,}],
+            });
+          } else {
+            const existingData = mergedData.get(currencyId);
+            if (!existingData.currencyChain.some(chain => chain.id === currencyChain)) {
+              existingData.currencyChain.push({ id: currencyChain, name: getDataInfo(currencyChain, 'chains')?.name });
+            }
+            existingData.balance += balance;
+            existingData.totalBalanceUsdt += totalBalanceUsdt;
+          }
+        });
+        currencyMergedData.value = Array.from(mergedData.values());
+        // 如果有可用的货币，自动选择第一个
+        // if (currencyMergedData.value.length > 0) {
+        //   form.value.selectedCurrencyId = currencyMergedData.value[0].currencyId;
+        //   updateCurrencyChain('form');
+        //   form.value.selectedCurrencyToId = currencyMergedData.value[0].currencyId;
+        //   updateCurrencyChain('to');
+        // }
+      }
+    } else {
+      ElMessage.error(res.message || '查询失败');
+    }
+  } catch (error) {
+    ElMessage.error('请求失败，请重试');
+  }
+};
+
+// 初始化数据
+onMounted(() => {
+  fetchData();
+});
 </script>
 
 <style lang="less" scoped>
@@ -90,6 +222,7 @@ const exchange = (type: number) => {
   padding-bottom: 20px;
   position: relative;
   .button{
+    z-index: 5;
     position: absolute;
     top: 118px;
     left: 50%;
@@ -113,6 +246,7 @@ const exchange = (type: number) => {
   background: #ffffff;
   border: 3px #C8DCE8 solid;
   padding-left: 16px;
+  position: relative;
   .title {
     font-size: 14px;
     margin-top: 16px;

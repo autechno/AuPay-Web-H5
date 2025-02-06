@@ -2,7 +2,7 @@
   <div class="page">
     <GoBack :showRightButton="true" navigateTo="/order-list" />
     <div class="flash-title-wrap">
-      <div class="title">2025年度闪兑单</div>
+      <div class="title">{{yearText}}年度闪兑单</div>
       <div class="select-wrap" @click="dialogDrawer = true">
         <span>{{dateText}}</span>
         <el-icon size="12" class="el-icon--right"><arrow-down-bold /></el-icon>
@@ -107,6 +107,7 @@ const form = ref({
 });
 
 // 消息数据
+const yearText = ref('2025');
 const recordList = ref([]);
 const totalRecord = ref(0);
 const jumpDetail = (path: string) => {
@@ -144,20 +145,6 @@ const dialogDrawer = ref(false);
 const datePicker = ref(null);
 const handleClose = (done: () => void) => {
   dialogDrawer.value = false;
-  form.value.pageNo = 1;
-
-  const form = ref({
-    pageNo: 1,
-    pageSize: 10,
-    conditions: {
-      startTime: '',
-      endTime: '',
-    }
-  });
-
-  fetchData();
-
-
 };
 const selectedDate = ref('');
 const handleDateChange = (value: string) => {
@@ -165,6 +152,18 @@ const handleDateChange = (value: string) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0'); // 获取月份并补零
   dateText.value = `${year}${month}`;
+  yearText.value = year;
+  // 获取当月的第一天
+  const startTime = `${year}-${month}-01T00:00:00`;
+  // 计算当月最后一天
+  const lastDay = new Date(year, date.getMonth() + 1, 0).getDate();
+  const endTime = `${year}-${month}-${lastDay}T23:59:59`;
+
+  // 更新表单数据
+  form.value.pageNo = 1;
+  form.value.conditions.startTime = startTime;
+  form.value.conditions.endTime = endTime;
+  fetchData();
   nextTick(() => {
     handleClose(); // 关闭抽屉
   });
