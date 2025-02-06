@@ -170,7 +170,7 @@ onMounted(async () => {
       userStore.setTokenState(token);
       let result = await userStore.fetchUserInfo();
       if(result){
-        if(userStore.userInfo.propsModifyVO.showInitSet){
+        if(!userStore.userInfo.propsModifyVO.showInitSet){
           window.location.href = '/assets-account'
         }else{
           updateStatus();

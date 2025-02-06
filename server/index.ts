@@ -9,7 +9,7 @@ class UserApi extends Http {
         return this.post('/oz-client-auth/auth/login', params, headers)
     }
     public loginValidateEmail(params: any, headers: any): Promise<any> {
-        return this.post('/oz-client-auth/auth/validateLoginEmailCode?validateKey='+params.validateKey+'&emailCode='+params.emailCode, headers);
+        return this.postFormData('/oz-client-auth/auth/validateLoginEmailCode',{validateKey: params.validateKey, emailCode: params.emailCode}, headers, 'post')
     }
     public logout(params: any, headers: any): Promise<any> {
         return this.post('/oz-client-auth/auth/logout', params, headers)
@@ -47,8 +47,7 @@ class UserApi extends Http {
      * @param headers
      */
     public setAssetsPassword(params: any, headers: any): Promise<any> {
-        let url = '/aupay-user/password/setAssetsPassword?assetsPassword=' + params.assetsPassword
-        return this.post(url, {}, headers)
+        return this.postFormData('/aupay-user/password/setAssetsPassword', {assetsPassword: params.assetsPassword}, headers, 'post');
     }
     /**
      * 忘记密码-重新设置密码邮箱验证码
@@ -92,19 +91,19 @@ class UserApi extends Http {
      * 白名单地址状态切换
      */
     public getFrequentlyToggle(params: any, headers: any): Promise<any> {
-        return this.post('/aupay-user/address/white/toggle/'+ params.optToken+'?id=' + params.id, params, headers)
+        return this.postFormData('/aupay-user/address/white/toggle/'+ params.optToken, {id: params.id}, headers, 'post');
     }
     /**
      * 修改密码
      */
     public updatePassword(params: any,  headers: any): Promise<any> {
-        return this.post('/aupay-user/password/updatePassword/'+ params.optToken+'?newPassword=' + params.newPassword + '&rawPassword=' + params.newPassword, {}, headers)
+        return this.postFormData('/aupay-user/password/updatePassword/'+ params.optToken, {newPassword: params.newPassword, rawPassword: params.newPassword}, headers, 'post');
     }
     /**
      * 修改资金密码
      */
     public updateAssetsPassword(params: any,  headers: any): Promise<any> {
-        return this.post('/aupay-user/password/updateAssetsPassword/'+ params.optToken+'?newPassword=' + params.newPassword, {}, headers)
+        return this.postFormData('/aupay-user/password/updateAssetsPassword/'+ params.optToken, { newPassword: params.newPassword}, headers, 'post');
     }
 }
 
@@ -206,11 +205,11 @@ class SystemApi extends Http {
         if(params.type == 1){
             return this.get('/aupay-user/bindGoogleAuth', {}, headers)
         }else{
-            return this.put('/aupay-user/bindGoogleAuth/'+params.optToken+'?googleSecret='+params.googleSecret+'&googleCode='+params.googleCode, {}, headers)
+            return this.postFormData('/aupay-user/bindGoogleAuth/'+params.optToken, {googleSecret: params.googleSecret,  googleCode: params.googleCode}, headers, 'put')
         }
     }
     public bindGoogleFirstAuth(params: any, headers: any): Promise<any> {
-        return this.put('/aupay-user/bindGoogleAuthFirstTime?googleSecret='+params.googleSecret+'&googleCode='+params.googleCode, {}, headers)
+        return this.postFormData('/aupay-user/bindGoogleAuthFirstTime', {googleSecret: params.googleSecret, googleCode:  params.googleCode}, headers, 'put');
     }
     /**
      * 发送注册邮箱验证码
