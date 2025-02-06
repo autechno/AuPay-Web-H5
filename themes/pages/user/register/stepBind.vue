@@ -173,7 +173,16 @@ onMounted(async () => {
         if(!userStore.userInfo.propsModifyVO.showInitSet){
           window.location.href = '/assets-account'
         }else{
-          updateStatus();
+          let res = userStore.userInfo;
+            statusList.value.forEach(item => {
+              if (item.key && res[item.key] !== undefined) {
+                if(item.key == 'bindGoogleLogin'){
+                  bindGoogleLogin.value = res[item.key];
+                }
+                item.status = res[item.key];
+              }
+            });
+          console.log("google auth updateStatus");
         }
       }
     }

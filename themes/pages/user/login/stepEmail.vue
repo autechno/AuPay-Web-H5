@@ -4,7 +4,7 @@
     <div class="regTips">请输入{{email}}收到的验证码</div>
     <el-form :model="form" :rules="rules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
       <el-form-item label="" prop="emailCode">
-        <el-input v-model="form.emailCode" type="emailCode" placeholder="密码" />
+        <el-input v-model="form.emailCode" type="emailCode" placeholder="验证码" />
       </el-form-item>
       <el-form-item>
         <el-button class="custom-button" native-type="submit">{{ submitText }}</el-button>
