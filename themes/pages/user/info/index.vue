@@ -17,15 +17,15 @@
         <div>用户等级: VIP{{ form.userLevel }}</div>
       </div>
 
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
+      <el-form :model="form" :rules="formRules" ref="formRef" label-width="100px">
         <!-- 昵称 -->
-        <el-form-item label="昵称" prop="nickname">
-          <el-input  :disabled="!isNickName" v-model="form.nickname" placeholder="请输入昵称" />
+        <el-form-item label="昵称" >
+          <el-input  :disabled="isNickName" v-model="form.nickname" placeholder="请输入昵称" />
         </el-form-item>
         <!-- 生日 -->
         <el-form-item label="生日"  prop="birthday">
           <el-date-picker
-              :disabled="!isBirthday"
+              :disabled="isBirthday"
               v-model="form.birthday"
               type="date"
               placeholder="请选择生日"
@@ -36,13 +36,12 @@
         <!-- 性别 -->
         <el-form-item label="性别" prop="sex">
           <el-select v-model="form.sex" placeholder="请选择性别">
-            <el-option :key="0" label="" :value="0" />
             <el-option :key="1" label="男" :value="1" />
             <el-option :key="2" label="女" :value="2" />
           </el-select>
         </el-form-item>
         <!-- 国家 -->
-        <el-form-item label="国家" prop="country">
+        <el-form-item label="国家">
           <el-select v-model="form.country" placeholder="请选择国家">
             <el-option v-for="item in countryList" :key="item.code31662" :label="item.officialNameCn" :value="item.code31662" />
           </el-select>
@@ -53,7 +52,7 @@
         </el-form-item>
         <!-- auPay收款码 -->
         <el-form-item label="auPay收款码"  prop="transferQR">
-          <el-input :disabled="!isTransferQr"  v-model="form.transferQR" placeholder="auPay收款码" />
+          <el-input :disabled="isTransferQr"  v-model="form.transferQR" placeholder="auPay收款码" />
           <el-button size="small" @click="copyText(form.transferQR)">复制</el-button>
           <el-button size="small" @click="showQrDialog = true">二维码</el-button>
         </el-form-item>
@@ -84,9 +83,9 @@ const countryList = ref([]);
 const headers = getHeader();
 const { userApi, systemApi } = useServer();
 const showQrDialog = ref(false);
-const isNickName = ref(true);
-const isBirthday = ref(true);
-const isTransferQr = ref(true);
+const isNickName = ref(false);
+const isBirthday = ref(false);
+const isTransferQr = ref(false);
 // 表单数据
 const form = ref({
   email: "",
@@ -95,12 +94,28 @@ const form = ref({
   nickname: "",
   headPortrait: "",
   birthday: "",
-  sex: 1,
+  sex: '',
   country: "",
   sign: "",
   transferQR: ''
 });
 
+// 表单验证规则
+const formRules = {
+  ...rules,
+  sign: [
+    {
+      validator: (rule, value, callback) => {
+        if (value && value.length > 150) {
+          callback(new Error('签名不能超过150字符'));
+        } else {
+          callback();
+        }
+      },
+      trigger: 'blur'
+    }
+  ]
+};
 
 // 文件上传成功
 const handleAvatarSuccess: UploadProps['onSuccess'] = (response) => {
@@ -148,13 +163,12 @@ const fetchData = async () => {
     // 用户信息
     if (userInfoRes.code === 200) {
       form.value = userInfoRes.data;
-      isNickName.value = userInfoRes.data.propsModifyVO.nickname <= 0;
-       isBirthday.value = userInfoRes.data.propsModifyVO.birthday <= 0;
-       isTransferQr.value = userInfoRes.data.propsModifyVO.transferQr <= 0;
-      // 设置默认头像
-      if (!userInfoRes.data.headPortrait) {
-        form.value.headPortrait = '/image/header.png';
+      if(form.value.sex == 0){
+        form.value.sex = ''
       }
+      isNickName.value = userInfoRes.data.propsModifyVO.nickname == 0;
+       isBirthday.value = userInfoRes.data.propsModifyVO.birthday == 0;
+       isTransferQr.value = userInfoRes.data.propsModifyVO.transferQr == 0;
     }
     // 国家列表
     if (countryListRes.code === 200) {

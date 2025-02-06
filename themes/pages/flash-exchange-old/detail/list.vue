@@ -63,6 +63,7 @@
         @click="handleClose"
         @opened="datePicker.handleOpen()">
         <el-date-picker
+            size="small"
             ref="datePicker"
             v-model="selectedDate"
             type="month"
@@ -111,12 +112,6 @@ const totalRecord = ref(0);
 const jumpDetail = (path: string) => {
   router.push(path);
 }
-const dateRange = ref([]);
-//转换搜索时间
-const updateDateRange = (range) => {
-  form.value.conditions.startTime = range.length > 0 ? range[0] : '';
-  form.value.conditions.endTime = range.length > 0 ? range[1] : '';
-};
 
 // 获取消息数据
 const fetchData = async () => {
@@ -144,11 +139,25 @@ onMounted(() => {
   fetchData();
 });
 
-const dateText = ref('202502');
+const dateText = ref('所有时间');
 const dialogDrawer = ref(false);
 const datePicker = ref(null);
 const handleClose = (done: () => void) => {
   dialogDrawer.value = false;
+  form.value.pageNo = 1;
+
+  const form = ref({
+    pageNo: 1,
+    pageSize: 10,
+    conditions: {
+      startTime: '',
+      endTime: '',
+    }
+  });
+
+  fetchData();
+
+
 };
 const selectedDate = ref('');
 const handleDateChange = (value: string) => {

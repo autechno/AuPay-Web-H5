@@ -59,11 +59,11 @@ const form = ref({
  * 表单提交
  */
 const handleSubmit = async () => {
-  const valid = await formRef.value.validate();
   if (countdown.value == 0) {
     sendEamil();
     return;
   }
+  const valid = await formRef.value.validate();
   if (valid) {
     let res = await userApi.loginValidateEmail({
       validateKey: validateKey.value,
@@ -90,8 +90,9 @@ const handleSubmit = async () => {
  * 发送EMAIL
  */
 const sendEamil = async () => {
-  let res = await systemApi.sendRegEmail({email: email}, {});
+  let res = await systemApi.sendLoginEmail({validateKey: validateKey.value}, {});
   if (res.code === 200) {
+    validateKey.value = res.data;
     ElMessage.success('email发送成功');
     startCountdown();
   } else {

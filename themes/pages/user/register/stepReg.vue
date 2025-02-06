@@ -84,15 +84,16 @@ const form = ref({
   emailCode: '',
 });
 
+
 /**
  * 表单提交
  */
 const handleSubmit = async () => {
-  const valid = await formRef.value.validate();
   if (countdown.value == 0) {
     sendEamil();
     return;
   }
+  const valid = await formRef.value.validate();
   if (valid) {
     let res = await userApi.register(form.value, {});
     if (res.code === 200) {
