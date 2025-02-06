@@ -4,7 +4,7 @@
     <h1>账户信息</h1>
     <div style="padding-bottom: 20px;">账户：{{ baseInfo.email }}</div>
     <div>登录密码： <span><a href="javascript:;" @click="setPassBtn(3)">设置登录密码</a></span></div>
-    <div>交易密码： <span><a href="javascript:;" @click="setPassBtn(2)">设置交易密码</a></span></div>
+    <div>资金密码： <span><a href="javascript:;" @click="setPassBtn(2)">设置资金密码</a></span></div>
     <h1>三方授权</h1>
     <div class="content">
       <div class="status-item" v-for="item in statusList" :key="item.key">
@@ -71,7 +71,7 @@ import {Check, Close} from "@element-plus/icons-vue";
 import { getHeader } from "@/utils/storageUtils";
 import { setHeadersAuth, copyText } from "@/utils/funcUtil";
 import { rules } from "@/utils/validationRules";
-import {ElForm} from "element-plus";
+import {ElForm, ElMessage} from "element-plus";
 const headers = getHeader();
 const { systemApi, userApi } = useServer();
 const formRef: any = ref(null);
@@ -81,6 +81,9 @@ const isPassDialogVisible = ref(false);
 const userStore = UseUserStore();
 const isGoogleDialogVisible = ref(false);
 import CheckPermissionDialog from '@/composables/CheckPermissionDialog.vue';
+import { useRouter, useRoute } from 'vue-router';
+const router = useRouter();
+
 
 /**
  * 基础数据
@@ -216,13 +219,19 @@ const handleSubmit = async () => {
           newPassword: form.value.password,
           optToken: form.value.optToken,
         };
-        if(form.value.type == 3){
+        if(permissionId.value == 3){
           res = await userApi.updatePassword(params, headers);
         }else{
           res = await userApi.updateAssetsPassword(params, headers);
         }
         if (res.code === 200) {
-          window.location.reload();
+          setTimeout(() => {
+            if(permissionId.value == 3){
+              logout();
+            }else{
+              window.location.reload();
+            }
+          }, 300);
           ElMessage.success("密码重置成功");
         } else {
           ElMessage.error(res.message);
@@ -230,6 +239,16 @@ const handleSubmit = async () => {
       }
   } catch (error) {
     ElMessage.error('请求失败，请重试');
+  }
+};
+
+// 处理下拉菜单命令
+const logout = async () => {
+  let res = await userApi.logout({}, headers);
+  if (res.code === 200) {
+    const userStore = UseUserStore();
+    userStore.clearUserState()
+    router.push("/");
   }
 };
 
