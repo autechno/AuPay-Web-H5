@@ -36,6 +36,9 @@ export default defineNuxtConfig({
   pinia: {
     autoImports: ['defineStore', 'storeToRefs']
   },
+  elementPlus:{
+    defaultLocale:'zh-cn'
+  },
   css: ['element-plus/dist/index.css'],
   nitro: {
     devProxy: {
