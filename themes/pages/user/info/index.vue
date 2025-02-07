@@ -142,6 +142,7 @@ const beforeAvatarUpload = (rawFile) => {
 // 提交表单
 const handleSubmit = async () => {
   try {
+    const userStore = UseUserStore();
     let params = {
       sex: form.value.sex,
       country: form.value.country,
@@ -160,6 +161,7 @@ const handleSubmit = async () => {
     }
     const res = await userApi.setUserInfo(params, headers);
     if (res.code === 200) {
+      await userStore.fetchUserInfo();
       ElMessage.success('保存成功');
     } else {
       ElMessage.error(res.message || '保存失败');
