@@ -6,7 +6,7 @@
         <div class="item" @click="selectAddress(item)">
           <div class="left-column"><div class="currency-wrap"><el-image :src="btc" /></div></div>
           <div class="right-column">
-            <div class="currency" @click="copyText(item.address)"><el-image :src="copy" /></div>
+            <div class="currency" @click.stop="copyText(item.address)"><el-image :src="copy" /></div>
             <p class="row"><span class="title">{{item.name}}</span> <span class="text">{{item.remark}}</span></p>
             <p class="row"><span class="text">{{item.address}}</span></p>
           </div>
