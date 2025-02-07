@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-      <GoBack :showRightButton="false"/>
+    <GoBack :showRightButton="false" :showScan="false"  />
       <div :class="['tips', statusClass]">
         <span class="status"><el-image :src="statusImage" /></span>
         <p class="text">{{ getStatusText(assets.status, 'ACCOUNT') }}</p>

@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <GoBack :showRightButton="true" navigateTo="/order-list" />
+    <GoBack :showRightButton="false" navigateTo="/order-list" :showScan="false"  />
     <div class="flash-title-wrap">
       <div class="title">{{yearText}}年度闪兑单</div>
       <div class="select-wrap" @click="dialogDrawer = true">

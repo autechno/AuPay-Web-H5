@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <GoBack :showRightButton="false" />
+    <GoBack :showRightButton="false" :showScan="false"  />
     <div class="content">
       <div class="exchange-container" style="height: 126px;">
         <div class="title">兑出</div>
