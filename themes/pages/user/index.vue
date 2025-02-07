@@ -70,18 +70,18 @@ import {ref, onMounted} from 'vue';
 import {Check, Close} from "@element-plus/icons-vue";
 import { getHeader } from "@/utils/storageUtils";
 import { setHeadersAuth, copyText } from "@/utils/funcUtil";
+import CheckPermissionDialog from '@/composables/CheckPermissionDialog.vue';
+import { useRouter, useRoute } from 'vue-router';
 import { rules } from "@/utils/validationRules";
 import {ElForm, ElMessage} from "element-plus";
+
 const headers = getHeader();
 const { systemApi, userApi } = useServer();
 const formRef: any = ref(null);
 const dialogCheckVisible = ref(false);
 const permissionId = ref(3);
 const isPassDialogVisible = ref(false);
-const userStore = UseUserStore();
 const isGoogleDialogVisible = ref(false);
-import CheckPermissionDialog from '@/composables/CheckPermissionDialog.vue';
-import { useRouter, useRoute } from 'vue-router';
 const router = useRouter();
 
 
@@ -161,12 +161,14 @@ const setPassBtn = async (type: number) =>{
 // 删除绑定
 const deleteGoogleAuth = async () => {
   try {
+    const userStore = UseUserStore();
     setHeadersAuth(headers, form);
     let validateRes = await systemApi.resetGoogleAuth({optToken: form.value.optToken}, headers);
     if (validateRes.code === 200) {
-      await userStore.fetchUserInfo();
-        ElMessage.success('解绑成功')
-        window.location.reload();
+      // 设置google 绑定器
+      userStore.userInfo.bindGoogleAuth = false;
+      baseInfo.value.bindGoogleAuth = false;
+      ElMessage.success('解绑成功')
     } else {
       ElMessage.error(validateRes.message);
     }
@@ -183,6 +185,7 @@ const checkGoogleAuth = (type: number, id: number) => {
 // 绑定Google
 const bingGoogleAuth = async (type: number) => {
   try {
+    const userStore = UseUserStore();
     setHeadersAuth(headers, form);
     let res = await systemApi.bindGoogleAuth({
       googleSecret: googleForm.value.googleSecret,
@@ -196,9 +199,11 @@ const bingGoogleAuth = async (type: number) => {
         googleForm.value.qrCode = res.data.qr;
         isGoogleDialogVisible.value = true;
       }else{
-        await userStore.fetchUserInfo();
+        isGoogleDialogVisible.value = false;
+        // 设置google 绑定器
+        userStore.userInfo.bindGoogleAuth = true;
+        baseInfo.value.bindGoogleAuth = true;
         ElMessage.success('绑定成功')
-        window.location.reload();
       }
     } else {
       ElMessage.error(res.message);
@@ -212,9 +217,10 @@ const bingGoogleAuth = async (type: number) => {
  * 表单提交
  */
 const handleSubmit = async () => {
-  const valid = await formRef.value.validate();
   try {
+    const valid = await formRef.value.validate();
     if (valid) {
+      const userStore = UseUserStore();
       setHeadersAuth(headers, form);
         let res;
         let params = {
@@ -231,6 +237,9 @@ const handleSubmit = async () => {
           setTimeout(() => {
             if(permissionId.value == 3){
               logout();
+            }else{
+              // 设置资金密码状态
+              userStore.userInfo.setAssetsPassword = true;
             }
           }, 300);
           ElMessage.success("密码重置成功");
@@ -253,16 +262,27 @@ const logout = async () => {
   }
 };
 
+
+// 获取数据
+const fetchData = async () => {
+  try {
+    const userInfo = UseUserStore().userInfo;
+    baseInfo.value.email = userInfo.email;
+    baseInfo.value.bindGoogleAuth = userInfo.bindGoogleAuth;
+    form.value.email = userInfo.email;
+    statusList.value.forEach(item => {
+      if (item.key && userInfo[item.key] !== undefined) {
+        item.status = userInfo[item.key];
+      }
+    });
+  } catch (error) {
+    ElMessage.error('获取用户信息失败');
+  }
+};
+
 // 初始化数据
 onMounted(() => {
-  const userStore = UseUserStore();
-  const userInfo = userStore.userInfo;
-  baseInfo.value.email = userInfo.email;
-  form.value.email = userInfo.email;
-  baseInfo.value.bindGoogleAuth = userInfo.bindGoogleAuth;
-  statusList.value.forEach(statusItem => {
-    statusItem.status = userInfo[statusItem.key];
-  });
+  fetchData();
 });
 </script>
 <style scoped>

@@ -41,7 +41,7 @@
       <span>费用：</span>
       <span>{{ cost.content }}</span>
     </div>
-    <el-button class="custom-button" native-type="submit">确认</el-button>
+    <el-button  @click="searchBtn" class="custom-button" >确认</el-button>
     <el-drawer class="custom-title" v-model="drawerSearch"
                :title="dialogTitle"
                :show-close="false"
@@ -102,6 +102,7 @@ import {ArrowDownBold,  Search} from "@element-plus/icons-vue";
 import {getHeader} from "@/utils/storageUtils";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 import btc from '@@/public/images/btc.svg'
+import {ElMessage} from "element-plus";
 const headers = getHeader();
 const { assetsApi } = useServer();
 // 整合数据列表
@@ -111,6 +112,7 @@ const currencyChainList = ref([]);
 const dialogCheckVisible = ref(false);
 const selectedChain = ref(null);
 const isAllSelected = ref(true);
+// 搜索
 const selectAll = () => {
   isAllSelected.value = true;
   selectedChain.value = null;
@@ -121,6 +123,14 @@ const selectChain = (id: number) => {
   isAllSelected.value = false;
   resetCurrencyList();
 };
+
+const searchBtn = () => {
+  if(!form.value.inputAmountTo || !form.value.inputAmount) {
+    ElMessage.error('请输入金额!');
+    return;
+  }
+  dialogCheckVisible.value = true
+}
 const rateExchange = ref({
   content: '',
   rate: 1,
