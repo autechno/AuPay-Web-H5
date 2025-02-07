@@ -11,7 +11,7 @@
         <input v-model="form.amount" @input="" />
       </div>
     </div>
-    <el-button @click="submit = ()" class="custom-button" >确认</el-button>
+    <el-button @click="submit" class="custom-button" >确认</el-button>
   </div>
 </template>
 <script setup lang="ts">
@@ -32,7 +32,6 @@ const form = ref({
 })
 // 确认提现
 const submit = () => {
-  router.push()
 }
 // 回退
 const resetBtn = () => {
