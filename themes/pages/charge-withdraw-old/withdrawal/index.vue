@@ -4,14 +4,17 @@
     <div class="tips">至</div>
     <div class="sub-page">
       <div class="search-wrap">
-        <input v-model="addressText" placeholder="请填写地址" class="custom-input" />
+        <input v-model="addressText"  class="custom-input" />
         <div class="select-address" @click="resetBtn"><span class="icon"><el-image :src="shape" /></span> 编辑</div>
       </div>
       <div class="input-amount-wrap">
-        <input v-model="form.amount" @input="" />
+        <input :class="{ 'error-input': isAmountError }"  class="input-wrap" placeholder="请转入金额" type="number" v-model="form.amount" @input="validateInputAmount" />
       </div>
+      <div class="row-title">${{formatCurrency(form.totalBalanceUsdt)}}</div>
+      <div class="row-text">可提现: {{formatCurrency(form.balance)}}</div>
+      <div class="row-text" v-if="cost.amount">手续费：<span>{{ formatCurrency(cost.amount) }}</span> </div>
     </div>
-    <el-button @click="submit" class="custom-button" >确认</el-button>
+    <el-button @click="handleSubmit" class="custom-button" :class="{ 'disabled-button': !form.amount || isAmountError }" :disabled="!form.amount || isAmountError" >确认</el-button>
   </div>
 </template>
 <script setup lang="ts">
@@ -19,33 +22,112 @@ import { ref, onMounted } from 'vue';
 import GoBack from "@/composables/GoBack.vue";
 import {getHeader} from "@/utils/storageUtils";
 import shape from '@@/public/images/Shape.svg'
-
-
-
-const route = useRoute();
-const currencyId = ref('');
-const addressText = ref('');
+import {ElMessage} from "element-plus";
+import {
+  formatCurrency,
+  getDataInfo,
+} from "@/utils/formatUtils";
 import { useRoute, useRouter } from 'vue-router';
+const { assetsApi } = useServer();
+const headers = getHeader();
 const router = useRouter();
-const form = ref({
-  amount: 0,
-})
-// 确认提现
-const submit = () => {
-}
-// 回退
-const resetBtn = () => {
+const route = useRoute();
+const isAmountError = ref(false);
+const addressText = ref('');
+const cost = ref({
+  content: '',
+  amount: '',
+});
+// 验证输入金额
+const validateInputAmount = async () => {
+  const value = form.value.amount;
+  if(!value){
+    return;
+  }
+  // 将处理后的值赋回
+  let res = await assetsApi.getWithdrawRateFee({
+    currencyId: form.value.currencyId,
+    currencyChain: form.value.currencyChain,
+    amount: value
+  }, headers);
+  if (res.code === 200) {
+    cost.value.amount = res.data.fee;
+    cost.value.content = parseFloat(form.value.balance) - res.data.fee;
+    if (value > cost.value.content) {
+      isAmountError.value = true;
+    } else {
+      isAmountError.value = false;
+    }
+  }
+};
 
-}
+// 提交转账
+const handleSubmit = async () => {
+
+};
+
+const form = ref({
+  amount: '',
+  totalBalanceUsdt: '',
+  balance: ''
+})
+
+// 获取数据
+const fetchData = async (currencyId: number) => {
+  try {
+    let res = await assetsApi.getAccountAssetsById({ assetsId:  currencyId }, headers);
+    if (res.code == 200) {
+      form.value = res.data;
+      form.value.amount = '';
+    } else {
+      ElMessage.error(res.message || '查询失败');
+    }
+  } catch (error) {
+    ElMessage.error('请求失败，请重试');
+  }
+};
 
 // 初始化数据
 onMounted(() => {
-  currencyId.value = route.query.currencyId;
   addressText.value = route.query.address;
+  fetchData(route.query.currencyId);
 });
 </script>
 
 <style lang="less" scoped>
+.error-input {
+  color: red!important;
+}
+.row-title{
+  height: 25px;
+  line-height: 25px;
+  font-size: 16px;
+  color: #0D0D0D;
+  margin-top: 28px;
+  margin-bottom: 80px;
+  text-align: center;
+}
+.row-text{
+  line-height: 40px;
+  color: #333333;
+  font-size: 14px;
+}
+.input-amount-wrap{
+  height: 49px;
+  margin-top: 49px;
+  .input-wrap{
+    border: 0 !important;
+    text-align: center;
+    height: 49px;
+    line-height: 49px;
+    width: 100%;
+    font-size: 36px;
+    color: #0D0D0D;
+  }
+  .input-wrap::placeholder{
+    font-size: 28px;
+  }
+}
 
 *{
   margin: 0;
@@ -58,7 +140,7 @@ onMounted(() => {
 }
 .page{
   position: relative;
-  margin-top: 28px;
+  padding-top: 28px;
   height: calc(100vh - 28px);
   .custom-button{
     position: absolute;
@@ -67,53 +149,10 @@ onMounted(() => {
     transform: translate(-50%);
   }
 }
-
 .sub-page{
   padding-top:10px;
   padding-bottom: 20px;
   position: relative;
-}
-.chain-wrap{
-  height: 50px;
-  padding: 20px 0 ;
-  .text-wrap{
-    height: 20px;
-    line-height: 20px;
-    font-size: 12px;
-    color: #666666;
-  }
-  .list-chain-wrap {
-    .cur{
-      border-color: #5686E1 !important;
-    }
-    width: 100%;
-    height: 30px;
-    margin-top: 5px;
-    .item{
-      height: 28px;
-      width: 28px;
-      margin-right: 10px;
-      border: #C8DCE8 solid 1px;
-      border-radius: 8px;
-      background: #ffffff;
-      text-align: center;
-      .img{
-        margin-top: 4px;
-        width: 18px;
-        height: 18px;
-      }
-    }
-    .btn{
-      font-size: 12px;
-      text-align: center;
-      height: 28px;
-      line-height: 28px;
-      width: 33px;
-      border-radius: 8px;
-      background: #ffffff;
-      border: #C8DCE8 solid 1px;
-    }
-  }
 }
 .search-wrap{
   margin-bottom: 20px;
@@ -146,15 +185,15 @@ onMounted(() => {
       width: 14px;
       height: 14px;
     }
-
   }
   .custom-input{
     width: calc(100vw - 150px);
     border: 1px #ffffff solid;
     height: 30px;
+    color: #353955;
     line-height: 32px;
     margin-top: 4px;
-    font-size: 18px;
+    font-size: 16px;
     overflow: hidden;
   }
 }

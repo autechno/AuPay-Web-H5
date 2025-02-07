@@ -8,7 +8,9 @@
         <div class="select-address" @click="selectAddress"><el-icon class="icon" size="10" ><CloseBold /></el-icon> 选地址</div>
       </div>
       <div class="copy-list">
-        <div class="item"><el-image :src="clip" class="icon" /><span class="text">5asdkfjaioiuoiuoiu……t4u8</span></div>
+        <div class="item" v-for="item in copyList" :key="item" @click="copyToAddress(item)">
+          <el-image :src="clip" /><span class="text">{{ item }}</span>
+        </div>
       </div>
     </div>
     <el-button @click="nextTick()" class="custom-button" >下一步</el-button>
@@ -17,29 +19,67 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import GoBack from "@/composables/GoBack.vue";
-import {getHeader} from "@/utils/storageUtils";
-import clip from '@@/public/images/ClipBoard.svg'
-import {CloseBold} from "@element-plus/icons-vue";
+import { getHeader } from "@/utils/storageUtils";
+import clip from '@@/public/images/ClipBoard.svg';
+import { CloseBold } from "@element-plus/icons-vue";
+import { useRoute, useRouter } from 'vue-router';
+import {ElMessage} from "element-plus";
+const router = useRouter();
 const route = useRoute();
 const currencyId = ref('');
 const addressText = ref('');
-const dialogDrawer = ref(false);
-import { useRoute, useRouter } from 'vue-router';
-const router = useRouter();
-const nextTick = () => {
+const copyList = ref([]);
 
-}
+// 读取剪贴板内容并添加到 copyList
+const readClipboard = async () => {
+  try {
+    const text = await navigator.clipboard.readText(); // 读取剪贴板文本
+    if (text) {
+      copyList.value.push(text); // 将读取的内容添加到 copyList
+    }
+  } catch (err) {
+    console.error('无法读取剪贴板内容:', err);
+    ElMessage.error( '请确保您已允许访问剪贴板');
+  }
+};
+// 检查剪贴板是否有内容
+const checkClipboardContent = async () => {
+  try {
+    const text = await navigator.clipboard.readText();
+    return text.trim() !== ''; // 返回内容是否非空
+  } catch (err) {
+    console.error('无法检查剪贴板内容:', err);
+    return false;
+  }
+};
+
+// 复制到地址文本框
+const copyToAddress = (item: string) => {
+  addressText.value = item.replace(/\s+/g, '');
+};
+const nextTick = () => {
+  if(!addressText.value){
+    ElMessage.error( '地址不能为空!');
+    return;
+  }
+  router.push({ path: '/charge-withdraw-old/withdrawal', query: { currencyId: currencyId.value, address: addressText.value } });
+};
 const selectAddress = () => {
-  router.push({ path: '/charge-withdraw-old/withdrawal/address', query: { currencyId:  currencyId.value } });
-}
+  router.push({ path: '/charge-withdraw-old/withdrawal/address', query: { currencyId: currencyId.value } });
+};
+
 // 初始化数据
-onMounted(() => {
+onMounted(async () => {
   currencyId.value = route.query.currencyId;
+  // 粘体板
+  const hasContent = await checkClipboardContent();
+  if (hasContent) {
+    await readClipboard();
+  }
 });
 </script>
 
 <style lang="less" scoped>
-
 *{
   margin: 0;
   padding: 0;
@@ -52,19 +92,23 @@ onMounted(() => {
 .copy-list{
   padding-top: 30px;
   .item{
+    overflow: hidden;
+    margin-bottom: 10px;
     height: 56px;
     line-height: 56px;
     border-radius: 16px;
     background: #F1F1F1;
     padding:0 14px;
     display: flex;
-    .icon{
-      width: 26px;
-      height: 30px;
-      margin-top: 12px;
+    .el-image{
+      width: 18px;
+      height: 26px;
+      margin-top: 14px;
       margin-right: 5px;
     }
     .text{
+      width: calc(100vw - 70px);
+      overflow: hidden;
       color: #353955;
     }
   }

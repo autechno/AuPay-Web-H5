@@ -92,13 +92,16 @@ export const StatusEnum = {
 export const formatCurrency = (
     amount: number,
     locale: string = 'en-US',
-    minimumFractionDigits: number = 2,
-    maximumFractionDigits: number = 2
+    minimumFractionDigits: number = 0,
+    maximumFractionDigits: number = 8
 ): string => {
-    return new Intl.NumberFormat(locale, {
+    // 使用 Intl.NumberFormat 进行格式化
+    const formattedAmount = new Intl.NumberFormat(locale, {
         minimumFractionDigits,
         maximumFractionDigits,
     }).format(amount);
+
+    return formattedAmount;
 };
 
 /**

@@ -42,9 +42,7 @@ onMounted(() => {
   height: auto;
   overflow: auto;
 }
-.page{
-  padding-top: 18px;
-}
+
 .custom-button{
   background: #5686E1;
   width: 100%;
@@ -55,6 +53,10 @@ onMounted(() => {
   color: #fff;
   border: 0;
   border-radius: 16px;
+}
+.el-button.is-disabled.custom-button{
+  background: #A3A8B0!important;
+  color: #fff;
 }
 
 </style>
