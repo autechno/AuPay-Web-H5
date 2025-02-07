@@ -8,23 +8,26 @@
           <input  v-model="form.inputAmountTo" placeholder="请输入金额" type="number" @input="syncInputAmountTo(false)" />
         </div>
         <el-row class="flash-btn">
-          <el-col :span="8"><span>50%</span></el-col>
-          <el-col :span="8"><span>100%</span></el-col>
+          <el-col :span="8"><span @click="percentage(0.5)">50%</span></el-col>
+          <el-col :span="8"><span @click="percentage(1)">100%</span></el-col>
         </el-row>
-        <div class="box-wrap" @click="exchange(1)">
+        <div class="balance-display">
+          <span>余额: {{ form.bigNumCost }}</span>
+        </div>
+        <div class="box-wrap" @click="exchange('to')">
           <div class="img"></div>
           <div class="text-wrap">{{ form.selectedCurrencyTo }}</div>
           <el-icon size="12" class="icon"> <ArrowDownBold /> </el-icon>
         </div>
       </div>
-      <div class="button"><el-image :src="fx" /></div>
+      <div class="button" @click="swapCurrencies" ><el-image :src="fx" /></div>
       <div class="exchange-container" style="height: 90px; margin-top:12px;">
         <div class="title">兑入</div>
         <div class="currency">
           <input v-model="form.inputAmount"  placeholder="请输入金额" type="number" @input="syncInputAmount"
           />
         </div>
-        <div class="box-wrap" @click="exchange(2)">
+        <div class="box-wrap" @click="exchange('form')">
           <div class="img"></div>
           <div class="text-wrap">{{ form.selectedCurrency }}</div>
           <el-icon size="12" class="icon"> <ArrowDownBold /> </el-icon>
@@ -40,7 +43,7 @@
     </div>
     <el-button class="custom-button" native-type="submit">确认</el-button>
     <el-drawer class="custom-title" v-model="drawerSearch"
-               :title="title"
+               :title="dialogTitle"
                :show-close="false"
                direction="btt"
                size="85%">
@@ -49,13 +52,32 @@
           <el-icon class="arrow" size="26"><Search /></el-icon>
           <input v-model="searchText" placeholder="搜索" class="custom-input" />
         </div>
-        <div class="table-list">
-          <div class="item" >
+        <div class="chain-wrap">
+          <div class="text-wrap">选择网络</div>
+          <div class="list-chain-wrap">
+            <el-row style="display: flex; justify-content: space-between">
+              <el-col :span="22" style="display: flex">
+                <div class="item"
+                     v-for="item in currencyChainList"
+                     :key="item.id"
+                     :class="{ cur: selectedChain === item.id }"
+                     @click="selectChain(item.id)">
+                  <el-image class="img" :src="btc" />
+                </div>
+              </el-col>
+              <el-col :span="2">
+                <div class="btn" :class="{ cur: isAllSelected }" @click="selectAll">全部</div>
+              </el-col>
+            </el-row>
+          </div>
+        </div>
+        <div class="table-list" v-for="currency in currencyList" :key="currency.id">
+          <div class="item" @click="updateCurrencyChain(currency)">
             <div class="left-column"> <div class="currency-wrap"></div> </div>
             <div class="right-column">
-              <div class="currency">0.00</div>
-              <p class="row"><span class="title">ETC</span></p>
-              <p class="row"><span class="text">Ethereum</span></p>
+              <div class="currency">{{currency.balance}}</div>
+              <p class="row"><span class="title">{{currency.currencyName}}</span></p>
+              <p class="row"><span class="text">{{currency.currencyChainName}}</span></p>
             </div>
           </div>
         </div>
@@ -79,14 +101,27 @@ import GoBack from "@/composables/GoBack.vue";
 import {ArrowDownBold,  Search} from "@element-plus/icons-vue";
 import {getHeader} from "@/utils/storageUtils";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
-
+import btc from '@@/public/images/btc.svg'
 const headers = getHeader();
 const { assetsApi } = useServer();
-
 // 整合数据列表
-const currencyMergedData = ref([]);
-const  dialogCheckVisible = ref(false);
-const  rateExchange = ref({
+const currencyList = ref([]);
+const originalCurrencyList = ref([]);
+const currencyChainList = ref([]);
+const dialogCheckVisible = ref(false);
+const selectedChain = ref(null);
+const isAllSelected = ref(true);
+const selectAll = () => {
+  isAllSelected.value = true;
+  selectedChain.value = null;
+  resetCurrencyList();
+};
+const selectChain = (id: number) => {
+  selectedChain.value = id;
+  isAllSelected.value = false;
+  resetCurrencyList();
+};
+const rateExchange = ref({
   content: '',
   rate: 1,
 });
@@ -96,13 +131,16 @@ const cost = ref({
 });
 const drawerSearch = ref(false);
 const searchText = ref('');
-const title = ref('兑出');
-const dialogSource = ref({
-  1: {name: '兑出', id: 1},
-  2: {name: '兑入', id: 2},
-});
-const exchange = (type: number) => {
-  title.value = dialogSource.value[type].name
+const dialogTitle = ref('');
+const dialogType = ref('');
+const exchange = (type: string) => {
+  dialogType.value = type;
+  if(type == 'to'){
+    dialogTitle.value = '兑出';
+  }else{
+    dialogTitle.value = '兑入';
+  }
+  selectAll();
   drawerSearch.value = true;
 }
 
@@ -113,16 +151,15 @@ const form = ref({
   selectedCurrencyId: null,
   selectedCurrency: null,
   selectedChain: null,
-  selectedCurrencyChain: [],
+  selectedChainName: null,
   inputAmount: '',
   bigNumCost: 0,
 
   selectedCurrencyToId: null,
   selectedCurrencyTo: null,
   selectedChainTo: null,
-  selectedCurrencyChainTo: [],
+  selectedChainNameTo: null,
   inputAmountTo: '',
-  bigNumCostTo: 0,
 
   bindPassword: false,
   googleCode: '',
@@ -160,42 +197,57 @@ const updateForm = async (newForm: Object) => {
   }
 };
 
+// 重置 currencyList
+const resetCurrencyList = () => {
+  console.log("Selected Chain:", selectedChain.value);
+  console.log("Search Text:", searchText.value); // 添加搜索文本的调试输出
+  currencyList.value = originalCurrencyList.value.filter(currency => {
+    // 检查是否匹配 selectedChain
+    const isMatch = selectedChain.value === null || currency.currencyChain === selectedChain.value;
+    // 检查是否模糊匹配搜索文本
+    const isSearchMatch = currency.currencyName.toLowerCase().includes(searchText.value.toLowerCase());
+    // 允许 selectedChain 为 0 时匹配 currencyChain 为 0
+    const isZeroMatch = currency.currencyChain === 0 && selectedChain.value === 0;
+    return (isMatch || isZeroMatch) && isSearchMatch;
+  });
+};
+
+
 // 获取数据
 const fetchData = async () => {
   try {
     let res = await assetsApi.accountAssets({}, headers);
-    if (res.code === 200) {
-      const mergedData = new Map();
+    if (res.code == 200) {
+      let currencyData = new Array();
+      let chainData = new Array();
       const dataList = res.data;
-      if (dataList?.length) {
-        dataList.forEach(item => {
-          const { currencyId, currencyChain, balance, totalBalanceUsdt } = item;
-          // 检查是否已存在该货币数据
-          if (!mergedData.has(currencyId)) {
-            mergedData.set(currencyId, {
-              balance,
-              totalBalanceUsdt,
-              currencyId,
-              currencyChain: [{ id: currencyChain, name: getDataInfo(currencyChain, 'chains')?.name }],
-              currency: [{ id: currencyId, name: getDataInfo(currencyId, 'currencyChains')?.name,}],
-            });
-          } else {
-            const existingData = mergedData.get(currencyId);
-            if (!existingData.currencyChain.some(chain => chain.id === currencyChain)) {
-              existingData.currencyChain.push({ id: currencyChain, name: getDataInfo(currencyChain, 'chains')?.name });
-            }
-            existingData.balance += balance;
-            existingData.totalBalanceUsdt += totalBalanceUsdt;
-          }
-        });
-        currencyMergedData.value = Array.from(mergedData.values());
-        // 如果有可用的货币，自动选择第一个
-        if (currencyMergedData.value.length > 0) {
-          form.value.selectedCurrencyId = currencyMergedData.value[0].currencyId;
-          updateCurrencyChain('form');
-          form.value.selectedCurrencyToId = currencyMergedData.value[0].currencyId;
-          updateCurrencyChain('to');
+      dataList.forEach(item => {
+        const {id, currencyId, currencyChain, balance, totalBalanceUsdt } = item;
+        // 检查是否已存在该货币数据
+        currencyData.push({
+            id,
+            balance,
+            totalBalanceUsdt,
+            currencyId,
+            currencyName: getDataInfo(currencyId, 'currencyChains')?.name,
+            currencyChain: currencyChain,
+            currencyChainName: getDataInfo(currencyChain, 'chains')?.name,
+          });
+        // 添加链信息，避免重复
+        const chainInfo = { id: currencyChain, name: getDataInfo(currencyChain, 'chains')?.name };
+        if (!chainData.some(chain => chain.id === chainInfo.id)) {
+          chainData.push(chainInfo);
         }
+      });
+      currencyList.value = currencyData;
+      originalCurrencyList.value = currencyData;
+      currencyChainList.value = chainData;
+      // // 如果有可用的货币，自动选择第一个
+      if (currencyList.value.length > 0) {
+        dialogType.value = 'form'
+        updateCurrencyChain(currencyList.value[0]);
+        dialogType.value = 'to'
+        updateCurrencyChain(currencyList.value[0]);
       }
     } else {
       ElMessage.error(res.message || '查询失败');
@@ -206,30 +258,31 @@ const fetchData = async () => {
 };
 
 // 更新链数据的函数
-const updateCurrencyChain = (formType: string) => {
+const updateCurrencyChain = (currencyData: any) => {
   // 切换清空金额内容
   form.value.inputAmountTo = '';
   form.value.inputAmount = '';
   cost.value = { amount: 0, content: '' };
-  const selectedCurrencyData = formType === 'form'
-      ? currencyMergedData.value.find(currency => currency.currencyId === form.value.selectedCurrencyId)
-      : currencyMergedData.value.find(currency => currency.currencyId === form.value.selectedCurrencyToId);
-  if (formType === 'form') {
-    form.value.selectedCurrency = selectedCurrencyData.currency[0].name;
-    form.value.selectedCurrencyChain = selectedCurrencyData ? selectedCurrencyData.currencyChain : [];
-    form.value.selectedChain = form.value.selectedCurrencyChain.length > 0 ? form.value.selectedCurrencyChain[0].id : null;
-  } else {
-    form.value.selectedCurrencyTo = selectedCurrencyData.currency[0].name;
-    form.value.selectedCurrencyChainTo = selectedCurrencyData ? selectedCurrencyData.currencyChain : [];
-    form.value.selectedChainTo = form.value.selectedCurrencyChainTo.length > 0 ? form.value.selectedCurrencyChainTo[0].id : null;
-    form.value.bigNumCost = selectedCurrencyData.balance
+
+  if(dialogType.value === 'form'){
+    form.value.selectedCurrencyId = currencyData.currencyId;
+    form.value.selectedCurrency = currencyData.currencyName;
+    form.value.selectedChain = currencyData.currencyChain
+    form.value.selectedChainName = currencyData.currencyChainName
+  }else{
+    form.value.selectedCurrencyToId= currencyData.currencyId;
+    form.value.selectedCurrencyTo = currencyData.currencyName;
+    form.value.selectedChainTo = currencyData.currencyChain;
+    form.value.selectedChainNameTo = currencyData.currencyChainName;
+    form.value.bigNumCost = currencyData.balance;
   }
   if(form.value.selectedCurrencyId && form.value.selectedCurrencyToId){
     fetchRateExchange();
   }
+  drawerSearch.value = false;
 };
 
-// 获取数据的函数
+// 获取汇率数据
 const fetchRateExchange = async () => {
   try {
     // 按 ID 匹配并找到名称
@@ -237,7 +290,6 @@ const fetchRateExchange = async () => {
     if(res.code == 200) {
       rateExchange.value.content = '1 ' + form.value.selectedCurrencyTo + ' ≈ ' + res.data + ' ' +form.value.selectedCurrency;
       rateExchange.value.rate = res.data
-      console.log(rateExchange.value);
     }else{
       ElMessage.error(res.message || '查询失败');
     }
@@ -246,74 +298,61 @@ const fetchRateExchange = async () => {
   }
 };
 
-// 手续费
-const fastRateFee = async (inputAmountTo: number, inputAmount: number, maxInputAmount: number, rate: number, isFlag: boolean) => {
+//计算加手续费
+const calculateAndFetchFee = async (inputAmount: number, sourceCurrencyId: number, targetCurrencyId: number, type: number) => {
   try {
-    const [curRes, maxRes] = await Promise.all([
+    loading.value = true;
+    const [res, feeRes] = await Promise.all([
+      assetsApi.calculate({ amount: inputAmount, sourceCurrencyId, targetCurrencyId }, headers),
       assetsApi.getFastRateFee({
-        currencyId: form.value.selectedCurrencyToId, currencyChain: form.value.selectedChainTo, amount: inputAmountTo,
-      }, headers),
-      assetsApi.getFastRateFee({
-        currencyId: form.value.selectedCurrencyToId, currencyChain: form.value.selectedChainTo, amount: maxInputAmount,
+        currencyId: form.value.selectedCurrencyToId,
+        currencyChain: form.value.selectedChainTo,
+        amount: inputAmount
       }, headers)
     ]);
-
-    let fee = 0;
-    if(curRes.code == 200 && maxRes.code == 200) {
-      let curAmount = (inputAmountTo + curRes.data.fee).toFixed(8);
-      let maxAmount = (maxInputAmount - maxRes.data.fee).toFixed(8);
-      if(curAmount > maxAmount){
-        curAmount = maxAmount;
-        // fee = maxRes.data.fee;
+    if (res.code === 200) {
+      if (type === 1) {
+        form.value.inputAmount = res.data;
+        form.value.inputAmountTo = inputAmount;
+      } else {
+        form.value.inputAmountTo = res.data;
+        form.value.inputAmount = inputAmount;
       }
-      fee = curRes.data.fee;
-      if(inputAmountTo < curAmount){
-        form.value.inputAmountTo = inputAmountTo;
-      }else{
-        // form.value.inputAmountTo = curAmount;
-      }
-      cost.value.content = fee + ' ' + form.value.selectedCurrencyTo
+    } else {
+      ElMessage.error(res.message || '查询失败');
+    }
+    if (feeRes.code === 200) {
+      const fee = feeRes.data.fee;
+      cost.value.content = `${fee} ${form.value.selectedCurrencyTo}`;
       cost.value.amount = fee;
-      form.value.inputAmount = (form.value.inputAmountTo * rate).toFixed(8);
-      loading.value = false;
+    } else {
+      ElMessage.error(feeRes.message || '查询失败');
     }
   } catch (error) {
     ElMessage.error('请求失败，请重试');
+  } finally {
     loading.value = false;
-  }
-};
-
-// 输入框同步输出金额
-const syncInputAmount = () => {
-  const rate = parseFloat(rateExchange.value.rate);
-  const inputAmount = parseFloat(form.value.inputAmount);
-  if (!isNaN(inputAmount) && !isNaN(rate)) {
-    // 保留 8 位小数
-    form.value.inputAmountTo = (inputAmount / rate).toFixed(8);
-  } else {
-    form.value.inputAmountTo = '';
   }
 };
 
 // 交换货币和链
 const swapCurrencies = async () => {
-  loading.value = true;
   const selectedCurrencyId = form.value.selectedCurrencyId;
   const selectedCurrency = form.value.selectedCurrency;
   const selectedChain = form.value.selectedChain;
-  const selectedCurrencyChain = form.value.selectedCurrencyChain;
+  const selectedChainName = form.value.selectedChainName;
   // 重新计算金额
   form.value.selectedCurrencyId = form.value.selectedCurrencyToId;
   form.value.selectedCurrency = form.value.selectedCurrencyTo;
   form.value.selectedChain = form.value.selectedChainTo;
-  form.value.selectedCurrencyChain = form.value.selectedCurrencyChainTo;
+  form.value.selectedChainName = form.value.selectedChainNameTo;
   form.value.selectedCurrencyToId = selectedCurrencyId;
   form.value.selectedCurrencyTo = selectedCurrency;
   form.value.selectedChainTo = selectedChain;
-  form.value.selectedCurrencyChainTo = selectedCurrencyChain;
+  form.value.selectedChainNameTo = selectedChainName;
 
   // 重新计算汇率
-  const  selectedCurrencyData = currencyMergedData.value.find(currency => currency.currencyId === form.value.selectedCurrencyToId)
+  const  selectedCurrencyData = currencyList.value.find(currency => currency.currencyId === form.value.selectedCurrencyToId)
   form.value.bigNumCost = selectedCurrencyData.balance
   fetchRateExchange();
   // 延迟200毫秒
@@ -322,21 +361,43 @@ const swapCurrencies = async () => {
   }, 500);
 };
 
+
+
+// 输入框同步输出金额
+const syncInputAmount = () => {
+  const inputAmount = parseFloat(form.value.inputAmount);
+  if (!isNaN(inputAmount)) {
+    calculateAndFetchFee(inputAmount, form.value.selectedCurrencyId, form.value.selectedCurrencyToId, 2)
+  } else {
+    form.value.inputAmountTo = '';
+  }
+};
+
+// 百分比方式
+const percentage = (number: number) => {
+  form.value.inputAmountTo = form.value.bigNumCost * number;
+  syncInputAmountTo(false);
+}
+
 // 输出框同步输入金额
 const syncInputAmountTo = (isFlag: boolean) => {
-  const rate = rateExchange.value.rate;
-  let inputAmountTo = parseFloat(form.value.inputAmountTo);
+  let inputAmount = parseFloat(form.value.inputAmountTo);
   if(isFlag){
-    inputAmountTo = parseFloat(form.value.inputAmount);
+    inputAmount = parseFloat(form.value.inputAmount);
   }
-  const maxInputAmount = form.value.bigNumCost;
-  if (!isNaN(inputAmountTo) && !isNaN(rate)) {
-    fastRateFee(inputAmountTo, 0, maxInputAmount, rate, isFlag);
+  if (!isNaN(inputAmount)) {
+    calculateAndFetchFee(inputAmount, form.value.selectedCurrencyToId, form.value.selectedCurrencyId, 1)
   }else{
     form.value.inputAmount = '';
     loading.value = false;
   }
 };
+
+// 监听
+watch(searchText, () => {
+  resetCurrencyList();
+});
+
 // 初始化数据
 onMounted(() => {
   fetchData();
@@ -402,6 +463,18 @@ onMounted(() => {
       color: #333333;
       background: #EAF3FA;
     }
+  }
+  .balance-display{
+    width: 46%;
+    line-height: 24px;
+    height: 24px;
+    overflow: hidden;
+    color: #333333;
+    font-size: 12px;
+    position: absolute;
+    top: 80px;
+    right: 10px;
+    text-align: right;
   }
   .currency{
     height: 22px;
@@ -473,6 +546,48 @@ onMounted(() => {
 .sub-page{
 
 }
+.chain-wrap{
+  height: 50px;
+  padding: 20px 0 ;
+  .text-wrap{
+    height: 20px;
+    line-height: 20px;
+    font-size: 12px;
+    color: #666666;
+  }
+  .list-chain-wrap {
+    .cur{
+      border-color: #5686E1 !important;
+    }
+    width: 100%;
+    height: 30px;
+    margin-top: 5px;
+    .item{
+      height: 28px;
+      width: 28px;
+      margin-right: 10px;
+      border: #C8DCE8 solid 1px;
+      border-radius: 8px;
+      background: #ffffff;
+      text-align: center;
+      .img{
+        margin-top: 4px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+    .btn{
+      font-size: 12px;
+      text-align: center;
+      height: 28px;
+      line-height: 28px;
+      width: 33px;
+      border-radius: 8px;
+      background: #ffffff;
+      border: #C8DCE8 solid 1px;
+    }
+  }
+}
 .search-wrap{
   height: 40px;
   padding-right: 10px;
@@ -519,7 +634,7 @@ onMounted(() => {
 
 .table-list{
   position: relative;
-  margin-top: 40px;
+  margin-top: 5px;
   .item{
     display: flex;
     height: 52px;
