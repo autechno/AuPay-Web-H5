@@ -2,8 +2,8 @@
   <div class="page">
     <GoBack :buttonConfig="buttonConfig" />
     <div class="box-wrap">
-      <div class="title">收款</div>
-      <div class="text"  @click="copyText(form.transferQR)">auPayID: {{formatAddressString(form.transferQR, 8, 14)}}<el-image :src="copy" /></div>
+      <div class="title-tips">收款</div>
+      <div class="text-tips"  @click="copyText(form.transferQR)">auPayID: {{formatAddressString(form.transferQR, 8, 14)}}<el-image :src="copy" /></div>
       <div class="code-wrap">
         <QCcode :value="form.generateQR" :size="180" />
       </div>
@@ -12,20 +12,33 @@
       </div>
       <div class="select-wrap" v-else>
         <div class="select">
-          <button class="btn">编辑</button><button class="btn">清除</button>
+          <button class="btn" @click="isDrawerVisible = true">编辑</button><button class="btn" @click="cleanQR">清除</button>
+          <div class="row-wrap"><span class="text">币种：</span><span>{{form.currencyId}}</span></div>
+          <div class="row-wrap"><span class="text">网络：</span><span>{{form.currencyChain}}</span></div>
+          <div class="row-wrap"><span class="text">数量：</span><span>{{form.amount}}</span></div>
+          <div class="row-wrap"><span class="text">备注：</span><span>{{formatAddressString(form.remark, 4, 8)}}</span></div>
         </div>
       </div>
+
     </div>
     <el-drawer class="custom-drawer" v-model="isDrawerVisible"
-               title=""
-               :show-close="false"
-               @close="handleCloseDrawer"
-               direction="rtl"
-               size="100%">
-      <GoClose @close="handleCloseDrawer" />
+         title=""
+         :show-close="false"
+         @close="isDrawerVisible = false"
+         direction="rtl"
+         size="100%">
+      <GoClose @close="isDrawerVisible = false" />
       <div class="icon-edit-wrap">
         <div class="icon-edit"><el-image :src="Shape"></el-image></div>
       </div>
+      <div class="title">
+        编辑收款
+      </div>
+      <TransferForm
+          style="margin-top: 20px;"
+          :form="form"
+          @update:form="updateForm"
+      />
     </el-drawer>
     <el-button class="custom-button-down" >分享</el-button>
     <el-button class="custom-button-down-default">下载</el-button>
@@ -36,27 +49,30 @@ import { ref, onMounted } from 'vue';
 import GoBack from "@/composables/GoPageBack.vue";
 import GoClose from "@/composables/GoPageClose.vue";
 import { useRoute, useRouter } from 'vue-router';
-import {ElMessage} from "element-plus";
 import copy from "@@/public/images/copy2.svg";
 import Shape from "@@/public/images/Shape2.svg";
 import {copyText, formatAddressString} from "@/utils/funcUtil";
 import QCcode from "@/composables/QCcode.vue";
-import {ArrowRightBold, Search} from "@element-plus/icons-vue";
+import {ArrowRightBold} from "@element-plus/icons-vue";
+import TransferForm from "./Form.vue";
 const isDrawerVisible = ref(false);
-const handleCloseDrawer = () => {
+
+// 更新父组件的 form 数据
+const updateForm = (newForm) => {
+  form.value = newForm;
   isDrawerVisible.value = false;
+  console.log(newForm);
 };
-const { assetsApi } = useServer();
-const headers = getHeader();
+
 const router = useRouter();
 const route = useRoute();
 const form = ref({
   transferQR: '',
   generateQR: '',
-  currencyId: '',
-  currencyChainId: '',
-  amount: '',
-  remark: '',
+  currencyId: '2',
+  currencyChain: '3',
+  amount: '100',
+  remark: '我们去吃饭好不好呀我们',
 })
 const buttonConfig = ref({
   navigateTo: '/order-list',
@@ -64,17 +80,13 @@ const buttonConfig = ref({
   type: 'pay',
 })
 
-// 获取数据
-const fetchData = async () => {
-  try {
-    const assetsRes = await assetsApi.getAccountAssetsById({ assetsId: 987 }, headers);
-    if (assetsRes.code === 200) {
-    }else{
-      ElMessage.error(assetsRes.message || '查询失败');
-    }
-  } catch (error) {
-    ElMessage.error('请求失败，请重试');
-  }
+// 清空表单
+const cleanQR = () => {
+  form.value.generateQR = form.value.transferQR;
+  form.value.currencyId = '';
+  form.value.currencyChain = '';
+  form.value.amount = '';
+  form.value.remark = '';
 };
 
 // 初始化数据
@@ -91,10 +103,9 @@ onMounted(() => {
   padding: 0;
 }
 .select-wrap{
-  height: 26px;
   line-height: 26px;
   text-align: center;
-  margin: 15px 0;
+  margin: 15px 0 20px 0;
   .select{
     font-size: 18px;
     color: #333333;
@@ -117,6 +128,21 @@ onMounted(() => {
       background: #EAF3FA;
     }
   }
+  .row-wrap{
+    line-height: 26px;
+    height: 26px;
+    display: flex;
+    width: 50%;
+    margin:0 auto;
+    font-size: 14px;
+    overflow: hidden;
+    color: #0D0D0D;
+    justify-content: space-between;
+    .text{
+      font-size: 13px;
+      color: #999999;
+    }
+  }
 }
 .code-wrap{
   margin: 0 auto;
@@ -134,7 +160,7 @@ onMounted(() => {
   padding-bottom: 35px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  .title{
+  .title-tips{
     padding: 25px 20px 3px 20px;
     height: 41px;
     line-height: 41px;
@@ -142,7 +168,7 @@ onMounted(() => {
     font-size: 24px;
     color: #0D0D0D;
   }
-  .text{
+  .text-tips{
     padding: 0 20px;
     font-size: 16px;
     color: #0D0D0D;
@@ -191,16 +217,19 @@ onMounted(() => {
   }
 }
 .icon-edit-wrap{
-
-}
-.icon-edit{
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #5686E1;
-  .el-image{
-    width: 20px;
-    margin-top: 6px;
+  height: 54px;
+  display: flex;
+  align-items: flex-end;
+  .icon-edit{
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #5686E1;
+    .el-image{
+      width: 20px;
+      margin-top: 6px;
+    }
   }
 }
+
 </style>
