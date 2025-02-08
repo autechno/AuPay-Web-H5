@@ -80,7 +80,7 @@ import { ref, nextTick, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRouter, useRoute } from 'vue-router';
 import { getHeader } from "@/utils/storageUtils";
-import {getStatusText,formatDate, getDataList } from "@/utils/formatUtils";
+import { formatDate } from "@/utils/formatUtils";
 import GoBack from "@/composables/GoBack.vue";
 import { ArrowDownBold } from '@element-plus/icons-vue'
 import sol from '@@/public/images/sol.svg'

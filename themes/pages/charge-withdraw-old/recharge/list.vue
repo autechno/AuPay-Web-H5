@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <GoBack :showRightButton="false"  :showScan="true"  />
+    <GoBack :showRightButton="false"  :showScan="false"  />
     <div class="sub-page">
       <div class="search-wrap">
         <el-icon class="arrow" size="26"><Search /></el-icon>
@@ -41,9 +41,7 @@ const searchText = ref('');
 // 选择货币
 const selectCurrency = async (currency: any) => {
   router.push({ path: '/charge-withdraw-old/recharge', query: {
-      id: currency.id,
-      currencyId: currency.currencyId,
-      currencyChain: currency.currencyChain,
+      currencyId: currency.id,
     }
   });
 }

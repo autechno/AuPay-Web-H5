@@ -178,12 +178,6 @@ onMounted(() => {
   position: relative;
   padding-top: 28px;
   height: calc(100vh - 28px);
-  .custom-button{
-    position: absolute;
-    bottom: 25px;
-    left: 50%;
-    transform: translate(-50%);
-  }
 }
 .sub-page{
   padding-top:10px;

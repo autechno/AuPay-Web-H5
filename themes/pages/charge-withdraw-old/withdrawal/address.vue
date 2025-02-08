@@ -13,7 +13,7 @@
         </div>
       </div>
     </div>
-    <el-button class="custom-button" >新增地址</el-button>
+    <el-button class="custom-button custom-button-pos" >新增地址</el-button>
   </div>
 </template>
 <script setup lang="ts">
@@ -66,17 +66,12 @@ onMounted(() => {
   position: relative;
   padding-top: 28px;
   height: calc(100vh - 28px);
-  .custom-button{
-    position: absolute;
-    bottom: 25px;
-    left: 50%;
-    transform: translate(-50%);
+  .sub-page{
+    padding-top:5px;
+    padding-bottom: 20px;
   }
 }
-.sub-page{
-  padding-top:5px;
-  padding-bottom: 20px;
-}
+
 .search-wrap{
   margin-bottom: 20px;
   height: 40px;

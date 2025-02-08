@@ -1,21 +1,21 @@
 <template>
   <div class="history-wrap">
+    <!-- 左侧返回按钮 -->
     <button class="left-button" @click="goBack">
       <el-icon size="20"> <ArrowLeftBold /> </el-icon>
     </button>
+    <!-- 中间文本 -->
+    <div class="middle-text">{{ title }}</div>
+    <!-- 右侧按钮 -->
     <el-button
-        v-if="showRightButton"
+        v-if="buttonConfig"
         class="right-button"
-        @click="() => goList(navigateTo)">
-      查看订单
+        @click="() => goList()">
+      {{buttonConfig.btnName}}
+      <el-image  v-if="buttonConfig.type == 'pay'" :src="pay" />
     </el-button>
-    <el-button
-        v-if="showRightButton"
-        class="right-button"
-        @click="() => goList(navigateTo)">
-      查看订单
-    </el-button>
-    <div class="avatar" v-if="showScan">
+
+    <div class="scan-wrap" v-if="showScan">
       <el-image :src="scan" class="scan" />
     </div>
   </div>
@@ -26,17 +26,18 @@ import { defineProps } from 'vue';
 import { useRouter } from 'vue-router';
 import { ArrowLeftBold } from "@element-plus/icons-vue";
 import scan from "@@/public/images/Scana.svg";
+import pay from "@@/public/images/Group.svg";
 
 const props = defineProps({
-  showRightButton: {
-    type: Boolean,
-    default: false
+  buttonConfig: {
+    type: Object,
+    default: ''
   },
-  navigateTo: {
+  title: {
     type: String,
     default: ''
   },
-  showScan: {  // 新增 avatarSrc prop
+  showScan: {
     type: Boolean,
     default: false
   }
@@ -48,10 +49,14 @@ const goBack = () => {
   router.back();
 };
 
-const goList = (navigateTo: string) => {
-  if (navigateTo) {
-    router.push(navigateTo);
+const goList = () => {
+  if (props.buttonConfig.navigateTo) {
+    router.push(props.buttonConfig.navigateTo);
   }
+};
+
+const scanPage = () => {
+  // 执行扫码的逻辑
 };
 </script>
 
@@ -62,6 +67,7 @@ const goList = (navigateTo: string) => {
   margin: 0 0 18px 0;
   display: flex;
   justify-content: space-between;
+  align-items: center; /* 垂直居中对齐 */
 }
 
 .left-button {
@@ -70,29 +76,40 @@ const goList = (navigateTo: string) => {
   height: 34px;
   border-radius: 17px;
   background-color: #f4f4f4;
-  margin-top:5px;
+  margin-top: 8px;
 }
 
-.avatar{
+.middle-text {
+  flex: 1;
+  text-align: center;
+  font-size: 16px;
+}
+
+.scan-wrap {
   width: 46px;
   height: 46px;
   background: #F4F4F4;
   text-align: center;
   border-radius: 50%;
-  .scan{
+  .scan {
     padding-top: 10px;
   }
 }
 .right-button {
-  margin-top:5px;
+  margin-top: 5px;
   background: #5686E1;
-  width: 90px;
   height: 34px;
-  border-radius: 8px;
+  border-radius: 15px;
   font-size: 14px;
   font-weight: 600;
   line-height: 34px;
+  padding:0 15px;
   color: #fff;
   border: 0;
+  display: inline-flex;
+  .el-image{
+    margin-top: 20px;
+    margin-left: 3px;
+  }
 }
 </style>

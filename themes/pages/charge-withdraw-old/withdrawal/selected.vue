@@ -9,17 +9,16 @@
       </div>
       <div class="copy-list">
         <div class="item" v-for="item in copyList" :key="item" @click="copyToAddress(item)">
-          <el-image :src="clip" /><span class="text">{{ item }}</span>
+          <el-image :src="clip" /><span class="text">{{ formatAddressString(item, 28, 35) }}</span>
         </div>
       </div>
     </div>
-    <el-button @click="nextTick()" class="custom-button" >下一步</el-button>
+    <el-button @click="nextTick()" class="custom-button custom-button-pos" >下一步</el-button>
   </div>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import GoBack from "@/composables/GoBack.vue";
-import { getHeader } from "@/utils/storageUtils";
 import clip from '@@/public/images/ClipBoard.svg';
 import { CloseBold } from "@element-plus/icons-vue";
 import { useRoute, useRouter } from 'vue-router';
@@ -84,91 +83,43 @@ onMounted(async () => {
   margin: 0;
   padding: 0;
 }
-.tips{
-  height: 22px;
-  color: #0D0D0D;
-  margin-top: 15px;
-}
-.copy-list{
-  padding-top: 30px;
-  .item{
-    overflow: hidden;
-    margin-bottom: 10px;
-    height: 56px;
-    line-height: 56px;
-    border-radius: 16px;
-    background: #F1F1F1;
-    padding:0 14px;
-    display: flex;
-    .el-image{
-      width: 18px;
-      height: 26px;
-      margin-top: 14px;
-      margin-right: 5px;
-    }
-    .text{
-      width: calc(100vw - 70px);
-      overflow: hidden;
-      color: #353955;
-    }
-  }
-}
+
 .page{
   position: relative;
   padding-top: 28px;
   height: calc(100vh - 28px);
-  .custom-button{
-    position: absolute;
-    bottom: 25px;
-    left: 50%;
-    transform: translate(-50%);
+  .sub-page{
+    padding-top:10px;
+    padding-bottom: 20px;
+    position: relative;
   }
-}
-
-.sub-page{
-  padding-top:10px;
-  padding-bottom: 20px;
-  position: relative;
-}
-.chain-wrap{
-  height: 50px;
-  padding: 20px 0 ;
-  .text-wrap{
-    height: 20px;
-    line-height: 20px;
-    font-size: 12px;
-    color: #666666;
+  .tips{
+    height: 22px;
+    color: #0D0D0D;
+    margin-top: 15px;
   }
-  .list-chain-wrap {
-    .cur{
-      border-color: #5686E1 !important;
-    }
-    width: 100%;
-    height: 30px;
-    margin-top: 5px;
+  .copy-list{
+    padding-top: 30px;
     .item{
-      height: 28px;
-      width: 28px;
-      margin-right: 10px;
-      border: #C8DCE8 solid 1px;
-      border-radius: 8px;
-      background: #ffffff;
-      text-align: center;
-      .img{
-        margin-top: 4px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      height: 56px;
+      line-height: 56px;
+      border-radius: 16px;
+      background: #F1F1F1;
+      padding:0 14px;
+      display: flex;
+      .el-image{
         width: 18px;
-        height: 18px;
+        height: 26px;
+        margin-top: 14px;
+        margin-right: 5px;
       }
-    }
-    .btn{
-      font-size: 12px;
-      text-align: center;
-      height: 28px;
-      line-height: 28px;
-      width: 33px;
-      border-radius: 8px;
-      background: #ffffff;
-      border: #C8DCE8 solid 1px;
+      .text{
+        width: calc(100vw - 70px);
+        overflow: hidden;
+        color: #353955;
+      }
     }
   }
 }
@@ -210,57 +161,6 @@ onMounted(async () => {
     margin-top: 4px;
     font-size: 18px;
     overflow: hidden;
-  }
-}
-
-.table-list{
-  position: relative;
-  margin-top: 5px;
-  .item{
-    display: flex;
-    height: 52px;
-    padding: 10px 0;
-    border-bottom: 1px solid #f1f1f1;
-    overflow: hidden;
-  }
-}
-.left-column {
-  width: 48px;
-  height: 48px;
-  .currency-wrap{
-    width: 100%;
-    height: 100%;
-    background-color: #eaeaea;
-    border-radius: 50%;
-  }
-}
-.right-column {
-  padding-left: 10px;
-  flex: 1;
-  padding-top: 5px;
-  justify-content: flex-start;
-  flex-direction: column;
-  position: relative;
-  .currency{
-    height: 100%;
-    line-height: 48px;
-    color: #666666;
-    text-align: right;
-    position: absolute;
-    right: 0;
-    top:0;
-  }
-  .row {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    .title {
-      font-weight: bold;
-      font-size: 16px;
-    }
-    .text {
-      color: #6E6E6E;
-    }
   }
 }
 

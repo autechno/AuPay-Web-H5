@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="13px" height="15px" viewBox="0 0 13 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group</title>
+    <g id="auPay" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="转账2" transform="translate(-336, -73)" stroke="#FFFFFF" stroke-width="1.5">
+            <g id="Group" transform="translate(337, 74)">
+                <path d="M0,1.95840575 L8.57742581,1.95840575 C9.60622262,1.95840575 10.436691,2.7888772 10.436691,3.81767085 C10.436691,3.81767085 10.436691,4.50353458 10.436691,5.87526205" id="Vector"></path>
+                <polyline id="Vector" points="1.95842799 0 0 1.95840841 1.95842799 3.91685598"></polyline>
+                <path d="M10.436691,10.4366846 L1.85926519,10.4366846 C0.830468376,10.4366846 0,9.60621303 0,8.5774193 C0,8.5774193 0,7.89155551 0,6.51982792" id="Vector"></path>
+                <polyline id="Vector" points="8.4782543 12.3950897 10.4366826 10.4366812 8.4782543 8.47823367"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>

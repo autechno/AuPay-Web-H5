@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="26px" height="26px" viewBox="0 0 26 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Scan2</title>
+    <g id="auPay" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="付款" transform="translate(-311, -218)" stroke="#C8DCE8">
+            <g id="Scan2" transform="translate(313, 220)">
+                <path d="M0.25758466,7.04424267 C0.953464309,2.79571903 3.05330389,0.695879601 7.30182783,0" id="Stroke-3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <rect id="矩形" fill="#C8DCE8" x="3.37844311" y="9.45574534" width="15.742939" height="2.13930106" rx="1.06965053"></rect>
+                <path d="M7.3018393,22.0240732 C3.05332252,21.3159832 0.953474176,19.2283504 0.257594287,14.9798302 C0.257594287,14.9798302 0.257187818,14.9814592 0.25637488,14.9847172 C0.108651369,14.1057134 0.0244173506,13.1168279 0,12.030283" id="Stroke-5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M22.536077,12.0301553 C22.5116605,13.1166999 22.4261992,14.1055852 22.2797002,14.9845889 C22.2797002,14.9845889 22.2805153,14.9829599 22.2821455,14.9797019 C21.5850457,19.2282212 19.4851986,21.3158536 15.2366787,22.0239435" id="Stroke-7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M15.2373014,0 C19.4858251,0.695879601 21.5856645,2.79571903 22.2815441,7.04424267" id="Stroke-9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -15,7 +15,7 @@
           <span>余额: {{ form.bigNumCost }}</span>
         </div>
         <div class="box-wrap" @click="exchange('to')">
-          <div class="img"></div>
+          <div class="img"><el-image :src="sol" /></div>
           <div class="text-wrap">{{ form.selectedCurrencyTo }}</div>
           <el-icon size="12" class="icon"> <ArrowDownBold /> </el-icon>
         </div>
@@ -28,7 +28,7 @@
           />
         </div>
         <div class="box-wrap" @click="exchange('form')">
-          <div class="img"></div>
+          <div class="img"><el-image :src="sol" /></div>
           <div class="text-wrap">{{ form.selectedCurrency }}</div>
           <el-icon size="12" class="icon"> <ArrowDownBold /> </el-icon>
         </div>
@@ -73,7 +73,7 @@
         </div>
         <div class="table-list" v-for="currency in currencyList" :key="currency.id">
           <div class="item" @click="updateCurrencyChain(currency)">
-            <div class="left-column"> <div class="currency-wrap"></div> </div>
+            <div class="left-column"><div class="currency-wrap"><el-image :src="sol" /></div></div>
             <div class="right-column">
               <div class="currency">{{currency.balance}}</div>
               <p class="row"><span class="title">{{currency.currencyName}}</span></p>
@@ -102,9 +102,11 @@ import {ArrowDownBold,  Search} from "@element-plus/icons-vue";
 import {getHeader} from "@/utils/storageUtils";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 import btc from '@@/public/images/btc.svg'
+import sol from '@@/public/images/sol.svg'
 import {ElMessage} from "element-plus";
 const headers = getHeader();
 const { assetsApi } = useServer();
+
 // 整合数据列表
 const currencyList = ref([]);
 const originalCurrencyList = ref([]);
@@ -216,7 +218,6 @@ const resetCurrencyList = () => {
     const isMatch = selectedChain.value === null || currency.currencyChain === selectedChain.value;
     // 检查是否模糊匹配搜索文本
     const isSearchMatch = currency.currencyName.toLowerCase().includes(searchText.value.toLowerCase());
-    // 允许 selectedChain 为 0 时匹配 currencyChain 为 0
     const isZeroMatch = currency.currencyChain === 0 && selectedChain.value === 0;
     return (isMatch || isZeroMatch) && isSearchMatch;
   });
@@ -424,7 +425,6 @@ onMounted(() => {
   margin-top: 10px;
   height: calc(100vh - 28px);
 }
-
 .content{
   margin-top:25px;
   padding-bottom: 20px;
@@ -448,7 +448,6 @@ onMounted(() => {
     }
   }
 }
-
 .exchange-container {
   border-radius: 16px;
   background: #ffffff;
@@ -661,6 +660,10 @@ onMounted(() => {
     height: 100%;
     background-color: #eaeaea;
     border-radius: 50%;
+    .el-image{
+      height: 100%;
+      height: 100%;
+    }
   }
 }
 .right-column {
