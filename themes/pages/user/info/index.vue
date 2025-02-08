@@ -81,6 +81,7 @@ import QCcode from "@/composables/QCcode.vue";
 const { public: { API_HOST } } = useRuntimeConfig();
 const countryList = ref([]);
 const headers = getHeader();
+const formRef: any = ref(null);
 const { userApi, systemApi } = useServer();
 const showQrDialog = ref(false);
 const isNickName = ref(false);
@@ -141,34 +142,34 @@ const beforeAvatarUpload = (rawFile) => {
 
 // 提交表单
 const handleSubmit = async () => {
-  try {
-    const userStore = UseUserStore();
-    let params = {
-      sex: form.value.sex,
-      country: form.value.country,
-      sign: form.value.sign,
-      headPortrait: form.value.headPortrait,
-    };
+    const valid = await formRef.value.validate();
+    if (valid) {
+      const userStore = UseUserStore();
+      let params = {
+        sex: form.value.sex,
+        country: form.value.country,
+        sign: form.value.sign,
+        headPortrait: form.value.headPortrait,
+      };
 
-    if(!isTransferQr.value) {
-      params['transferQR'] = form.value.transferQR;
+      if (!isTransferQr.value) {
+        params['transferQR'] = form.value.transferQR;
+      }
+      if (!isNickName.value && form.value.nickname != '') {
+        params['nickname'] = form.value.nickname;
+      }
+      if (!isBirthday.value && form.value.birthday != '') {
+        params['birthday'] = form.value.birthday;
+      }
+      const res = await userApi.setUserInfo(params, headers);
+      if (res.code === 200) {
+        await userStore.fetchUserInfo();
+        ElMessage.success('保存成功');
+      } else {
+        ElMessage.error(res.message || '保存失败');
+      }
     }
-    if(!isNickName.value && form.value.nickname != '') {
-      params['nickname'] = form.value.nickname;
-    }
-    if(!isBirthday.value && form.value.birthday != '') {
-      params['birthday'] = form.value.birthday;
-    }
-    const res = await userApi.setUserInfo(params, headers);
-    if (res.code === 200) {
-      await userStore.fetchUserInfo();
-      ElMessage.success('保存成功');
-    } else {
-      ElMessage.error(res.message || '保存失败');
-    }
-  } catch (error) {
-    ElMessage.error('请求失败，请重试');
-  }
+
 };
 
 // 获取初始化信息

@@ -76,7 +76,7 @@ const statusList = ref([
   { name: '注册', key: 'isLogin', status: true },
   { name: '资金密码', key: 'setAssetsPassword', status: false },
   { name: '绑定Google验证器', key: 'bindGoogleAuth', status: false },
-  { name: '三方验证绑定', key: '', status: false },
+  { name: '三方登录绑定', key: '', status: false },
   { name: 'Google account', key: 'bindGoogleLogin', status: false },
   { name: 'Apple ID', key: 'bindAppleLogin', status: false },
   { name: 'Telegram', key: 'bindFacebookLogin', status: false },

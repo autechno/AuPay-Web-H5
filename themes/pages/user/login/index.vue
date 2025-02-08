@@ -21,19 +21,19 @@
       <el-col :span="8">
         <div class="icon-wrapper" @click="googleBind">
           <img class="icon" :src="google" width="36" />
-          <span>Google<br />账户登录</span>
+          <span>Google</span>
         </div>
       </el-col>
       <el-col :span="8">
         <div class="icon-wrapper">
           <img class="icon" :src="apple" width="36" />
-          <span>Apple<br />账户登录</span>
+          <span>Apple</span>
         </div>
       </el-col>
       <el-col :span="8">
         <div class="icon-wrapper">
           <img class="icon" :src="telegram" width="36" />
-          <span>Telegram<br />账户登录</span>
+          <span>Telegram</span>
         </div>
       </el-col>
     </el-row>

@@ -2,7 +2,7 @@
   <div class="page">
     <img class="logo" :src="logo" alt="logo" />
     <div class="regTips">{{tips}}</div>
-    <el-form :model="form" :rules="rules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
+    <el-form :model="form" :rules="formRules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
       <div v-if="activeStepId == 1">
         <el-form-item prop="email" >
           <el-input v-model="form.email" placeholder="请输入邮箱"  />
@@ -61,6 +61,29 @@ const startCountdown = () => {
     }
   }, 1000);
 };
+
+/**
+ * 表单验证规则
+ * 自定义验证器：确认密码
+ */
+const validateConfirmPassword = (rule: any, value: string, callback: any) => {
+  if (value !== form.value.password) {
+    callback(new Error('确认密码与密码不一致'));
+  } else {
+    callback();
+  }
+};
+
+// 表单验证规则
+const formRules = {
+  ...rules,
+  confirmPassword: [
+    { required: true, message: '确认密码不能为空', trigger: 'blur' },
+    { min: 8, message: '确认密码长度至少为8位', trigger: 'blur' },
+    { validator: validateConfirmPassword, trigger: 'blur' }
+  ],
+};
+
 
 // 表单数据
 const form = ref({

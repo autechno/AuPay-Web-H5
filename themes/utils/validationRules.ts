@@ -82,7 +82,7 @@ export const rules = {
         { required: true, message: '货币不能为空', trigger: 'blur' },
     ],
     currencyChain: [
-        { required: true, message: '货币不能为空', trigger: 'blur' },
+        { required: true, message: '链不能为空', trigger: 'blur' },
     ],
     inputAmount: [
         { required: true, message: '数量不能为空', trigger: 'blur' },
