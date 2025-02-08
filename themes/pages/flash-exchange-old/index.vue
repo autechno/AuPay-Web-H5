@@ -365,7 +365,7 @@ const swapCurrencies = async () => {
   const  selectedCurrencyData = currencyList.value.find(currency => currency.currencyId === form.value.selectedCurrencyToId)
   form.value.bigNumCost = selectedCurrencyData.balance
   fetchRateExchange();
-  // 延迟200毫秒
+  // 延迟500毫秒
   setTimeout(() => {
     syncInputAmountTo(true);
   }, 500);
@@ -688,6 +688,7 @@ onMounted(() => {
       font-size: 16px;
     }
     .text {
+      font-size: 12px;
       color: #6E6E6E;
     }
   }

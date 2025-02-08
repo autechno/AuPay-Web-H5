@@ -275,6 +275,13 @@ class AssetsApi extends Http {
     public accountAssets(params: any, headers: any): Promise<any> {
         return this.get('/aupay-user/assets/getAssetsInfo', params, headers)
     }
+
+    /**
+     * 获取账户资产地址
+     */
+    public getAccountRechargeConfig(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-wallet/wallet/getAccountRechargeConfig', params, headers)
+    }
     /**
      * 获取账户资产
      */

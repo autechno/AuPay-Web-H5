@@ -14,7 +14,14 @@
       <div class="row-text">可提现: {{formatCurrency(form.balance)}}</div>
       <div class="row-text" v-if="cost.amount">手续费：<span>{{ formatCurrency(cost.amount) }}</span> </div>
     </div>
-    <el-button @click="handleSubmit" class="custom-button" :class="{ 'disabled-button': !form.amount || isAmountError }" :disabled="!form.amount || isAmountError" >确认</el-button>
+    <el-button @click="dialogCheckVisible = true" class="custom-button" :class="{ 'disabled-button': !form.amount || isAmountError}" :disabled="!form.amount || isAmountError" >确认</el-button>
+    <CheckPermissionDialog
+        :form="form"
+        @update:form="updateForm"
+        :permissionId = 4
+        :isDialogVisible="dialogCheckVisible"
+        @close="dialogCheckVisible = false"
+    />
   </div>
 </template>
 <script setup lang="ts">
@@ -23,21 +30,34 @@ import GoBack from "@/composables/GoBack.vue";
 import {getHeader} from "@/utils/storageUtils";
 import shape from '@@/public/images/Shape.svg'
 import {ElMessage} from "element-plus";
-import {
-  formatCurrency,
-  getDataInfo,
-} from "@/utils/formatUtils";
+import { formatCurrency, } from "@/utils/formatUtils";
 import { useRoute, useRouter } from 'vue-router';
+import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
+import {setHeadersAuth} from "@/utils/funcUtil";
 const { assetsApi } = useServer();
 const headers = getHeader();
 const router = useRouter();
 const route = useRoute();
 const isAmountError = ref(false);
 const addressText = ref('');
+const dialogCheckVisible = ref(false);
 const cost = ref({
   content: '',
   amount: '',
 });
+
+const resetBtn = () => {
+  router.push({ path: '/charge-withdraw-old/withdrawal/selected', query: { currencyId: form.value.id } });
+}
+// 更新父组件的 form 数据
+const updateForm = (newForm: Object) => {
+  form.value = newForm;
+  if(form.value.permissionStatus){
+    dialogCheckVisible.value = false;
+    handleSubmit();
+  }
+};
+
 // 验证输入金额
 const validateInputAmount = async () => {
   const value = form.value.amount;
@@ -63,13 +83,28 @@ const validateInputAmount = async () => {
 
 // 提交转账
 const handleSubmit = async () => {
-
+  try{
+      setHeadersAuth(headers,form);
+      let res = await assetsApi.getWithdrawApply(form.value, headers);
+      if (res.code == 200) {
+        ElMessage.success('提现成功');
+        // 延迟500毫秒
+        setTimeout(() => {
+          router.push({ path: '/charge-withdraw-old/withdrawal/list' });
+        }, 500);
+      } else {
+        ElMessage.error(res.message);
+      }
+  } catch (error) {
+    ElMessage.error('请求失败，请重试');
+  }
 };
 
 const form = ref({
   amount: '',
   totalBalanceUsdt: '',
-  balance: ''
+  balance: '',
+  permissionStatus: ''
 })
 
 // 获取数据
@@ -79,6 +114,7 @@ const fetchData = async (currencyId: number) => {
     if (res.code == 200) {
       form.value = res.data;
       form.value.amount = '';
+      form.value.permissionStatus = false;
     } else {
       ElMessage.error(res.message || '查询失败');
     }
