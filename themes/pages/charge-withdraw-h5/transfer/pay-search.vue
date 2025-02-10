@@ -135,29 +135,26 @@ onMounted(() => {
   font-size: 16px;
   color: #333333;
 }
-.table-list{
-  .item{
-    margin-top: 20px;
-    height: 40px;
-    display: flex;
-    .title{
-      line-height: 20px;
-      color: #333333;
-      height: 20px;
-    }
-    .text{
-      line-height: 12px;
-      color: #999999;
-      font-size: 12px;
-      height: 14px;
-      overflow: hidden;
-    }
+.title-item{
+  margin-top: 20px;
+  height: 40px;
+  display: flex;
+  .title{
+    line-height: 20px;
+    color: #333333;
+    height: 20px;
+  }
+  .text{
+    line-height: 12px;
+    color: #999999;
+    font-size: 12px;
+    height: 14px;
+    overflow: hidden;
   }
   .el-icon{
     margin-top:2px;
     height: 34px;
     width: 34px;
-
   }
 
 

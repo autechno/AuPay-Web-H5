@@ -7,7 +7,7 @@
       <div class="code-wrap">
         <QCcode :value="form.walletAddress" :size="180" />
       </div>
-      <div class="text">请注意！此地址仅能接受 Ethere上的代币 （ETH，USTD，OZC，TOTO）</div>
+      <div class="text">请注意！此地址仅能接受 Ethereum （ETH，USTD，OZC，TOTO）</div>
       <div class="address-bg-wrap" @click="copyText(form.walletAddress)">
        {{ formatAddressString(form.walletAddress, 16, 20) }} <el-image :src="copy" />
       </div>
@@ -19,7 +19,7 @@
                direction="btt"
                size="70%">
       <div>
-        <p>本地址仅接受 Ethere 上的 USTD，OZC，TOTO，ETH 四种代币</p>
+        <p>本地址仅接受 Ethereum 上的 USTD，OZC，TOTO，ETH 四种代币</p>
         <p>请您在充值前仔细核对币种, 不支持币种的任何转账, 不可退还和取消。</p>
       </div>
       <el-button class="custom-button" >我已知晓，会仔细核对充值币种</el-button>
