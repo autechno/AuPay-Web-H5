@@ -12,7 +12,7 @@
                 placeholder="请选择货币"
                 @change="updateCurrencyChain('to')">
               <el-option
-                  v-for="currency in currencyMergedData"
+                  v-for="currency in currencyList"
                   :key="currency.currencyId"
                   :label="currency.currency[0].name"
                   :value="currency.currencyId"
@@ -33,10 +33,11 @@
             <!-- 输入框部分 -->
             <div class="input-container">
               <el-input
+                  :class="{ 'error-input': isAmountError }"
                   v-model="form.inputAmountTo"
                   placeholder="请输入金额"
                   type="number"
-                  @input="syncInputAmountTo(false)"
+                  @input="syncInputAmountTo()"
               />
               <span style="padding-left: 20px;">{{ form.selectedCurrencyTo }}</span>
             </div>
@@ -47,7 +48,7 @@
           </div>
         </div>
         <div class="button-container">
-          <el-button @click="swapCurrencies" :disabled="loading" :loading="loading">交换</el-button>
+          <el-button @click="swapCurrencies" >交换</el-button>
         </div>
         <div class="exchange-container">
           <div class="select-container">
@@ -58,7 +59,7 @@
                 placeholder="请选择货币"
                 @change="updateCurrencyChain('form')">
               <el-option
-                  v-for="currency in currencyMergedData"
+                  v-for="currency in currencyList"
                   :key="currency.currencyId"
                   :label="currency.currency[0].name"
                   :value="currency.currencyId"
@@ -94,7 +95,7 @@
         <div v-if="cost.amount">费用：{{ cost.content }}</div>
       </div>
     </div>
-    <el-button @click="dialogCheckVisible = true" type="primary" >确认兑换</el-button>
+    <el-button @click="dialogCheckVisible = true" type="primary" :class="{ 'disabled-button': isAmountError}" :disabled="!form.inputAmountTo || isAmountError || isAmountSame">确认兑换</el-button>
     <!-- 密码验证对话框 -->
     <CheckPermissionDialog
         :form="form"
@@ -115,9 +116,11 @@ import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 const headers = getHeader();
 const { assetsApi } = useServer();
 // 处理整合数据列表
-const currencyMergedData = ref([]);
-const  dialogCheckVisible = ref(false);
-const  rateExchange = ref({
+const currencyList = ref([]);
+const dialogCheckVisible = ref(false);
+const isAmountError = ref(false);
+const isAmountSame = ref(false);
+const rateExchange = ref({
   content: '',
   rate: 1,
 });
@@ -125,9 +128,6 @@ const cost = ref({
   content: '',
   amount: 0,
 });
-
-const loading = ref(false); // Add loading state
-
 
 // 状态合并到一个对象中
 const form = ref({
@@ -152,7 +152,13 @@ const form = ref({
   googleToken: '',
   optToken: '',
 });
-
+// 同一货币协议不能兑换
+const checkAmountSame = () => {
+  isAmountSame.value = (
+      form.value.selectedCurrencyId === form.value.selectedCurrencyToId &&
+      form.value.selectedChain === form.value.selectedChainTo
+  ) ? true : false;
+};
 // 更新父组件的 form 数据
 const updateForm = async (newForm: Object) => {
   try {
@@ -208,12 +214,11 @@ const fetchData = async () => {
             existingData.totalBalanceUsdt += totalBalanceUsdt;
           }
         });
-        currencyMergedData.value = Array.from(mergedData.values());
-        // 如果有可用的货币，自动选择第一个
-        if (currencyMergedData.value.length > 0) {
-          form.value.selectedCurrencyId = currencyMergedData.value[0].currencyId;
+        currencyList.value = Array.from(mergedData.values());
+        if (currencyList.value.length > 0) {
+          form.value.selectedCurrencyId = currencyList.value[0].currencyId;
           updateCurrencyChain('form');
-          form.value.selectedCurrencyToId = currencyMergedData.value[0].currencyId;
+          form.value.selectedCurrencyToId = currencyList.value[0].currencyId;
           updateCurrencyChain('to');
         }
       }
@@ -232,8 +237,8 @@ const updateCurrencyChain = (formType: string) => {
   form.value.inputAmount = '';
   cost.value = { amount: 0, content: '' };
   const selectedCurrencyData = formType === 'form'
-      ? currencyMergedData.value.find(currency => currency.currencyId === form.value.selectedCurrencyId)
-      : currencyMergedData.value.find(currency => currency.currencyId === form.value.selectedCurrencyToId);
+      ? currencyList.value.find(currency => currency.currencyId === form.value.selectedCurrencyId)
+      : currencyList.value.find(currency => currency.currencyId === form.value.selectedCurrencyToId);
   if (formType === 'form') {
     form.value.selectedCurrency = selectedCurrencyData.currency[0].name;
     form.value.selectedCurrencyChain = selectedCurrencyData ? selectedCurrencyData.currencyChain : [];
@@ -246,6 +251,7 @@ const updateCurrencyChain = (formType: string) => {
   }
   if(form.value.selectedCurrencyId && form.value.selectedCurrencyToId){
     fetchRateExchange();
+    checkAmountSame();
   }
 };
 
@@ -257,7 +263,6 @@ const fetchRateExchange = async () => {
     if(res.code == 200) {
       rateExchange.value.content = '1 ' + form.value.selectedCurrencyTo + ' ≈ ' + res.data + ' ' +form.value.selectedCurrency;
       rateExchange.value.rate = res.data
-      console.log(rateExchange.value);
     }else{
       ElMessage.error(res.message || '查询失败');
     }
@@ -267,68 +272,57 @@ const fetchRateExchange = async () => {
 };
 
 // 手续费
-const fastRateFee = async (inputAmountTo: number, inputAmount: number, maxInputAmount: number, rate: number, isFlag: boolean) => {
+const calculateAndFetchFee = async (inputAmount: number, type: number) => {
   try {
-    const [curRes, maxRes] = await Promise.all([
-      assetsApi.getFastRateFee({
-        currencyId: form.value.selectedCurrencyToId, currencyChain: form.value.selectedChainTo, amount: inputAmountTo,
-      }, headers),
-      assetsApi.getFastRateFee({
-        currencyId: form.value.selectedCurrencyToId, currencyChain: form.value.selectedChainTo, amount: maxInputAmount,
-      }, headers)
-    ]);
-
-    let fee = 0;
-    if(curRes.code == 200 && maxRes.code == 200) {
-      let curAmount = (inputAmountTo + curRes.data.fee).toFixed(8);
-      let maxAmount = (maxInputAmount - maxRes.data.fee).toFixed(8);
-      if(curAmount > maxAmount){
-        curAmount = maxAmount;
-        // fee = maxRes.data.fee;
-      }
-      fee = curRes.data.fee;
-      if(inputAmountTo < curAmount){
-        form.value.inputAmountTo = inputAmountTo;
-      }else{
-        // form.value.inputAmountTo = curAmount;
-      }
-      cost.value.content = fee + ' ' + form.value.selectedCurrencyTo
+    let rate = rateExchange.value.rate;
+    if (type === 1) {
+      form.value.inputAmountTo = inputAmount;
+      form.value.inputAmount = form.value.inputAmountTo / rate;
+    } else {
+      form.value.inputAmount = inputAmount;
+      form.value.inputAmountTo = form.value.inputAmountTo * rate;
+    }
+    const feeRes = await assetsApi.getFastRateFee({ currencyId: form.value.selectedCurrencyToId, currencyChain: form.value.selectedChainTo, amount: inputAmount }, headers);
+    if (feeRes.code === 200) {
+      const fee = feeRes.data.fee;
+      cost.value.content = `${fee} ${form.value.selectedCurrencyTo}`;
       cost.value.amount = fee;
-      form.value.inputAmount = (form.value.inputAmountTo * rate).toFixed(8);
-      loading.value = false;
+      let maxAmount = form.value.inputAmountTo + fee;
+      if (maxAmount > form.value.bigNumCost) {
+        isAmountError.value = true;
+      } else {
+        isAmountError.value = false;
+        checkAmountSame();
+      }
+    } else {
+      ElMessage.error(feeRes.message || '查询失败');
     }
   } catch (error) {
     ElMessage.error('请求失败，请重试');
-    loading.value = false;
+  } finally {
   }
 };
 
 // 输入框同步输出金额
 const syncInputAmount = () => {
-  const rate = parseFloat(rateExchange.value.rate);
   const inputAmount = parseFloat(form.value.inputAmount);
-  if (!isNaN(inputAmount) && !isNaN(rate)) {
-    // 保留 8 位小数
-    form.value.inputAmountTo = (inputAmount / rate).toFixed(8);
+  if (!isNaN(inputAmount)) {
+    calculateAndFetchFee(inputAmount, 2)
   } else {
     form.value.inputAmountTo = '';
   }
 };
+
 // 输出框同步输入金额
-const syncInputAmountTo = (isFlag: boolean) => {
-  const rate = rateExchange.value.rate;
-  let inputAmountTo = parseFloat(form.value.inputAmountTo);
-  if(isFlag){
-    inputAmountTo = parseFloat(form.value.inputAmount);
-  }
-  const maxInputAmount = form.value.bigNumCost;
-  if (!isNaN(inputAmountTo) && !isNaN(rate)) {
-    fastRateFee(inputAmountTo, 0, maxInputAmount, rate, isFlag);
+const syncInputAmountTo = () => {
+  let inputAmount = parseFloat(form.value.inputAmountTo);
+  if (!isNaN(inputAmount)) {
+    calculateAndFetchFee(inputAmount, 1)
   }else{
     form.value.inputAmount = '';
-    loading.value = false;
   }
 };
+
 // 初始化数据
 onMounted(() => {
   fetchData();
@@ -336,12 +330,10 @@ onMounted(() => {
 
 // 交换货币和链
 const swapCurrencies = async () => {
-  loading.value = true;
   const selectedCurrencyId = form.value.selectedCurrencyId;
   const selectedCurrency = form.value.selectedCurrency;
   const selectedChain = form.value.selectedChain;
   const selectedCurrencyChain = form.value.selectedCurrencyChain;
-  // 重新计算金额
   form.value.selectedCurrencyId = form.value.selectedCurrencyToId;
   form.value.selectedCurrency = form.value.selectedCurrencyTo;
   form.value.selectedChain = form.value.selectedChainTo;
@@ -350,20 +342,20 @@ const swapCurrencies = async () => {
   form.value.selectedCurrencyTo = selectedCurrency;
   form.value.selectedChainTo = selectedChain;
   form.value.selectedCurrencyChainTo = selectedCurrencyChain;
-
+  form.value.inputAmount = '';
+  form.value.inputAmountTo = '';
+  cost.value = {
+    content: '',
+    amount: 0,
+  };
   // 重新计算汇率
-  const  selectedCurrencyData = currencyMergedData.value.find(currency => currency.currencyId === form.value.selectedCurrencyToId)
+  const  selectedCurrencyData = currencyList.value.find(currency => currency.currencyId === form.value.selectedCurrencyToId)
   form.value.bigNumCost = selectedCurrencyData.balance
   fetchRateExchange();
-  // 延迟200毫秒
-  setTimeout(() => {
-    syncInputAmountTo(true);
-  }, 500);
 };
 
 
 </script>
-
 <style scoped>
 .exchange-wrapper {
   display: flex;

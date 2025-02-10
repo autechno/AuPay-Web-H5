@@ -5,7 +5,7 @@
       <div class="exchange-container" style="height: 126px;">
         <div class="title">兑出</div>
         <div class="currency">
-          <input  v-model="form.inputAmountTo" :class="{ 'error-input': isAmountError }" placeholder="请输入金额" type="number" @input="syncInputAmountTo(false)" />
+          <input  v-model="form.inputAmountTo" :class="{ 'error-input': isAmountError }" placeholder="请输入金额" type="number" @input="syncInputAmountTo()" />
         </div>
         <el-row class="flash-btn">
           <el-col :span="8"><span @click="percentage(0.5)">50%</span></el-col>
@@ -41,9 +41,7 @@
       <span>费用：</span>
       <span>{{ cost.content }}</span>
     </div>
-
     <el-button  @click="submitExchange" class="custom-button" :class="{ 'disabled-button': isAmountError}" :disabled="!form.inputAmountTo || isAmountError || isAmountSame">确认</el-button>
-
     <el-drawer class="custom-title" v-model="drawerSearch"
                :title="dialogTitle"
                :show-close="false"
@@ -85,7 +83,6 @@
         </div>
       </div>
     </el-drawer>
-
     <!-- 密码验证对话框 -->
     <CheckPermissionDialog
         :form="form"
@@ -227,11 +224,10 @@ const resetCurrencyList = () => {
 };
 // 同一货币协议不能兑换
 const checkAmountSame = () => {
-  if (form.value.selectedCurrencyId === form.value.selectedCurrencyToId && form.value.selectedChain === form.value.selectedChainTo) {
-    isAmountSame.value = true;
-  }else{
-    isAmountSame.value = false;
-  }
+  isAmountSame.value = (
+      form.value.selectedCurrencyId === form.value.selectedCurrencyToId &&
+      form.value.selectedChain === form.value.selectedChainTo
+  ) ? true : false;
 };
 
 // 获取数据
@@ -403,7 +399,6 @@ const syncInputAmountTo = () => {
     calculateAndFetchFee(inputAmount, 1)
   }else{
     form.value.inputAmount = '';
-    loading.value = false;
   }
 };
 
