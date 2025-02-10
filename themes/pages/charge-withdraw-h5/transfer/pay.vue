@@ -2,7 +2,9 @@
   <div class="page">
     <GoBack :buttonConfig="buttonConfig" />
     <div class="sub-page">
-      <div class="title-wrap"> 传款给  </div>
+      <div class="title-box-wrap">
+        <div class="title-wrap">传款给</div>
+      </div>
       <div class="search-wrap">
         <input v-model="searchText" placeholder="auPay ID" class="custom-input" />
         <el-icon><el-image :src="Scan" /></el-icon>
@@ -42,14 +44,15 @@ onMounted(() => {
   margin: 0;
   padding: 0;
 }
-.title-wrap {
-  color: #0D0D0D;
-  line-height: 24px;
-  height: 24px;
-  font-size: 24px;
-  text-align: center;
-  font-weight: bold;
-  margin: 0 28px;
+.title-box-wrap {
+  height: 100px;
+  background: red;
+  .title-wrap{
+    color: #0D0D0D;
+    line-height: 24px;
+    font-size: 24px;
+    text-align: center;
+  }
 }
 .page{
   position: relative;

@@ -60,7 +60,7 @@
               <td>数量: </td><td>{{assets.fromAmount}}</td>
             </tr>
             <tr v-if="assets.fromCurrencyId">
-              <td>代币名称: </td><td>{{getDataInfo(assets.fromCurrencyId, 'currencyChains')?.name}}</td>
+              <td>币种: </td><td>{{getDataInfo(assets.fromCurrencyId, 'currencyChains')?.name}}</td>
             </tr>
             <tr v-if="assets.fromCurrencyChain">
               <td>链: </td><td>{{getDataInfo(assets.fromCurrencyChain, 'chains')?.name}}</td>

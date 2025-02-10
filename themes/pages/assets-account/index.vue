@@ -9,7 +9,7 @@
       <div style="text-align: right; margin-top: 20px; font-weight: bold;">
         总资产：{{!isShowCurrency?'******':formatCurrency(totalAssets) }}{{currencySign}}
       </div>
-      <el-button type="primary" @click="searchDialogVisible = true">搜索</el-button>
+      <el-button type="primary" @click="searchDialogVisible = true">筛选</el-button>
       <el-table :data="accountAssetsList" style="width: 100%">
         <el-table-column label="序号" width="60">
           <template #default="scope">
@@ -99,10 +99,10 @@
       </div>
     </div>
 
-    <el-dialog title="搜索" v-model="searchDialogVisible" @close="searchDialogVisible = false">
+    <el-dialog title="筛选" v-model="searchDialogVisible" @close="searchDialogVisible = false">
       <el-form :model="form">
-        <el-form-item label="代币名称">
-          <el-select v-model="form.conditions.currencyId" placeholder="请选择链">
+        <el-form-item label="币种">
+          <el-select v-model="form.conditions.currencyId" placeholder="请选择币种">
             <el-option v-for="item in getDataList('currencyChains')" :key="item.code" :label="item.name" :value="item.code" />
           </el-select>
         </el-form-item>
