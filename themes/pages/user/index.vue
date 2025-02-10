@@ -147,7 +147,6 @@ const bindLogin = async (item: any) => {
 // 解除绑定
 const unBindLogin = async (item: any) => {
   let res;
-  console.log(item)
   if(item.key == 'bindGoogleLogin'){
     res = await  userApi.getUnbindGoogle({providerType: 'google'}, headers);
   }
@@ -312,14 +311,14 @@ onMounted(async () => {
     if(providerType == 'google'){
       res = await userApi.setBindGoogle({providerType: 'google', providerId: providerId}, headers);
       if(res.code == 200) {
-        window.location.href = '/user';
+        const userStore = UseUserStore();
+        userStore.userInfo.bindGoogleLogin = true;
       }else{
         ElMessage.error(res.message);
       }
     }
-  }else{
-    fetchData();
   }
+  await fetchData();
 });
 </script>
 <style scoped>

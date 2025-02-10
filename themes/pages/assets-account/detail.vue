@@ -137,8 +137,11 @@
       <tr> <td>{{assets.toAmount}} </td> </tr>
       <tr><td>费用</td></tr>
       <tr> <td>{{assets.fee}} {{getDataInfo(assets.fromCurrencyId, 'currencyChains')?.name}} {{getDataInfo(assets.fromCurrencyChain, 'chains')?.name}}</td></tr>
-      <tr><td><span v-if="assets.tradeType == 2">实际到账</span><span v-if="assets.tradeType == 1"> </span></td></tr>
-      <tr> <td>{{assets.toAmount}} {{getDataInfo(assets.toCurrencyId, 'currencyChains')?.name}} </td></tr>
+      <tr><td>
+        <span v-if="assets.tradeType == 2 || assets.tradeType == 72 || assets.tradeType == 82 || assets.tradeType == 92">实际支出</span>
+        <span v-else>实际到账</span>
+      </td></tr>
+      <tr> <td> {{assets.toAmount}} {{getDataInfo(assets.toCurrencyId, 'currencyChains')?.name}} </td></tr>
       <tr><td>发起</td></tr>
       <tr v-if="assets.fromWalletAddress"> <td>{{assets.fromWalletAddress}} <button @click="copyText(assets.fromWalletAddress)">copy</button> </td></tr>
       <tr><td>接收</td></tr>

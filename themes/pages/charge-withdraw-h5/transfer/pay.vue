@@ -9,6 +9,19 @@
         <input v-model="searchText" placeholder="auPay ID" class="custom-input" />
         <el-icon><el-image :src="Scan" /></el-icon>
       </div>
+      <div></div>
+      <div class="table-title">付款历史</div>
+      <div class="table-list">
+        <div class="item" v-for="(item, index) in historyLog" >
+          <div class="left-column">
+            <div class="currency-wrap"></div>
+          </div>
+          <div class="right-column">
+            <p class="row"><span class="title">3432323</span> </p>
+            <p class="row"><span class="text">+2000U</span></p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -19,7 +32,9 @@ import { useRoute, useRouter } from 'vue-router';
 import Scan from '@@/public/images/Scan3.svg';
 import {ArrowRightBold, Search} from "@element-plus/icons-vue";
 import {formatCurrency, getDataInfo} from "@/utils/formatUtils";
+const historyLog = ref([
 
+]);
 const router = useRouter();
 const route = useRoute();
 const searchText = ref('');
@@ -91,8 +106,6 @@ onMounted(() => {
     padding: 0 40px;
   }
 }
-.sub-page{
-}
 .search-wrap{
   margin-bottom: 20px;
   height: 40px;
@@ -127,4 +140,5 @@ onMounted(() => {
     overflow: hidden;
   }
 }
+
 </style>
