@@ -95,7 +95,7 @@
         <div v-if="cost.amount">费用：{{ cost.content }}</div>
       </div>
     </div>
-    <el-button @click="dialogCheckVisible = true" type="primary" :class="{ 'disabled-button': isAmountError}" :disabled="!form.inputAmountTo || isAmountError || isAmountSame">确认兑换</el-button>
+    <el-button @click="dialogCheckVisible = true" type="primary" :disabled="!form.inputAmountTo || isAmountError || isAmountSame">确认兑换</el-button>
     <!-- 密码验证对话框 -->
     <CheckPermissionDialog
         :form="form"
