@@ -313,6 +313,7 @@ onMounted(async () => {
       if(res.code == 200) {
         const userStore = UseUserStore();
         userStore.userInfo.bindGoogleLogin = true;
+        window.location.href = '/user';
       }else{
         ElMessage.error(res.message);
       }
