@@ -3,21 +3,18 @@
     <GoBack :buttonConfig="buttonConfig" />
     <div class="sub-page">
       <div class="title-box-wrap">
-        <div class="title-wrap">付款给</div>
-      </div>
-      <div class="search-wrap">
-        <input v-model="searchText" placeholder="auPay ID" class="custom-input" />
-        <el-icon><el-image :src="Scan" /></el-icon>
-      </div>
-      <div class="table-title">付款历史</div>
-      <div class="table-list">
-        <div class="item" v-for="(item, index) in historyLog" >
-         <el-icon><el-image :src="Scan" /></el-icon>
+        <div class="title-wrap">付款至</div>
+        <div class="title-item">
+          <el-icon><el-image :src="Scan" /></el-icon>
           <div class="column">
             <div class="title">3432323</div>
             <div class="text">+2000U</div>
           </div>
         </div>
+      </div>
+      <div class="search-wrap">
+        <input v-model="searchText" placeholder="auPay ID" class="custom-input" />
+        <el-icon><el-image :src="Scan" /></el-icon>
       </div>
     </div>
   </div>
@@ -30,9 +27,6 @@ import Scan from '@@/public/images/Scan3.svg';
 import {ArrowRightBold, Search} from "@element-plus/icons-vue";
 import {formatCurrency, getDataInfo} from "@/utils/formatUtils";
 
-const historyLog = ref([
-  {a:'b'},{a:'b'},{a:'b'}
-]);
 const router = useRouter();
 const route = useRoute();
 const searchText = ref('');

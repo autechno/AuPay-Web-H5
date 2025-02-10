@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="flash-content">
-      <div class="exchange-container" v-for="item in recordList" @click="jumpDetail(`/flash-exchange-old/detail?id=${item.id}&tradeNo=${item.tradeNo}`)">
+      <div class="exchange-container" v-for="item in recordList" @click="jumpDetail(`/flash-exchange-h5/detail?id=${item.id}&tradeNo=${item.tradeNo}`)">
           <div class="item-wrap">
             <el-row type="flex" >
               <el-col :span="11">

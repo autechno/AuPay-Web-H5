@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import GoBack from "@/composables/GoBack.vue";
-import { formatDate, getDataInfo, getStatusText } from "~/utils/formatUtils";
+import { formatDate, getDataInfo, getStatusText } from "@/utils/formatUtils";
 import { ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
 import { useRoute } from 'vue-router';
