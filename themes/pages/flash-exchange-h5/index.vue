@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="tips">
-      <span>前兑换汇率：</span><span>{{ rateExchange.content }}</span>
+      <span>当前兑换汇率：</span><span>{{ rateExchange.content }}</span>
     </div>
     <div class="tips" v-if="cost.amount">
       <span>费用：</span>
@@ -322,10 +322,10 @@ const calculateAndFetchFee = async (inputAmount: number,  type: number) => {
     let rate = rateExchange.value.rate;
     if (type === 1) {
       form.value.inputAmountTo = inputAmount;
-      form.value.inputAmount = form.value.inputAmountTo / rate;
+      form.value.inputAmount = form.value.inputAmountTo * rate;
     } else {
       form.value.inputAmount = inputAmount;
-      form.value.inputAmountTo = form.value.inputAmountTo * rate;
+      form.value.inputAmountTo = form.value.inputAmountTo / rate;
     }
     const feeRes = await assetsApi.getFastRateFee({ currencyId: form.value.selectedCurrencyToId, currencyChain: form.value.selectedChainTo, amount: inputAmount }, headers);
     if (feeRes.code === 200) {
