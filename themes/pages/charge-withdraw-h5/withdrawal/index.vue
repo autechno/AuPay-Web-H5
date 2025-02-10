@@ -5,7 +5,7 @@
     <div class="sub-page">
       <div class="search-wrap">
         <input v-model="addressText"  class="custom-input" />
-        <div class="select-address" @click="resetBtn"><span class="icon"><el-image :src="shape" /></span> 编辑</div>
+        <div class="select-address" @click="resetBtn"><el-image :src="shape" />编辑</div>
       </div>
       <div class="input-amount-wrap">
         <input :class="{ 'error-input': isAmountError }"  class="input-wrap" placeholder="请转入金额" type="number" v-model="form.amount" @input="validateInputAmount" />

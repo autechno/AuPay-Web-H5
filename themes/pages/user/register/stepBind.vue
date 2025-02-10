@@ -166,21 +166,16 @@ const confirmGoogleAuth = async (type: number) => {
 // 初始化
 onMounted(async () => {
   if(activeStepId.value == 1) {
-    const headers = getHeader();
     let action = route.query.action || '';
     let token = route.query.token || '';
-    let providerId = route.query.providerId || '';
-    if (action && token && providerId) {
+    if (action && token) {
       userStore.setTokenState(token);
       let result = await userStore.fetchUserInfo();
       if(result){
-        const res = await userApi.setBindGoogle({providerType: 'google', providerId: providerId }, headers);
-        if(res.code === 200){
-          if(!userStore.userInfo.propsModifyVO.showInitSet){
-            window.location.href = '/assets-account'
-          }else{
-            updateStatus();
-          }
+        if(!userStore.userInfo.propsModifyVO.showInitSet){
+          window.location.href = '/assets-account'
+        }else{
+          updateStatus();
         }
       }
     }

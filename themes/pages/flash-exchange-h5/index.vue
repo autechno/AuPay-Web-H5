@@ -325,7 +325,7 @@ const calculateAndFetchFee = async (inputAmount: number,  type: number) => {
       form.value.inputAmount = form.value.inputAmountTo * rate;
     } else {
       form.value.inputAmount = inputAmount;
-      form.value.inputAmountTo = form.value.inputAmountTo / rate;
+      form.value.inputAmountTo = form.value.inputAmount / rate;
     }
     const feeRes = await assetsApi.getFastRateFee({ currencyId: form.value.selectedCurrencyToId, currencyChain: form.value.selectedChainTo, amount: inputAmount }, headers);
     if (feeRes.code === 200) {

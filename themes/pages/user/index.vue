@@ -12,8 +12,8 @@
         <el-icon :size="20" v-if="item.key">
           <component :is="item.status ? Check : Close" />
         </el-icon>
-        <span v-if="item.status" @click="unBindAuth(item)">解绑</span>
-        <span v-else>绑定</span>
+        <span v-if="item.status" @click="unBindLogin(item)">解绑</span>
+        <span v-else @click="bindLogin(item)">绑定</span>
       </div>
     </div>
     <h1>验证器</h1>
@@ -74,7 +74,6 @@ import CheckPermissionDialog from '@/composables/CheckPermissionDialog.vue';
 import { useRouter, useRoute } from 'vue-router';
 import { rules } from "@/utils/validationRules";
 import {ElForm, ElMessage} from "element-plus";
-
 const headers = getHeader();
 const { systemApi, userApi } = useServer();
 const formRef: any = ref(null);
@@ -83,6 +82,8 @@ const permissionId = ref(3);
 const isPassDialogVisible = ref(false);
 const isGoogleDialogVisible = ref(false);
 const router = useRouter();
+const route = useRoute();
+const { public: { API_HOST } } = useRuntimeConfig();
 
 
 /**
@@ -110,6 +111,7 @@ const googleForm = ref({
   type: 1,
 });
 
+
 /**
  * 表单验证规则
  * 自定义验证器：确认密码
@@ -121,22 +123,6 @@ const validateConfirmPassword = (rule: any, value: string, callback: any) => {
     callback();
   }
 };
-
-const unBindAuth = async (item: any) => {
-  let res;
-  const userStore = UseUserStore();
-  if(item.key == 'bindGoogleLogin'){
-    res = await  userApi.getUnbindGoogle({providerType: 'google'}, headers);
-  }
-  if(res.code == 200) {
-    userStore.userInfo.bindGoogleLogin = false;
-    ElMessage.success('解绑成功')
-  }else{
-    ElMessage.error(res.message);
-  }
-}
-
-// 表单验证规则
 const formRules = {
   ...rules,
   confirmPassword: [
@@ -145,12 +131,35 @@ const formRules = {
     { validator: validateConfirmPassword, trigger: 'blur' }
   ],
 };
-
 const statusList = ref([
   { name: '绑定Google登录', key: 'bindGoogleLogin', status: false },
   { name: 'Apple验证', key: 'bindAppleLogin', status: false },
   { name: 'Telegram验证', key: 'bindFacebookLogin', status: false },
 ]);
+
+// 绑定登录
+const bindLogin = async (item: any) => {
+  if(item.key == 'bindGoogleLogin'){
+    window.location.href = API_HOST + 'oz-client-auth/oauth2/authorize/google?action=bind'
+  }
+}
+
+// 解除绑定
+const unBindLogin = async (item: any) => {
+  let res;
+  console.log(item)
+  if(item.key == 'bindGoogleLogin'){
+    res = await  userApi.getUnbindGoogle({providerType: 'google'}, headers);
+  }
+  if(res.code == 200) {
+    const userStore = UseUserStore();
+    userStore.userInfo[item.key] = false;
+    fetchData();
+    ElMessage.success('解绑成功')
+  }else{
+    ElMessage.error(res.message);
+  }
+}
 
 // 更新父组件的 form 数据
 const updateForm = (newForm: Object) => {
@@ -295,8 +304,22 @@ const fetchData = async () => {
 };
 
 // 初始化数据
-onMounted(() => {
-  fetchData();
+onMounted(async () => {
+  let providerType = route.query.providerType || '';
+  let providerId = route.query.providerId || '';
+  if(providerType && providerId){
+    let res;
+    if(providerType == 'google'){
+      res = await userApi.setBindGoogle({providerType: 'google', providerId: providerId}, headers);
+      if(res.code == 200) {
+        window.location.reload();
+      }else{
+        ElMessage.error(res.message);
+      }
+    }
+  }else{
+    fetchData();
+  }
 });
 </script>
 <style scoped>

@@ -101,16 +101,11 @@ const googleBind = async () => {
 onMounted(async ()=>{
   let action = route.query.action || '';
   let token = route.query.token || '';
-  let providerId = route.query.providerId || '';
-  if(action && token && providerId){
+  if(action && token){
     userStore.setTokenState(token);
     const result = await userStore.fetchUserInfo();
     if(result){
-      const headers = getHeader();
-      const res = await userApi.setBindGoogle({providerType: 'google', providerId: providerId }, headers);
-      if(res.code === 200){
         window.location.href = '/assets-account'
-      }
     }
   }
 })

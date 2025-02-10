@@ -76,7 +76,7 @@ const form = ref({
   remark: '我们去吃饭好不好呀我们',
 })
 const buttonConfig = ref({
-  navigateTo: '/order-list',
+  navigateTo: '/charge-withdraw-h5/transfer/pay',
   btnName: '付款',
   type: 'pay',
 })
