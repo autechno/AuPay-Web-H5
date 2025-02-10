@@ -46,12 +46,15 @@ import logo from '@@/public/images/LOGO3.png';
 import { rules } from "@/utils/validationRules";
 import {ElForm, ElMessage} from "element-plus";
 import { ref, onMounted} from "vue";
-const { userApi  } = useServer();
-const formRef: any = ref(null);
+
 import { useRouter, useRoute } from "vue-router";
 import google from '@@/public/images/Google.svg';
 import apple from '@@/public/images/apple.svg';
 import telegram from '@@/public/images/telegram.svg';
+import {getHeader} from "@/utils/storageUtils";
+
+const { userApi  } = useServer();
+const formRef: any = ref(null);
 const router = useRouter();
 const route = useRoute();
 const userStore = UseUserStore();
@@ -98,15 +101,16 @@ const googleBind = async () => {
 onMounted(async ()=>{
   let action = route.query.action || '';
   let token = route.query.token || '';
-  if(action && token){
+  let providerId = route.query.providerId || '';
+  if(action && token && providerId){
     userStore.setTokenState(token);
-    let result = await userStore.fetchUserInfo();
+    const result = await userStore.fetchUserInfo();
     if(result){
-      // if(userStore.userInfo.country == '' || userStore.userInfo.nickname == '') {
-      //   window.location.href = '/user/info'
-      // }else{
+      const headers = getHeader();
+      const res = await userApi.setBindGoogle({providerType: 'google', providerId: providerId }, headers);
+      if(res.code === 200){
         window.location.href = '/assets-account'
-      // }
+      }
     }
   }
 })

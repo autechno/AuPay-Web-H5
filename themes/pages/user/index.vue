@@ -12,8 +12,8 @@
         <el-icon :size="20" v-if="item.key">
           <component :is="item.status ? Check : Close" />
         </el-icon>
-        <span v-if="item.status"><a href="javascript:;">解绑</a></span>
-        <span v-else><a href="javascript:;">绑定</a></span>
+        <span v-if="item.status" @click="unBindAuth(item)">解绑</span>
+        <span v-else>绑定</span>
       </div>
     </div>
     <h1>验证器</h1>
@@ -121,6 +121,18 @@ const validateConfirmPassword = (rule: any, value: string, callback: any) => {
     callback();
   }
 };
+
+const unBindAuth = async (item: any) => {
+  let res;
+  const userStore = UseUserStore();
+  if(item.key == 'bindGoogleLogin'){
+    res = await  userApi.getUnbindGoogle({providerType: 'google'}, headers);
+  }
+  if(res.code == 200) {
+    userStore.userInfo.bindGoogleLogin = false;
+    ElMessage.success('解绑成功')
+  }
+}
 
 // 表单验证规则
 const formRules = {
