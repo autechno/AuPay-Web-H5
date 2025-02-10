@@ -47,7 +47,7 @@ const cost = ref({
 });
 
 const resetBtn = () => {
-  router.push({ path: '/charge-withdraw-old/withdrawal/selected', query: { currencyId: form.value.id } });
+  router.push({ path: '/charge-withdraw-h5/withdrawal/selected', query: { currencyId: form.value.id } });
 }
 // 更新父组件的 form 数据
 const updateForm = (newForm: Object) => {
@@ -90,7 +90,7 @@ const handleSubmit = async () => {
         ElMessage.success('提现成功');
         // 延迟500毫秒
         setTimeout(() => {
-          router.push({ path: '/charge-withdraw-old/withdrawal/list' });
+          router.push({ path: '/charge-withdraw-h5/withdrawal/list' });
         }, 500);
       } else {
         ElMessage.error(res.message);

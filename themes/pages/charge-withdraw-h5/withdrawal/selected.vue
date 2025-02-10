@@ -61,10 +61,10 @@ const nextTick = () => {
     ElMessage.error( '地址不能为空!');
     return;
   }
-  router.push({ path: '/charge-withdraw-old/withdrawal', query: { currencyId: currencyId.value, address: addressText.value } });
+  router.push({ path: '/charge-withdraw-h5/withdrawal', query: { currencyId: currencyId.value, address: addressText.value } });
 };
 const selectAddress = () => {
-  router.push({ path: '/charge-withdraw-old/withdrawal/address', query: { currencyId: currencyId.value } });
+  router.push({ path: '/charge-withdraw-h5/withdrawal/address', query: { currencyId: currencyId.value } });
 };
 
 // 初始化数据

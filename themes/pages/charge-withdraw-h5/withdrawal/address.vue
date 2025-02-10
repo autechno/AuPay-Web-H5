@@ -33,7 +33,7 @@ const { assetsApi, userApi } = useServer();
 
 // 选择地址
 const selectAddress = (item: any) => {
-  router.push({ path: '/charge-withdraw-old/withdrawal', query: { currencyId:  currencyId.value, address: item.address } });
+  router.push({ path: '/charge-withdraw-h5/withdrawal', query: { currencyId:  currencyId.value, address: item.address } });
 }
 
 // 获取资产数据

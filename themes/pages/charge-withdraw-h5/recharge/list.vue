@@ -40,7 +40,7 @@ const searchText = ref('');
 
 // 选择货币
 const selectCurrency = async (currency: any) => {
-  router.push({ path: '/charge-withdraw-old/recharge', query: {
+  router.push({ path: '/charge-withdraw-h5/recharge', query: {
       currencyId: currency.id,
     }
   });

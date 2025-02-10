@@ -41,7 +41,7 @@ const searchText = ref('');
 const selectCurrency = async (currency: any) => {
   console.log(currency);
   const currencyId = currency.id;
-  router.push({ path: '/charge-withdraw-old/withdrawal/selected', query: { currencyId } });
+  router.push({ path: '/charge-withdraw-h5/withdrawal/selected', query: { currencyId } });
 }
 
 // 重置 currencyList
