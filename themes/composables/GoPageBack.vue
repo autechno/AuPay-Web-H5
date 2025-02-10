@@ -67,7 +67,8 @@ const scanPage = () => {
   margin: 0 0 18px 0;
   display: flex;
   justify-content: space-between;
-  align-items: center; /* 垂直居中对齐 */
+  align-items: center;
+  overflow: hidden;
 }
 
 .left-button {

@@ -138,7 +138,7 @@ const updateStatus = async () => {
 // 绑定第三方登录
 const googleBind = async () => {
   if(bindGoogleLogin.value){ return; }
-  window.location.href = API_HOST + 'oz-client-auth/oauth2/authorize/google?action=bind'
+  window.location.href = API_HOST + '/oz-client-auth/oauth2/authorize/google?action=bind'
 }
 
 /**

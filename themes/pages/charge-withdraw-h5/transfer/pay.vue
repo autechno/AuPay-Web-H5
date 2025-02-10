@@ -3,7 +3,7 @@
     <GoBack :buttonConfig="buttonConfig" />
     <div class="sub-page">
       <div class="title-box-wrap">
-        <div class="title-wrap">传款给</div>
+        <div class="title-wrap">付款给</div>
       </div>
       <div class="search-wrap">
         <input v-model="searchText" placeholder="auPay ID" class="custom-input" />
@@ -45,14 +45,15 @@ onMounted(() => {
   padding: 0;
 }
 .title-box-wrap {
-  height: 100px;
-  background: red;
+  position: relative;
   .title-wrap{
+    padding-top: 30px;
     color: #0D0D0D;
     line-height: 24px;
     font-size: 24px;
     text-align: center;
   }
+  padding-bottom: 28px;
 }
 .page{
   position: relative;
