@@ -140,7 +140,7 @@ const statusList = ref([
 // 绑定登录
 const bindLogin = async (item: any) => {
   if(item.key == 'bindGoogleLogin'){
-    window.location.href = API_HOST + 'oz-client-auth/oauth2/authorize/google?action=bind'
+    window.location.href = API_HOST + '/oz-client-auth/oauth2/authorize/google?action=bind'
   }
 }
 
