@@ -54,7 +54,7 @@ import Shape from "@@/public/images/Shape2.svg";
 import {copyText, formatAddressString} from "@/utils/funcUtil";
 import QCcode from "@/composables/QCcode.vue";
 import {ArrowRightBold} from "@element-plus/icons-vue";
-import TransferForm from "./Form.vue";
+import TransferForm from "@/composables/TransferForm.vue";
 const isDrawerVisible = ref(false);
 
 // 更新父组件的 form 数据
