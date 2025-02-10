@@ -5,7 +5,7 @@
       <div class="exchange-container" style="height: 126px;">
         <div class="title">兑出</div>
         <div class="currency">
-          <input  v-model="form.inputAmountTo" placeholder="请输入金额" type="number" @input="syncInputAmountTo(false)" />
+          <input  v-model="form.inputAmountTo" :class="{ 'error-input': isAmountError }" placeholder="请输入金额" type="number" @input="syncInputAmountTo(false)" />
         </div>
         <el-row class="flash-btn">
           <el-col :span="8"><span @click="percentage(0.5)">50%</span></el-col>
@@ -41,7 +41,9 @@
       <span>费用：</span>
       <span>{{ cost.content }}</span>
     </div>
-    <el-button  @click="searchBtn" class="custom-button" >确认</el-button>
+
+    <el-button  class="custom-button" :class="{ 'disabled-button': isAmountError || isAmountSame}" :disabled="!form.inputAmountTo || isAmountError || isAmountSame">确认</el-button>
+
     <el-drawer class="custom-title" v-model="drawerSearch"
                :title="dialogTitle"
                :show-close="false"
@@ -114,6 +116,9 @@ const currencyChainList = ref([]);
 const dialogCheckVisible = ref(false);
 const selectedChain = ref(null);
 const isAllSelected = ref(true);
+const isAmountError = ref(false);
+const isAmountSame = ref(false);
+
 // 搜索
 const selectAll = () => {
   isAllSelected.value = true;
@@ -126,7 +131,7 @@ const selectChain = (id: number) => {
   resetCurrencyList();
 };
 
-const searchBtn = () => {
+const submitExchange = () => {
   if(!form.value.inputAmountTo || !form.value.inputAmount) {
     ElMessage.error('请输入金额!');
     return;
@@ -211,8 +216,6 @@ const updateForm = async (newForm: Object) => {
 
 // 重置 currencyList
 const resetCurrencyList = () => {
-  console.log("Selected Chain:", selectedChain.value);
-  console.log("Search Text:", searchText.value); // 添加搜索文本的调试输出
   currencyList.value = originalCurrencyList.value.filter(currency => {
     // 检查是否匹配 selectedChain
     const isMatch = selectedChain.value === null || currency.currencyChain === selectedChain.value;
@@ -222,7 +225,12 @@ const resetCurrencyList = () => {
     return (isMatch || isZeroMatch) && isSearchMatch;
   });
 };
-
+// 同一货币协议不能兑换
+const checkAmountSame = () => {
+  if (form.value.selectedCurrencyId === form.value.selectedCurrencyToId && form.value.selectedChain === form.value.selectedChainTo) {
+    isAmountSame.value = true;
+  }
+};
 
 // 获取数据
 const fetchData = async () => {
@@ -289,9 +297,17 @@ const updateCurrencyChain = (currencyData: any) => {
   }
   if(form.value.selectedCurrencyId && form.value.selectedCurrencyToId){
     fetchRateExchange();
+    checkAmountSame();
   }
   drawerSearch.value = false;
 };
+
+/**
+ *
+ */
+if (form.value.selectedCurrencyId === form.value.selectedCurrencyToId  || form.value.selectedChain === form.value.selectedChainTo) {
+  isAmountError.value = false;
+}
 
 // 获取汇率数据
 const fetchRateExchange = async () => {
@@ -310,39 +326,34 @@ const fetchRateExchange = async () => {
 };
 
 //计算加手续费
-const calculateAndFetchFee = async (inputAmount: number, sourceCurrencyId: number, targetCurrencyId: number, type: number) => {
+const calculateAndFetchFee = async (inputAmount: number,  type: number) => {
   try {
-    loading.value = true;
-    const [res, feeRes] = await Promise.all([
-      assetsApi.calculate({ amount: inputAmount, sourceCurrencyId, targetCurrencyId }, headers),
-      assetsApi.getFastRateFee({
-        currencyId: form.value.selectedCurrencyToId,
-        currencyChain: form.value.selectedChainTo,
-        amount: inputAmount
-      }, headers)
-    ]);
-    if (res.code === 200) {
-      if (type === 1) {
-        form.value.inputAmount = res.data;
-        form.value.inputAmountTo = inputAmount;
-      } else {
-        form.value.inputAmountTo = res.data;
-        form.value.inputAmount = inputAmount;
-      }
+    let rate = rateExchange.value.rate;
+    if (type === 1) {
+      form.value.inputAmountTo = inputAmount;
+      form.value.inputAmount = form.value.inputAmountTo / rate;
     } else {
-      ElMessage.error(res.message || '查询失败');
+      form.value.inputAmount = inputAmount;
+      form.value.inputAmountTo = form.value.inputAmountTo * rate;
     }
+    const feeRes = await assetsApi.getFastRateFee({ currencyId: form.value.selectedCurrencyToId, currencyChain: form.value.selectedChainTo, amount: inputAmount }, headers);
     if (feeRes.code === 200) {
       const fee = feeRes.data.fee;
       cost.value.content = `${fee} ${form.value.selectedCurrencyTo}`;
       cost.value.amount = fee;
+      let maxAmount = form.value.inputAmountTo + fee;
+      if (maxAmount > form.value.bigNumCost) {
+        isAmountError.value = true;
+      } else {
+        isAmountError.value = false;
+        checkAmountSame();
+      }
     } else {
       ElMessage.error(feeRes.message || '查询失败');
     }
   } catch (error) {
     ElMessage.error('请求失败，请重试');
   } finally {
-    loading.value = false;
   }
 };
 
@@ -352,7 +363,7 @@ const swapCurrencies = async () => {
   const selectedCurrency = form.value.selectedCurrency;
   const selectedChain = form.value.selectedChain;
   const selectedChainName = form.value.selectedChainName;
-  // 重新计算金额
+
   form.value.selectedCurrencyId = form.value.selectedCurrencyToId;
   form.value.selectedCurrency = form.value.selectedCurrencyTo;
   form.value.selectedChain = form.value.selectedChainTo;
@@ -361,43 +372,40 @@ const swapCurrencies = async () => {
   form.value.selectedCurrencyTo = selectedCurrency;
   form.value.selectedChainTo = selectedChain;
   form.value.selectedChainNameTo = selectedChainName;
-
+  form.value.inputAmount = '';
+  form.value.inputAmountTo = '';
+  cost.value = {
+    content: '',
+    amount: 0,
+  };
   // 重新计算汇率
   const  selectedCurrencyData = currencyList.value.find(currency => currency.currencyId === form.value.selectedCurrencyToId)
   form.value.bigNumCost = selectedCurrencyData.balance
   fetchRateExchange();
-  // 延迟500毫秒
-  setTimeout(() => {
-    syncInputAmountTo(true);
-  }, 500);
 };
 
+// 百分比方式
+const percentage = (number: number) => {
+  // form.value.inputAmountTo = form.value.bigNumCost * number;
+  // syncInputAmountTo(false);
+}
 
 
 // 输入框同步输出金额
 const syncInputAmount = () => {
   const inputAmount = parseFloat(form.value.inputAmount);
   if (!isNaN(inputAmount)) {
-    calculateAndFetchFee(inputAmount, form.value.selectedCurrencyId, form.value.selectedCurrencyToId, 2)
+    calculateAndFetchFee(inputAmount, 2)
   } else {
     form.value.inputAmountTo = '';
   }
 };
 
-// 百分比方式
-const percentage = (number: number) => {
-  form.value.inputAmountTo = form.value.bigNumCost * number;
-  syncInputAmountTo(false);
-}
-
 // 输出框同步输入金额
-const syncInputAmountTo = (isFlag: boolean) => {
+const syncInputAmountTo = () => {
   let inputAmount = parseFloat(form.value.inputAmountTo);
-  if(isFlag){
-    inputAmount = parseFloat(form.value.inputAmount);
-  }
   if (!isNaN(inputAmount)) {
-    calculateAndFetchFee(inputAmount, form.value.selectedCurrencyToId, form.value.selectedCurrencyId, 1)
+    calculateAndFetchFee(inputAmount, 1)
   }else{
     form.value.inputAmount = '';
     loading.value = false;
@@ -419,6 +427,9 @@ onMounted(() => {
 *{
   margin:0;
   padding: 0;
+}
+.error-input {
+  color: red!important;
 }
 .page{
   position: relative;

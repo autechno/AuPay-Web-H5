@@ -21,17 +21,17 @@
       </el-form-item>
       <el-form-item
           label="链"
-          prop="currencyChainId"
+          prop="currencyChain"
           :rules="[{ required: true, message: '货币链不能为空', trigger: 'blur' }]">
         <el-select
             id="chain-select"
-            v-model="form.currencyChainId"
+            v-model="form.currencyChain"
             placeholder="请选择链">
           <el-option
               v-for="chain in currencyChainList"
-              :key="chain.currencyChainId"
+              :key="chain.currencyChain"
               :label="chain.currencyChainName"
-              :value="chain.currencyChainId"
+              :value="chain.currencyChain"
           />
         </el-select>
       </el-form-item>
@@ -84,7 +84,7 @@ const rules = {
   currencyId: [
     { required: true, message: '货币不能为空', trigger: 'blur' },
   ],
-  currencyChainId: [
+  currencyChain: [
     { required: true, message: '货币链不能为空', trigger: 'blur' },
   ],
   amount: [
@@ -97,7 +97,7 @@ const handleCurrencyChain = () => {
   const currentCurrency = currencyList.value.find(currency => currency.currencyId === props.form.currencyId);
   if (currentCurrency) {
     currencyChainList.value = currentCurrency.chains;
-    props.form.currencyChainId = currentCurrency.chains[0]?.currencyChainId;
+    props.form.currencyChain = currentCurrency.chains[0]?.currencyChain;
     transferableAmount.value = currentCurrency.chains[0]?.balance;
   }
 };
@@ -113,7 +113,7 @@ const validateInputAmount = async () => {
   }
   let res = await assetsApi.getTransferRateFee({
     currencyId: props.form.currencyId,
-    currencyChain: props.form.currencyChainId,
+    currencyChain: props.form.currencyChain,
     amount: props.form.amount
   }, headers);
   if (res.code === 200) {
@@ -130,7 +130,7 @@ const validateInputAmount = async () => {
 const handleSubmit = async () => {
   const valid = await formRef.value.validate();
   if (valid) {
-    props.form.generateQR = `/charge-withdraw/transfer/detail?qr=${props.form.transferQR}&currencyId=${props.form.currencyId}&currencyChainId=${props.form.currencyChainId}&amount=${props.form.amount}&remark=${props.form.remark}`;
+    props.form.generateQR = `/charge-withdraw/transfer/detail?qr=${props.form.transferQR}&currencyId=${props.form.currencyId}&currencyChain=${props.form.currencyChain}&amount=${props.form.amount}&remark=${props.form.remark}`;
     props.isDialogVisible = false;
     emit('update:form', { ...props.form }); // 更新父组件的 form 数据
     emit('close');
@@ -154,13 +154,11 @@ const assetsData = async () => {
             currencyId: item.currencyId,
             currencyName: getDataInfo(item.currencyId, 'currencyChains')?.name,
             chains: [],
-            walletAddress: item.walletAddress,
           });
         }
         currencyMap.get(item.currencyId).chains.push({
-          currencyChainId: item.currencyChain,
+          currencyChain: item.currencyChain,
           currencyChainName: getDataInfo(item.currencyChain, 'chains')?.name,
-          walletAddress: item.walletAddress,
           balance: item.balance,
           totalBalanceUsdt: item.totalBalanceUsdt,
         });

@@ -21,14 +21,14 @@
         <el-select
             id="chain-select"
             style="margin-bottom: 20px;"
-            v-model="form.currencyChainId"
+            v-model="form.currencyChain"
             placeholder="请选择链"
             @change="handleWalletAddress">
           <el-option
               v-for="chain in currencyChainList"
-              :key="chain.currencyChainId"
+              :key="chain.currencyChain"
               :label="chain.currencyChainName"
-              :value="chain.currencyChainId"
+              :value="chain.currencyChain"
           />
         </el-select>
         <div class="social-login">
@@ -58,7 +58,7 @@ const headers = getHeader();
 const { assetsApi } = useServer();
 const form = ref({
   currencyId: null,
-  currencyChainId: null,
+  currencyChain: null,
   walletAddress: '',
   avatar: '',
 });
@@ -82,7 +82,7 @@ const getQueryParams = () => {
   const urlParams = new URLSearchParams(window.location.search);
   return {
     currencyId: urlParams.get('currencyId'),
-    currencyChainId: urlParams.get('currencyChainId'),
+    currencyChain: urlParams.get('currencyChain'),
   };
 };
 
@@ -103,14 +103,14 @@ const fetchData = async () => {
           });
         }
         currencyMap.get(item.currencyId).chains.push({
-          currencyChainId: item.currencyChain,
+          currencyChain: item.currencyChain,
           currencyChainName: getDataInfo(item.currencyChain, 'chains')?.name,
           walletAddress: item.walletAddress,
         });
       });
       currencyList.value = Array.from(currencyMap.values());
       // 查询参数
-      const { currencyId, currencyChainId } = getQueryParams();
+      const { currencyId, currencyChain } = getQueryParams();
       if (currencyId) {
         form.value.currencyId = currencyId;
         handleCurrencyChain();
@@ -118,8 +118,7 @@ const fetchData = async () => {
         form.value.currencyId = currencyList.value[0]?.currencyId;
         console.log(form.value)
 
-        form.value.currencyChainId = currencyList.value[0]?.chains[0]?.currencyChainId;
-        form.value.walletAddress = currencyList.value[0]?.walletAddress || '';
+        form.value.currencyChain = currencyList.value[0]?.chains[0]?.currencyChain;
         currencyChainList.value = currencyList.value[0]?.chains || [];
       }
     } else {
@@ -135,16 +134,21 @@ const handleCurrencyChain = () => {
   const currentCurrency = currencyList.value.find(currency => currency.currencyId === form.value.currencyId);
   if (currentCurrency) {
     currencyChainList.value = currentCurrency.chains;
-    form.value.currencyChainId = currentCurrency.chains[0]?.currencyChainId;
-    form.value.walletAddress = currentCurrency.chains[0]?.walletAddress || '';
+    form.value.currencyChain = currentCurrency.chains[0]?.currencyChain;
   }
 };
 
 // 更新钱包地址
-const handleWalletAddress = () => {
-  const selectedChain = currencyChainList.value.find(chain => chain.currencyChainId === form.value.currencyChainId);
+const handleWalletAddress = async () => {
+  const selectedChain = currencyChainList.value.find(chain => chain.currencyChain === form.value.currencyChain);
   if (selectedChain) {
-    form.value.walletAddress = selectedChain.walletAddress;
+    // 获取充值配置
+    const res = await assetsApi.getAccountRechargeConfig({currencyId: form.value.currencyId,  currencyChain: form.value.currencyChain}, headers);
+    if (res.code === 200) {
+      form.value.walletAddress = res.data.address
+    } else {
+      ElMessage.error(res.message || '查询失败');
+    }
   }
 };
 

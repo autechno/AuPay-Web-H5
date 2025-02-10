@@ -74,7 +74,7 @@ const rules = {
 const form = ref({
   qr: '',
   currencyId: '',
-  currencyChainId: '',
+  currencyChain: '',
   amount: '',
   remark: '',
 });
@@ -111,7 +111,7 @@ const  processPay = async () =>{
     accountType: account.value.accountType,
     qrcode: form.value.qr,
     currencyId: form.value.currencyId,
-    currencyChain: form.value.currencyChainId,
+    currencyChain: form.value.currencyChain,
     transferAmount: form.value.amount,
     remark: form.value.remark,
     optToken: checkForm.value.optToken
@@ -139,7 +139,7 @@ const initializeData = async () => {
     // 处理资产数据
     if (assetsRes.code == 200) {
       assetsRes.data.forEach(item => {
-        if (item.currencyId == form.value.currencyId && item.currencyChain == form.value.currencyChainId) {
+        if (item.currencyId == form.value.currencyId && item.currencyChain == form.value.currencyChain) {
           const currencyInfo = getDataInfo(item.currencyId, 'currencyChains');
           currencyAccount.value.currencyName = currencyInfo?.name;
           currencyAccount.value.currencyTitle = currencyInfo?.title;
@@ -182,7 +182,7 @@ const handleSubmit = async () => {
       throw new Error('转账ID不能为空');
     }else if (!account.value.accountId) {
       throw new Error('转账的账户信息不完整');
-    }else if (!form.value.currencyId || !form.value.currencyChainId) {
+    }else if (!form.value.currencyId || !form.value.currencyChain) {
       throw new Error('转账货币信息不完整');
     } else if(!form.value.amount) {
       throw new Error('转账金额不能为空');
@@ -198,14 +198,13 @@ const handleSubmit = async () => {
 const validateInputAmount = async () => {
   let res = await assetsApi.getWithdrawRateFee({
     currencyId: form.value.currencyId,
-    currencyChain: form.value.currencyChainId,
+    currencyChain: form.value.currencyChain,
     amount: form.value.amount
   }, headers);
   if (res.code === 200) {
     currencyAccount.value.fee = res.data.fee;
   }
   if (form.value.amount > currencyAccount.value.balance) {
-    form.value.amount = currencyAccount.value.balance;
     ElMessage.warning('转入金额不能大于实际转账数量');
   }
   currencyAccount.value.rateCurrency = form.value.amount * currency.value.rate;
@@ -219,7 +218,7 @@ onMounted(() => {
   currency.value.sign = getDataInfo(currency.value.code, 'currency')?.sign;
   form.value.qr = route.query.qr;
   form.value.currencyId = route.query.currencyId;
-  form.value.currencyChainId = route.query.currencyChainId;
+  form.value.currencyChain = route.query.currencyChain;
   form.value.amount = route.query.amount;
   console.log('-form start-')
   console.log(form.value)
