@@ -312,7 +312,7 @@ onMounted(async () => {
     if(providerType == 'google'){
       res = await userApi.setBindGoogle({providerType: 'google', providerId: providerId}, headers);
       if(res.code == 200) {
-        window.location.reload();
+        window.location.href = '/user';
       }else{
         ElMessage.error(res.message);
       }
