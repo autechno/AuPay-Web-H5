@@ -131,6 +131,8 @@ const unBindAuth = async (item: any) => {
   if(res.code == 200) {
     userStore.userInfo.bindGoogleLogin = false;
     ElMessage.success('解绑成功')
+  }else{
+    ElMessage.error(res.message);
   }
 }
 
