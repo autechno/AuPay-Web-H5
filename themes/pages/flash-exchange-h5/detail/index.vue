@@ -40,8 +40,8 @@ const route = useRoute();
 const headers = getHeader();
 const { assetsApi } = useServer();
 const statusMap = {
-  1: { percentage: 50, image: s1, class: 's1' },
-  2: { percentage: 100, image: s2, class: 's2' },
+  1: { percentage: 50, image: s2, class: 's1' },
+  2: { percentage: 100, image: s1, class: 's2' },
   3: { percentage: 100, image: s3, class: 's3' },
 };
 
