@@ -61,7 +61,11 @@ const handleSubmit = async () => {
     if (valid) {
       let res = await userApi.setUserSystemConfig(form.value, headers);
       if(res.code == 200) {
-        ElMessage.success('设置成功！');
+        const userStore = UseUserStore();
+        const result = await userStore.fetchUserInfo();
+        if(result){
+          ElMessage.success('设置成功！');
+        }
       }
     }
   } catch (error) {

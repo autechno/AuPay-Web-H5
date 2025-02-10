@@ -15,7 +15,7 @@
           <button class="btn" @click="isDrawerVisible = true">编辑</button><button class="btn" @click="cleanQR">清除</button>
           <div class="row-wrap"><span class="text">币种：</span><span>{{form.currencyId}}</span></div>
           <div class="row-wrap"><span class="text">网络：</span><span>{{form.currencyChain}}</span></div>
-          <div class="row-wrap"><span class="text">数量：</span><span>{{form.amount}}</span></div>
+          <div class="row-wrap"><span class="text">数量：</span><span>{{formatCurrency(form.amount)}}</span></div>
           <div class="row-wrap"><span class="text">备注：</span><span>{{formatAddressString(form.remark, 4, 8)}}</span></div>
         </div>
       </div>
@@ -55,6 +55,7 @@ import {copyText, formatAddressString} from "@/utils/funcUtil";
 import QCcode from "@/composables/QCcode.vue";
 import {ArrowRightBold} from "@element-plus/icons-vue";
 import TransferForm from "@/composables/TransferForm.vue";
+import {formatCurrency, getDataInfo} from "@/utils/formatUtils";
 const isDrawerVisible = ref(false);
 
 // 更新父组件的 form 数据
