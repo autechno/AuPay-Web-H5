@@ -42,7 +42,7 @@
       <span>{{ cost.content }}</span>
     </div>
 
-    <el-button  class="custom-button" :class="{ 'disabled-button': isAmountError || isAmountSame}" :disabled="!form.inputAmountTo || isAmountError || isAmountSame">确认</el-button>
+    <el-button  @click="submitExchange" class="custom-button" :class="{ 'disabled-button': isAmountError}" :disabled="!form.inputAmountTo || isAmountError || isAmountSame">确认</el-button>
 
     <el-drawer class="custom-title" v-model="drawerSearch"
                :title="dialogTitle"
@@ -229,6 +229,8 @@ const resetCurrencyList = () => {
 const checkAmountSame = () => {
   if (form.value.selectedCurrencyId === form.value.selectedCurrencyToId && form.value.selectedChain === form.value.selectedChainTo) {
     isAmountSame.value = true;
+  }else{
+    isAmountSame.value = false;
   }
 };
 
@@ -301,13 +303,6 @@ const updateCurrencyChain = (currencyData: any) => {
   }
   drawerSearch.value = false;
 };
-
-/**
- *
- */
-if (form.value.selectedCurrencyId === form.value.selectedCurrencyToId  || form.value.selectedChain === form.value.selectedChainTo) {
-  isAmountError.value = false;
-}
 
 // 获取汇率数据
 const fetchRateExchange = async () => {
@@ -386,8 +381,8 @@ const swapCurrencies = async () => {
 
 // 百分比方式
 const percentage = (number: number) => {
-  // form.value.inputAmountTo = form.value.bigNumCost * number;
-  // syncInputAmountTo(false);
+  form.value.inputAmountTo = form.value.bigNumCost * number;
+  syncInputAmountTo();
 }
 
 

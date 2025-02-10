@@ -15,6 +15,12 @@ class UserApi extends Http {
         return this.post('/oz-client-auth/auth/logout', params, headers)
     }
     /**
+     * 解绑google登录
+     */
+    public getUnbingGoogle(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-user/aupay-user/provider/unbinding', params, headers)
+    }
+    /**
      * 注册
      */
     public register(params: any, headers: any): Promise<any> {
@@ -168,6 +174,8 @@ class MessageApi extends Http {
 }
 
 class SystemApi extends Http {
+
+
     /**
      * 发送修改邮箱验证码
      */
