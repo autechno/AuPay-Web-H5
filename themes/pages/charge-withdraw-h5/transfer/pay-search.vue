@@ -8,7 +8,7 @@
           <el-icon><el-image :src="Scan" /></el-icon>
           <div class="column">
             <div class="title">3432323</div>
-            <div class="text">+2000U</div>
+            <div class="text">Life be beautiful like summer …</div>
           </div>
         </div>
       </div>
@@ -56,8 +56,7 @@ onMounted(() => {
     padding-top: 30px;
     color: #0D0D0D;
     line-height: 24px;
-    font-size: 24px;
-    text-align: center;
+    font-size: 14px;
   }
   padding-bottom: 28px;
 }
@@ -137,7 +136,7 @@ onMounted(() => {
 }
 .title-item{
   margin-top: 20px;
-  height: 40px;
+  height: 46px;
   display: flex;
   .title{
     line-height: 20px;
@@ -152,9 +151,8 @@ onMounted(() => {
     overflow: hidden;
   }
   .el-icon{
-    margin-top:2px;
-    height: 34px;
-    width: 34px;
+    height: 46px;
+    width: 46px;
   }
 
 

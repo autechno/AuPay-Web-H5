@@ -13,7 +13,7 @@
       </div>
     </div>
     <el-button class="custom-button" >分享</el-button>
-    <el-drawer v-model="drawerSearch"
+    <el-drawer v-model="drawerBox"
                title="请注意！"
                :show-close="false"
                direction="btt"
@@ -22,7 +22,7 @@
         <p>本地址仅接受 Ethereum 上的 USTD，OZC，TOTO，ETH 四种代币</p>
         <p>请您在充值前仔细核对币种, 不支持币种的任何转账, 不可退还和取消。</p>
       </div>
-      <el-button class="custom-button" >我已知晓，会仔细核对充值币种</el-button>
+      <el-button class="custom-button" @click="drawerBox = false">我已知晓，会仔细核对充值币种</el-button>
     </el-drawer>
 
   </div>
@@ -40,7 +40,7 @@ const { assetsApi } = useServer();
 const headers = getHeader();
 const router = useRouter();
 const route = useRoute();
-const drawerSearch = ref(true);
+const drawerBox = ref(true);
 const address = ref('');
 
 const form = ref({
