@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page" style="padding-top: 28px;">
     <GoBack  />
     <div class="flash-title-wrap">
       <div class="title">{{yearText}}年度闪兑单</div>
