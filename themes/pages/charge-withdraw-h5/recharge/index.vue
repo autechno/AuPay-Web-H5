@@ -39,12 +39,12 @@
 import { ref, onMounted } from 'vue';
 import GoBack from "@/composables/GoPageBack.vue";
 import { useRoute, useRouter } from 'vue-router';
-import {ElMessage} from "element-plus";
 import copy from "@@/public/images/copy.svg";
 import {copyText} from "@/utils/funcUtil";
 import QCcode from "@/composables/QCcode.vue";
 import arrow from '@@/public/images/arrow-right.svg';
 import Share from "@/composables/Share.vue";
+import {showCatchErrorMessage} from "~/utils/messageUtils";
 
 const { assetsApi } = useServer();
 const headers = getHeader();
@@ -75,19 +75,18 @@ const fetchData = async (id: number) => {
         currencyChain: currencyChain,
         currencyChainName: getDataInfo(currencyChain, 'chains')?.name,
       };
-      console.log(form.value);
       // 获取充值配置
       const rechargeConfigRes = await assetsApi.getAccountRechargeConfig({ currencyId, currencyChain }, headers);
       if (rechargeConfigRes.code === 200) {
         form.value.walletAddress = rechargeConfigRes.data.address
       } else {
-        ElMessage.error(rechargeConfigRes.message || '查询失败');
+        showErrorMessage(rechargeConfigRes.code, rechargeConfigRes.message)
       }
     }else{
-      ElMessage.error(assetsRes.message || '查询失败');
+      showErrorMessage(assetsRes.code, assetsRes.message)
     }
   } catch (error) {
-    ElMessage.error('请求失败，请重试');
+    showCatchErrorMessage();
   }
 };
 

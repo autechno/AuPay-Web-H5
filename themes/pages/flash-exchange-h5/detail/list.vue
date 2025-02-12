@@ -86,6 +86,7 @@ import { ArrowDownBold } from '@element-plus/icons-vue'
 import sol from '@@/public/images/sol.svg'
 import arrow from '@@/public/images/jiantou.svg'
 import btc from '@@/public/images/btc.svg'
+import {showCatchErrorMessage} from "~/utils/messageUtils";
 const router = useRouter()
 const headers = getHeader();
 const { assetsApi } = useServer();
@@ -122,10 +123,10 @@ const fetchData = async () => {
       recordList.value = res.data.records;
       totalRecord.value = res.data.total;
     } else {
-      ElMessage.error(res.message || '查询失败');
+      showErrorMessage(res.code, res.message);
     }
   } catch (error) {
-    ElMessage.error('请求失败，请重试');
+    showCatchErrorMessage();
   }
 };
 

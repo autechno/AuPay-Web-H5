@@ -52,7 +52,7 @@ const readClipboard = async () => {
     }
   } catch (err) {
     console.error('无法读取剪贴板内容:', err);
-    ElMessage.error( '请确保您已允许访问剪贴板');
+    showErrorMessage(0, '请确保您已允许访问剪贴板')
   }
 };
 // 设置地址

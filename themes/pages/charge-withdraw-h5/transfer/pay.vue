@@ -44,6 +44,7 @@ import head from '@@/public/images/head.svg';
 import clip from "@@/public/images/ClipBoard.svg";
 import addressbook from "@@/public/images/addressbook.svg";
 import {ElMessage} from "element-plus";
+import {showCatchErrorMessage} from "~/utils/messageUtils";
 
 const { userApi } = useServer();
 const headers = getHeader();
@@ -65,7 +66,7 @@ const readClipboard = async () => {
     }
   } catch (err) {
     console.error('无法读取剪贴板内容:', err);
-    ElMessage.error( '请确保您已允许访问剪贴板');
+    showErrorMessage(0, '请确保您已允许访问剪贴板');
   }
 };
 // 检查剪贴板是否有内容
@@ -113,11 +114,11 @@ const handleSubmit = async () => {
       if(res.code == 200){
         router.push({ path: 'selected', query: { qr: form.value.transferQR } });
       }else{
-        ElMessage.error(res.message);
+        showErrorMessage(res.code, res.message)
       }
     }
   } catch (error) {
-    ElMessage.error('请求失败，请重试');
+    showCatchErrorMessage()
   }
 };
 // 跳转配置信息

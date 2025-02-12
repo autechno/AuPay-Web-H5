@@ -103,6 +103,7 @@ import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 import btc from '@@/public/images/btc.svg'
 import sol from '@@/public/images/sol.svg'
 import {ElMessage} from "element-plus";
+import {showCatchErrorMessage} from "~/utils/messageUtils";
 const headers = getHeader();
 const { assetsApi } = useServer();
 
@@ -130,7 +131,7 @@ const selectChain = (id: number) => {
 
 const submitExchange = () => {
   if(!form.value.inputAmountTo || !form.value.inputAmount) {
-    ElMessage.error('请输入金额!');
+    showErrorMessage(0, '请输入金额!');
     return;
   }
   dialogCheckVisible.value = true
@@ -267,10 +268,10 @@ const fetchData = async () => {
         updateCurrencyChain(currencyList.value[0]);
       }
     } else {
-      ElMessage.error(res.message || '查询失败');
+      showErrorMessage(res.code, res.message);
     }
   } catch (error) {
-    ElMessage.error('请求失败，请重试');
+    showCatchErrorMessage();
   }
 };
 
@@ -327,9 +328,9 @@ const calculateAndFetchFee = async (inputAmount: number,  type: number) => {
       form.value.inputAmount = inputAmount;
       form.value.inputAmountTo = form.value.inputAmount / rate;
     }
-    const feeRes = await assetsApi.getFastRateFee({ currencyId: form.value.selectedCurrencyToId, currencyChain: form.value.selectedChainTo, amount: inputAmount }, headers);
-    if (feeRes.code === 200) {
-      const fee = feeRes.data.fee;
+    const res = await assetsApi.getFastRateFee({ currencyId: form.value.selectedCurrencyToId, currencyChain: form.value.selectedChainTo, amount: inputAmount }, headers);
+    if (res.code === 200) {
+      const fee = res.data.fee;
       cost.value.content = `${fee} ${form.value.selectedCurrencyTo}`;
       cost.value.amount = fee;
       let maxAmount = form.value.inputAmountTo + fee;
@@ -340,10 +341,10 @@ const calculateAndFetchFee = async (inputAmount: number,  type: number) => {
         checkAmountSame();
       }
     } else {
-      ElMessage.error(feeRes.message || '查询失败');
+      showErrorMessage(res.code, res.message);
     }
   } catch (error) {
-    ElMessage.error('请求失败，请重试');
+    showCatchErrorMessage();
   } finally {
   }
 };

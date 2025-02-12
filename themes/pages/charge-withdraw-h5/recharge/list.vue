@@ -28,6 +28,7 @@ import {ElMessage} from "element-plus";
 import btc from '@@/public/images/btc.svg'
 import ewm from "@@/public/images/ewm.svg";
 import { useRoute, useRouter } from 'vue-router';
+import {showCatchErrorMessage} from "~/utils/messageUtils";
 
 const headers = getHeader();
 const router = useRouter();
@@ -40,7 +41,7 @@ const searchText = ref('');
 
 // 选择货币
 const selectCurrency = async (currency: any) => {
-  router.push({ path: '/charge-withdraw-h5/recharge', query: {
+  router.push({ path: './', query: {
       currencyId: currency.id,
     }
   });
@@ -52,7 +53,6 @@ const resetCurrencyList = () => {
     return currency.currencyName.toLowerCase().includes(searchText.value.toLowerCase());
   });
 };
-
 
 // 获取数据
 const fetchData = async () => {
@@ -84,10 +84,10 @@ const fetchData = async () => {
       originalCurrencyList.value = currencyData;
       currencyChainList.value = chainData;
     } else {
-      ElMessage.error(res.message || '查询失败');
+      showErrorMessage(res.code, res.message);
     }
   } catch (error) {
-    ElMessage.error('请求失败，请重试');
+    showCatchErrorMessage()
   }
 };
 

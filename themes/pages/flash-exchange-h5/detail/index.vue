@@ -35,6 +35,7 @@ import { useRoute } from 'vue-router';
 import s1 from '@@/public/images/s1.svg';
 import s2 from '@@/public/images/s2.svg';
 import s3 from '@@/public/images/s3.svg';
+import {showCatchErrorMessage} from "~/utils/messageUtils";
 
 const route = useRoute();
 const headers = getHeader();
@@ -57,10 +58,10 @@ const fetchData = async () => {
     if (res.code === 200) {
       assets.value = res.data;
     } else {
-      ElMessage.error(res.message || '查询失败');
+      showErrorMessage(res.code, res.message);
     }
   } catch (error) {
-    ElMessage.error('请求失败，请重试');
+    showCatchErrorMessage();
   }
 };
 

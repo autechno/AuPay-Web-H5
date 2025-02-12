@@ -44,6 +44,7 @@ import head from '@@/public/images/head.svg';
 import sol from "@@/public/images/sol.svg";
 import {ElMessage} from "element-plus";
 import {getHeader} from "@/utils/storageUtils";
+import {showCatchErrorMessage} from "~/utils/messageUtils";
 // 整合数据
 const currencyList = ref([]);
 const originalCurrencyList = ref([]);
@@ -83,7 +84,6 @@ const fetchData = async (transferQR: number) => {
     if (resAssets.code === 200) {
       let currencyData = [];
       const dataList = resAssets.data;
-
       dataList.forEach(item => {
         const { id, currencyId, currencyChain, balance, totalBalanceUsdt } = item;
         currencyData.push({
@@ -100,16 +100,16 @@ const fetchData = async (transferQR: number) => {
       currencyList.value = currencyData;
       originalCurrencyList.value = currencyData;
     } else {
-      ElMessage.error(resAssets.message);
+      showErrorMessage(resAssets.code, resAssets.message);
     }
     // 处理二维码验证结果
     if (resQR.code === 200) {
       accountForm.value = resQR.data; // 更新账户表单数据
     } else {
-      ElMessage.error(resQR.message);
+      showErrorMessage(resQR.code, resQR.message);
     }
   } catch (error) {
-    ElMessage.error('请求失败，请重试');
+    showCatchErrorMessage();
   }
 };
 

@@ -64,6 +64,7 @@ import {formatCurrency, getDataInfo} from "~/utils/configUtils";
 import {ElMessage} from "element-plus";
 import {getHeader} from "@/utils/storageUtils";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
+import {showCatchErrorMessage} from "~/utils/messageUtils";
 
 const headers = getHeader();
 const router = useRouter();
@@ -148,24 +149,28 @@ const validateInputAmount = async () => {
 };
 // 转账
 const submitPay = async () =>{
-  let params = {
-    accountId: account.value.accountId,
-    accountType: account.value.accountType,
-    qrcode: account.value.qr,
-    currencyId: form.value.currencyId,
-    currencyChain: form.value.currencyChain,
-    transferAmount: form.value.amount,
-    remark: account.value.remark,
-    optToken: checkForm.value.optToken
-  }
-  setHeadersAuth(headers, checkForm);
-  let res = await assetsApi.transferApply(params, headers);
-  if(res.code == 200) {
-    let id = 384;
-    // TODO 返回了一个tradeNO,
-    router.push({ path: 'successed', query: { qr: account.value.qr, remark: remark.value, id:  id} });
-  }else{
-    throw new Error(res.message);
+  try {
+    let params = {
+      accountId: account.value.accountId,
+      accountType: account.value.accountType,
+      qrcode: account.value.qr,
+      currencyId: form.value.currencyId,
+      currencyChain: form.value.currencyChain,
+      transferAmount: form.value.amount,
+      remark: form.value.remark,
+      optToken: checkForm.value.optToken
+    }
+    setHeadersAuth(headers, checkForm);
+    let res = await assetsApi.transferApply(params, headers);
+    if(res.code == 200) {
+      let id = 384;
+      // TODO 返回了一个tradeNO,
+      router.push({ path: 'successed', query: { qr: account.value.qr, remark: remark.value, id:  id} });
+    }else{
+      showErrorMessage(res.code, res.message)
+    }
+  } catch (error) {
+    showCatchErrorMessage()
   }
 }
 // 设置最大金额
@@ -206,7 +211,7 @@ const fetchData = async (assetsId: number, transferQR: string) => {
         account.value.qr = transferQR;
         account.value.remark = remark.value;
       } else {
-        ElMessage.error(checkTransferRes.message || '查询失败');
+        showErrorMessage(checkTransferRes.code, checkTransferRes.message)
       }
       // 处理最大手续费
       if (feeRes.code == 200) {
@@ -222,10 +227,10 @@ const fetchData = async (assetsId: number, transferQR: string) => {
         showErrorMessage(rateRes.code, rateRes.message)
       }
     } else {
-      ElMessage.error(assetsRes.message || '查询失败');
+      showErrorMessage(assetsRes.code, assetsRes.message)
     }
   } catch (error) {
-    ElMessage.error('请求失败，请重试');
+    showCatchErrorMessage()
   }
 };
 // 初始化数据

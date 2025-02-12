@@ -31,7 +31,6 @@ import GoBack from "@/composables/GoPageBack.vue";
 import { useRoute, useRouter } from 'vue-router';
 import head from '@@/public/images/head.svg';
 import {formatCurrency, getDataInfo, getStatusText} from "~/utils/configUtils";
-import {ElMessage} from "element-plus";
 import {getHeader} from "@/utils/storageUtils";
 const headers = getHeader();
 const router = useRouter();
@@ -41,6 +40,7 @@ const { assetsApi, userApi } = useServer();
 import s1 from '@@/public/images/s1.svg';
 import s2 from '@@/public/images/s2.svg';
 import s3 from '@@/public/images/s3.svg';
+import {showCatchErrorMessage} from "~/utils/messageUtils";
 
 // 消息数据
 const recordId = ref(0);
@@ -70,13 +70,12 @@ const fetchData = async () => {
     if (res.code === 200) {
       assets.value = res.data;
     } else {
-      ElMessage.error(res.message || '查询失败')
+      showErrorMessage(res.code, res.message);
     }
   } catch (error) {
-    ElMessage.error('请求失败，请重试');
+    showCatchErrorMessage();
   }
 };
-
 
 // 计算状态类
 const statusClass = computed(() => {
