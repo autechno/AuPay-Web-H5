@@ -104,14 +104,14 @@ const validateTransferQR = () => {
   errorMessage.value = '';
 };
 
-// 确认按钮的处理函数
+// 确认按钮的处理
 const handleSubmit = async () => {
   validateTransferQR();
   try{
     if(!errorMessage.value){
       const res = await userApi.getCheckTransferCode({ qrCode: form.value.transferQR }, headers);
       if(res.code == 200){
-        router.push({ path: '/charge-withdraw-h5/transfer/selected', query: { qr: form.value.transferQR } });
+        router.push({ path: 'selected', query: { qr: form.value.transferQR } });
       }else{
         ElMessage.error(res.message);
       }
@@ -122,7 +122,7 @@ const handleSubmit = async () => {
 };
 // 跳转配置信息
 const buttonConfig = ref({
-  navigateTo: '/charge-withdraw-h5/transfer/collect',
+  navigateTo: 'collect',
   btnName: '收款',
   type: 'collect',
 })

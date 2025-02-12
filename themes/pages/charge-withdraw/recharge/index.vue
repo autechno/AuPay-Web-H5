@@ -52,7 +52,7 @@ import { getHeader } from "~/utils/storageUtils";
 import { ElMessage } from "element-plus";
 import QCcode from "~/composables/QCcode.vue";
 import { copyText } from "@/utils/funcUtil";
-import { getDataInfo } from "@/utils/formatUtils";
+import { getDataInfo } from "~/utils/configUtils";
 const showQrDialog = ref(false);
 const headers = getHeader();
 const { assetsApi } = useServer();

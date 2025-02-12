@@ -39,7 +39,7 @@ import { ref, onMounted } from 'vue';
 import { getHeader } from "@/utils/storageUtils";
 import { useRoute } from 'vue-router';
 import {ElMessage} from "element-plus";
-import {formatCurrency, getDataInfo} from "@/utils/formatUtils";
+import {formatCurrency, getDataInfo} from "~/utils/configUtils";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 import {setHeadersAuth} from "@/utils/funcUtil";
 

@@ -64,7 +64,7 @@ import {copyText, formatAddressString} from "@/utils/funcUtil";
 import QCcode from "@/composables/QCcode.vue";
 import {ArrowRightBold} from "@element-plus/icons-vue";
 import TransferForm from "@/composables/TransferForm.vue";
-import {formatCurrency, getDataInfo} from "@/utils/formatUtils";
+import {formatCurrency, getDataInfo} from "~/utils/configUtils";
 import arrow from '@@/public/images/arrow-right.svg';
 const drawerVisible = ref(false);
 const shareVisible = ref(false);
@@ -85,7 +85,7 @@ const form = ref({
   remark: '',
 })
 const buttonConfig = ref({
-  navigateTo: '/charge-withdraw-h5/transfer/pay',
+  navigateTo: 'pay',
   btnName: '付款',
   type: 'pay',
 })

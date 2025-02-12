@@ -52,7 +52,7 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
-import {getStatusText, getDataInfo, formatDate} from "@/utils/formatUtils";
+import {getStatusText, getDataInfo, formatDate} from "~/utils/configUtils";
 import { useRoute } from 'vue-router';
 const route = useRoute();
 const headers = getHeader();

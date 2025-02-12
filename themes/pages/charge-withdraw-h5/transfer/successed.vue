@@ -30,7 +30,7 @@ import { ref, onMounted } from 'vue';
 import GoBack from "@/composables/GoPageBack.vue";
 import { useRoute, useRouter } from 'vue-router';
 import head from '@@/public/images/head.svg';
-import {formatCurrency, getDataInfo, getStatusText} from "@/utils/formatUtils";
+import {formatCurrency, getDataInfo, getStatusText} from "~/utils/configUtils";
 import {ElMessage} from "element-plus";
 import {getHeader} from "@/utils/storageUtils";
 const headers = getHeader();
@@ -61,7 +61,7 @@ const remark = ref("");
 const qrCode = ref("");
 //跳到充值首页
 const jumpPage = () => {
-  window.location.href = "/charge-withdraw-h5/transfer/pay";
+  window.location.href = "pay";
 }
 // 获取消息数据
 const fetchData = async () => {

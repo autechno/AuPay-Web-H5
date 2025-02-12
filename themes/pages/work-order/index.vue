@@ -58,7 +58,7 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
-import { getStatusText, formatDate} from "@/utils/formatUtils";
+import { getStatusText, formatDate} from "~/utils/configUtils";
 
 const headers = getHeader();
 const { messageApi } = useServer();

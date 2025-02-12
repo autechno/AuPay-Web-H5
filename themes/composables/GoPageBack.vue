@@ -5,7 +5,9 @@
       <el-icon size="20"> <ArrowLeftBold /> </el-icon>
     </button>
     <!-- 中间文本 -->
-    <div class="middle-text">{{ title }}</div>
+    <div class="middle-text" v-if="title">
+      <span v-html="titleText"></span>
+    </div>
     <!-- 右侧按钮 -->
     <el-button
         v-if="buttonConfig && Object.keys(buttonConfig).length"
@@ -30,6 +32,7 @@ import scan from "@@/public/images/Scana.svg";
 import collect from "@@/public/images/Group.svg";
 import pay from "@@/public/images/Group2.svg";
 
+
 const props = defineProps({
   buttonConfig: {
     type: Object,
@@ -48,6 +51,7 @@ const props = defineProps({
     default: ''
   }
 });
+const titleText = ref('');
 
 //历史记录跳转
 const router = useRouter();
@@ -58,6 +62,20 @@ const goBack = () => {
     router.back();
   }
 };
+
+// 实时更新
+watchEffect(() => {
+  if (props.title) {
+    if (props.title.includes('||')) {
+      const beforeDelimiter = props.title.split('||')[0].trim();
+      const afterDelimiter = props.title.split('||')[1].trim();
+      titleText.value = `<span style='display: block;'>${beforeDelimiter}</span><span style='display: block; font-size: 12px;'>${afterDelimiter}</span>`;
+    } else {
+      titleText.value = props.title;
+    }
+  }
+});
+
 // 按钮跳转
 const goList = () => {
   if (props.buttonConfig.navigateTo) {
@@ -90,6 +108,7 @@ const goList = () => {
   flex: 1;
   text-align: center;
   font-size: 16px;
+  color: #333333;
 }
 
 .scan-wrap {

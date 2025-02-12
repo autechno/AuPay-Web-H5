@@ -64,7 +64,7 @@ import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import type { TabsPaneContext } from 'element-plus';
 import {getHeader} from "@/utils/storageUtils";
-import {formatDate} from "~/utils/formatUtils";
+import {formatDate} from "~/utils/configUtils";
 const headers = getHeader();
 const { messageApi } = useServer()
 const activeTab = ref('1')

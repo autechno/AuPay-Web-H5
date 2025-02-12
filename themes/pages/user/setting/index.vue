@@ -36,7 +36,7 @@ import { ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import {getHeader} from "@/utils/storageUtils";
 import { rules } from "@/utils/validationRules";
-import { getDataList } from "@/utils/formatUtils";
+import { getDataList } from "~/utils/configUtils";
 const headers = getHeader();
 const { userApi } = useServer();
 const currencyOptions = ref(getDataList('currency'));

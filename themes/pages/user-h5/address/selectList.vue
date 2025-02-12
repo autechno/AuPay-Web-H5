@@ -10,7 +10,6 @@
           </div>
           <div class="right-column">
             <div class="btn-wrap">
-              <el-icon @click.stop="editAddress(item)"><el-image :src="edit" /></el-icon>
               <el-icon  @click.stop="copyText(item.address)"><el-image :src="copy" /></el-icon>
             </div>
             <p class="row"><span class="title">{{item.name}}</span> <span class="text">{{item.remark}}</span></p>
@@ -37,17 +36,29 @@ const router = useRouter();
 const headers = getHeader();
 const addressList = ref([]);
 const { userApi } = useServer();
+const emit = defineEmits();
+
+const props = defineProps({
+  id: {
+    type: Number,
+    required: true
+  },
+  type: {
+    type: String,
+    required: true
+  }
+});
 
 // 定义跳转函数
 const addAddress = () => {
-  console.log('addressList')
-  router.push({ path: '/user-h5/address/add', query: { } });
+  router.push({ path: '/user-h5/address/add', query: { type: props.type, id: props.id } });
 };
 
 // 选择地址
-const selectAddress = (id: number) => {
+const selectAddress = (item: any) => {
+  emit('select-address', item.address);
+};
 
-}
 // 编辑地址
 const editAddress = (item: any) => {
   router.push({ path: '/user-h5/address/edit', query: { id: item.id } });
@@ -80,7 +91,6 @@ onMounted(() => {
 }
 .address-page{
   position: relative;
-  padding-top: 28px;
 }
 .address-body{
   .table-list{
@@ -119,7 +129,7 @@ onMounted(() => {
     padding-top: 5px;
     position: relative;
     .btn-wrap{
-      width: 83px;
+      width: 36px;
       position: absolute;
       right: 0;
       top: 10px;
@@ -137,7 +147,7 @@ onMounted(() => {
       }
     }
     .row {
-      width: calc(100vw - 200px);
+      width: calc(100vw - 140px);
       .title {
         font-weight: bold;
         font-size: 16px;

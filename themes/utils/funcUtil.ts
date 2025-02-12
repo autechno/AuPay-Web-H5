@@ -49,7 +49,6 @@ export const setHeadersAuth = (headers, form) => {
 // 返回传参
 export const getQueryParams = () => {
     const urlParams = new URLSearchParams(window.location.search);
-
     return {
         currencyId: urlParams.get('currencyId'),
         currencyChainId: urlParams.get('currencyChainId'),
@@ -67,3 +66,14 @@ export const formatAddressString = (input: string, endNumber: number, count: num
     }
 }
 
+// 延迟跳转URL
+export const goBackDelay = (router: any, address?: string, delay: number = 1000) => {
+    setTimeout(() => {
+        if (address) {
+            // 跳转到指定的 URL
+            router.push(address);
+        } else {
+            router.back(); // 返回上一页
+        }
+    }, delay);
+};

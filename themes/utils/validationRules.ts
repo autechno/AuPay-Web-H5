@@ -70,7 +70,7 @@ export const rules = {
         { required: true, message: '名称不能为空', trigger: 'blur' }
     ],
     address: [
-        { required: true, message: '地址不能为空', trigger: 'blur' }
+        { required: true, message: '地址不能为空', trigger: 'blur' },
     ],
     toAddress: [
         { required: true, message: '地址不能为空' }

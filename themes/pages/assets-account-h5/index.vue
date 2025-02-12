@@ -92,7 +92,7 @@ import scan from "@@/public/images/Scan.svg";
 import {
   formatCurrency,
   getDataInfo,
-} from "@/utils/formatUtils";
+} from "~/utils/configUtils";
 import {ElMessage} from "element-plus";
 const headers = getHeader();
 const { assetsApi, systemApi } = useServer();

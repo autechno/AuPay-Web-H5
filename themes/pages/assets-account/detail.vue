@@ -165,7 +165,7 @@ const { assetsApi } = useServer()
 const assets = ref({})
 const recordId = ref(0)
 import { copyText } from "@/utils/funcUtil";
-import {formatDate, getStatusText, getDataInfo} from "@/utils/formatUtils";
+import {formatDate, getStatusText, getDataInfo} from "~/utils/configUtils";
 
 const fetchData = async () => {
   try {

@@ -137,7 +137,7 @@ import {
   getStatusText,
   getDataInfo,
   getDataList
-} from "@/utils/formatUtils";
+} from "~/utils/configUtils";
 import CurrencyTabs from "@/composables/CurrencyTabs.vue";
 import {ElMessage} from "element-plus";
 import { copyText } from "@/utils/funcUtil";
@@ -268,7 +268,7 @@ onMounted(() => {
 
 </script>
 
-<style>
+<style scoped>
   .button-group {
     display: flex;
     gap: 10px; /* Space between buttons */

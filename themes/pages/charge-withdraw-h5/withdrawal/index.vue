@@ -2,19 +2,24 @@
   <div class="page">
     <GoBack :showRightButton="false"  :showScan="false"   />
     <div class="tips">至</div>
-    <div class="sub-page">
+    <div class="withdrawal-page">
       <div class="search-wrap">
-        <input v-model="addressText"  class="custom-input" />
+        <input v-model="remarkText" disabled class="custom-input" />
         <div class="select-address" @click="resetBtn"><el-image :src="shape" />编辑</div>
       </div>
       <div class="input-amount-wrap">
         <input :class="{ 'error-input': isAmountError }"  class="input-wrap" placeholder="请转入金额" type="number" v-model="form.amount" @input="validateInputAmount" />
       </div>
-      <div class="row-title">${{formatCurrency(form.totalBalanceUsdt)}}</div>
-      <div class="row-text">可提现: {{formatCurrency(form.balance)}}</div>
-      <div class="row-text" v-if="cost.amount">手续费：<span>{{ formatCurrency(cost.amount) }}</span> </div>
+      <div class="row-title">
+        ${{formatCurrency(form.totalBalanceUsdt)}}
+      </div>
+      <div class="row-text">
+        <span>可提现: {{formatCurrency(form.balance)}}</span>
+        <el-button @click="setAmount">全部余额</el-button>
+      </div>
+      <div class="row-text" v-if="form.fee">手续费：<span>{{ formatCurrency(form.fee) }}</span> </div>
     </div>
-    <el-button @click="dialogCheckVisible = true" class="custom-button" :class="{ 'disabled-button': !form.amount || isAmountError}" :disabled="!form.amount || isAmountError" >确认</el-button>
+    <el-button @click="dialogCheckVisible = true" class="custom-button custom-button-pos" :class="{ 'disabled-button': !form.amount || isAmountError}" :disabled="!form.amount || isAmountError" >确认</el-button>
     <CheckPermissionDialog
         :form="form"
         @update:form="updateForm"
@@ -30,24 +35,28 @@ import GoBack from "@/composables/GoPageBack.vue";
 import {getHeader} from "@/utils/storageUtils";
 import shape from '@@/public/images/Shape.svg'
 import {ElMessage} from "element-plus";
-import { formatCurrency, } from "@/utils/formatUtils";
+import { formatCurrency, } from "~/utils/configUtils";
 import { useRoute, useRouter } from 'vue-router';
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
-import {setHeadersAuth} from "@/utils/funcUtil";
+import {goBackDelay, setHeadersAuth} from "@/utils/funcUtil";
 const { assetsApi } = useServer();
 const headers = getHeader();
 const router = useRouter();
 const route = useRoute();
 const isAmountError = ref(false);
-const addressText = ref('');
+const maxFee = ref(0);
+const remarkText = ref('');
 const dialogCheckVisible = ref(false);
-const cost = ref({
-  content: '',
-  amount: '',
-});
 
+const form = ref({
+  amount: '',
+  fee: '',
+  totalBalanceUsdt: '',
+  balance: '',
+  permissionStatus: ''
+})
 const resetBtn = () => {
-  router.push({ path: '/charge-withdraw-h5/withdrawal/selected', query: { assetsId: form.value.id } });
+  router.push({ path: 'selected', query: { assetsId: form.value.id } });
 }
 // 更新父组件的 form 数据
 const updateForm = (newForm: Object) => {
@@ -56,6 +65,11 @@ const updateForm = (newForm: Object) => {
     dialogCheckVisible.value = false;
     handleSubmit();
   }
+};
+
+// 设置最大金额
+const setAmount = async () => {
+  form.value.amount = parseFloat(form.value.balance) - maxFee.value;
 };
 
 // 验证输入金额
@@ -71,13 +85,15 @@ const validateInputAmount = async () => {
     amount: value
   }, headers);
   if (res.code === 200) {
-    cost.value.amount = res.data.fee;
-    cost.value.content = parseFloat(form.value.balance) - res.data.fee;
-    if (value > cost.value.content) {
+    form.value.fee = res.data.fee;
+    let maxAmount = parseFloat(form.value.balance) - res.data.fee;
+    if (value > maxAmount) {
       isAmountError.value = true;
     } else {
       isAmountError.value = false;
     }
+  }else{
+    showErrorMessage(res.code, res.message)
   }
 };
 
@@ -85,47 +101,52 @@ const validateInputAmount = async () => {
 const handleSubmit = async () => {
   try{
       setHeadersAuth(headers,form);
+      form.value['toAddress'] = remarkText.value;
       let res = await assetsApi.getWithdrawApply(form.value, headers);
       if (res.code == 200) {
-        ElMessage.success('提现成功');
-        // 延迟500毫秒
-        setTimeout(() => {
-          router.push({ path: '/charge-withdraw-h5/withdrawal/list' });
-        }, 500);
+        showSuccessMessage(0, '提现成功')
+        goBackDelay(router, 'list');
       } else {
-        ElMessage.error(res.message);
+        showErrorMessage(res.code, res.message)
       }
   } catch (error) {
-    ElMessage.error('请求失败，请重试');
+    showCatchErrorMessage()
   }
 };
-
-const form = ref({
-  amount: '',
-  totalBalanceUsdt: '',
-  balance: '',
-  permissionStatus: ''
-})
 
 // 获取数据
 const fetchData = async (assetsId: number) => {
   try {
-    let res = await assetsApi.getAccountAssetsById({ assetsId:  assetsId }, headers);
-    if (res.code == 200) {
-      form.value = res.data;
+    let assetsRes = await assetsApi.getAccountAssetsById({ assetsId:  assetsId }, headers);
+    if (assetsRes.code == 200) {
+      form.value = assetsRes.data;
       form.value.amount = '';
+      form.value.fee = '';
       form.value.permissionStatus = false;
+      // 计算最大手续费
+      let feeRes = await assetsApi.getWithdrawRateFee({
+        currencyId: assetsRes.data.currencyId,
+        currencyChain: assetsRes.data.currencyChain,
+        amount: assetsRes.data.balance
+      }, headers);
+      if (feeRes.code == 200) {
+        maxFee.value = feeRes.data.fee;
+      }else{
+        showErrorMessage(feeRes.code, feeRes.message)
+      }
     } else {
-      ElMessage.error(res.message || '查询失败');
+      showErrorMessage(assetsRes.code, assetsRes.message)
     }
   } catch (error) {
-    ElMessage.error('请求失败，请重试');
+    showCatchErrorMessage()
   }
 };
 
 // 初始化数据
 onMounted(() => {
-  addressText.value = route.query.address;
+  if(route.query.address){
+    remarkText.value = decodeURIComponent(route.query.address);
+  }
   fetchData(route.query.assetsId);
 });
 </script>
@@ -134,20 +155,7 @@ onMounted(() => {
 .error-input {
   color: red!important;
 }
-.row-title{
-  height: 25px;
-  line-height: 25px;
-  font-size: 16px;
-  color: #0D0D0D;
-  margin-top: 28px;
-  margin-bottom: 80px;
-  text-align: center;
-}
-.row-text{
-  line-height: 40px;
-  color: #333333;
-  font-size: 14px;
-}
+
 .input-amount-wrap{
   height: 49px;
   margin-top: 49px;
@@ -179,13 +187,39 @@ onMounted(() => {
   padding-top: 28px;
   height: calc(100vh - 28px);
 }
-.sub-page{
-  padding-top:10px;
-  padding-bottom: 20px;
+.withdrawal-page{
   position: relative;
+  .row-title{
+    height: 25px;
+    line-height: 25px;
+    font-size: 16px;
+    color: #0D0D0D;
+    margin-top: 28px;
+    margin-bottom: 80px;
+    text-align: center;
+  }
+  .row-text{
+    line-height: 40px;
+    color: #333333;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    .el-button{
+      background: #EAF3FA;
+      font-size: 16px;
+      color: #333333;
+      height: 40px;
+      border-radius: 8px;
+      line-height: 40px;
+      font-weight: normal;
+      border: 0;
+      padding: 0 15px;
+    }
+  }
 }
 .search-wrap{
   margin-bottom: 20px;
+  margin-top: 10px;
   height: 40px;
   padding: 5px 15px;
   background: #ffffff;

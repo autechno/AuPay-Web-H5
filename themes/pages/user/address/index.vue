@@ -95,7 +95,7 @@ import {ElForm, ElMessage} from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
 import { setHeadersAuth } from "@/utils/funcUtil";
 import { rules } from "@/utils/validationRules";
-import {getDataList, getDataInfo} from "@/utils/formatUtils";
+import {getDataList, getDataInfo} from "~/utils/configUtils";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 const headers = getHeader();
 const { userApi, systemApi } = useServer();

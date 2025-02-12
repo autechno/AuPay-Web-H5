@@ -113,7 +113,7 @@
 import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
-import {getStatusText,formatDate, getDataList } from "@/utils/formatUtils";
+import {getStatusText,formatDate, getDataList } from "~/utils/configUtils";
 
 const headers = getHeader();
 const { assetsApi } = useServer();

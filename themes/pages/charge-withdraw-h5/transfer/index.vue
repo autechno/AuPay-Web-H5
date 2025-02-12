@@ -20,7 +20,10 @@
         <input :class="{ 'error-input': isAmountError }" :disabled="isCollectAmount" class="input-wrap" placeholder="请转入金额" type="number" v-model="form.amount" @input="validateInputAmount" />
       </div>
       <div class="row-title">{{currency.sign}}{{formatCurrency(form.totalBalanceUsdt)}}</div>
-      <div class="row-text">可转账: {{formatCurrency(form.balance)}} {{ form.currencyName }}</div>
+      <div class="row-text">
+        <span>可转账: {{formatCurrency(form.balance)}} {{ form.currencyName }}</span>
+        <el-button @click="setAmount">全部</el-button>
+      </div>
       <div class="row-text" v-if="form.fee">手续费：<span>{{ formatCurrency(form.fee) }} {{ form.currencyName }}</span> </div>
 
       <el-button @click="dialogCheckVisible = true" class="custom-button custom-button-pos" :class="{ 'disabled-button': !form.amount || isAmountError}" :disabled="!form.amount || isAmountError" >确认</el-button>
@@ -57,7 +60,7 @@ import { ref, onMounted } from 'vue';
 import GoBack from "@/composables/GoPageBack.vue";
 import { useRoute, useRouter } from 'vue-router';
 import head from '@@/public/images/head.svg';
-import {formatCurrency, getDataInfo} from "@/utils/formatUtils";
+import {formatCurrency, getDataInfo} from "~/utils/configUtils";
 import {ElMessage} from "element-plus";
 import {getHeader} from "@/utils/storageUtils";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
@@ -72,6 +75,7 @@ const dialogSuccessInfo = ref(false);
 const remark = ref('');
 const amount = ref('');
 const isCollectAmount = ref(false);
+const maxFee = ref(0);
 
 // 更新父组件的 form 数据
 const updateForm = (newForm: Object) => {
@@ -134,8 +138,6 @@ const validateInputAmount = async () => {
   }, headers);
   if (res.code === 200) {
     form.value.fee = res.data.fee;
-    console.log(form.value)
-    console.log(form.value)
     let maxAmount = parseFloat(form.value.balance) - res.data.fee;
     if (value > maxAmount) {
       isAmountError.value = true;
@@ -144,8 +146,8 @@ const validateInputAmount = async () => {
     }
   }
 };
-// 转账成功
-const  submitPay = async () =>{
+// 转账
+const submitPay = async () =>{
   let params = {
     accountId: account.value.accountId,
     accountType: account.value.accountType,
@@ -160,11 +162,17 @@ const  submitPay = async () =>{
   let res = await assetsApi.transferApply(params, headers);
   if(res.code == 200) {
     let id = 384;
-    router.push({ path: '/charge-withdraw-h5/transfer/successed', query: { qr: account.value.qr, remark: remark.value, id:  id} });
+    // TODO 返回了一个tradeNO,
+    router.push({ path: 'successed', query: { qr: account.value.qr, remark: remark.value, id:  id} });
   }else{
     throw new Error(res.message);
   }
 }
+// 设置最大金额
+const setAmount = async () => {
+  form.value.amount = parseFloat(form.value.balance) - maxFee.value;
+};
+
 // 获取数据
 const fetchData = async (assetsId: number, transferQR: string) => {
   try {
@@ -179,10 +187,18 @@ const fetchData = async (assetsId: number, transferQR: string) => {
       form.value.currencyChain = assetsRes.data.currencyChain;
       form.value.totalBalanceUsdt = assetsRes.data.totalBalanceUsdt;
       form.value.balance = assetsRes.data.balance;
+      if(amount.value){
+        form.value.amount = amount.value;
+      }
       //请求汇率及用户二维码
-      const [checkTransferRes, rateRes] = await Promise.all([
+      const [checkTransferRes, rateRes, feeRes] = await Promise.all([
         userApi.getCheckTransferCode({qrCode: transferQR}, headers),
         assetsApi.getRateCoin2currency({coinId: assetsRes.data.currencyId, currency: currency.value.code,}, headers),
+        await assetsApi.getWithdrawRateFee({
+          currencyId: assetsRes.data.currencyId,
+          currencyChain: assetsRes.data.currencyChain,
+          amount: assetsRes.data.balance
+        }, headers)
       ]);
       // 处理初始化信息
       if (checkTransferRes.code == 200) {
@@ -192,15 +208,18 @@ const fetchData = async (assetsId: number, transferQR: string) => {
       } else {
         ElMessage.error(checkTransferRes.message || '查询失败');
       }
+      // 处理最大手续费
+      if (feeRes.code == 200) {
+        maxFee.value = feeRes.data.fee;
+      }else{
+        showErrorMessage(feeRes.code, feeRes.message)
+      }
       // 处理汇率信息
       if (rateRes.code == 200) {
         currency.value.rate = rateRes.data;
         form.value.totalBalanceUsdt = form.value.balance * currency.value.rate;
-        if(amount.value){
-          form.value.amount = amount.value;
-        }
       } else {
-        ElMessage.error(rateRes.message || '查询失败');
+        showErrorMessage(rateRes.code, rateRes.message)
       }
     } else {
       ElMessage.error(assetsRes.message || '查询失败');
@@ -217,7 +236,7 @@ onMounted(() => {
   if(route.query.amount){
     amount.value = route.query.amount;
   }
-  if(route.query.amount && route.query.isCollect==1){
+  if(route.query.amount && route.query.isCollect==1 ){
     isCollectAmount.value = true;
   }
   fetchData(route.query.assetsId, route.query.qr);
@@ -260,6 +279,19 @@ onMounted(() => {
   line-height: 40px;
   color: #333333;
   font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  .el-button{
+    background: #EAF3FA;
+    font-size: 16px;
+    color: #333333;
+    height: 40px;
+    border-radius: 8px;
+    line-height: 40px;
+    font-weight: normal;
+    border: 0;
+    padding: 0 15px;
+  }
 }
 .title-box-wrap {
   position: relative;

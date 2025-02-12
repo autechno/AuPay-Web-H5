@@ -34,7 +34,7 @@ import { ref, onMounted } from 'vue';
 import GoBack from "@/composables/GoPageBack.vue";
 import { useRoute, useRouter } from 'vue-router';
 import { Search} from "@element-plus/icons-vue";
-import { getDataInfo} from "@/utils/formatUtils";
+import { getDataInfo} from "~/utils/configUtils";
 const headers = getHeader();
 
 const router = useRouter();
@@ -67,7 +67,7 @@ const resetCurrencyList = () => {
 };
 
 const selectCurrency = async (item: any) => {
-  router.push({ path: '/charge-withdraw-h5/transfer', query: { qr: form.value.transferQR, assetsId: item.id} });
+  router.push({ path: './', query: { qr: form.value.transferQR, assetsId: item.id} });
 }
 
 // 获取数据

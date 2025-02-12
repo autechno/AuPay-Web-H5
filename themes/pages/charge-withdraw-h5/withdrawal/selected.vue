@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <GoBack  :showScan="true"  />
+    <GoBack goBackTo="list" :title="titleBar" :showScan="true"  />
     <div class="tips">至</div>
     <div class="sub-page">
       <div class="search-wrap">
@@ -20,7 +20,7 @@
                @close="drawerVisible = false"
                direction="rtl"
                size="100%">
-      <Address />
+      <Address @select-address="setAddress" :id="assetsId" type="withdrawal" />
     </el-drawer>
   </div>
 </template>
@@ -31,14 +31,17 @@ import clip from '@@/public/images/ClipBoard.svg';
 import { CloseBold } from "@element-plus/icons-vue";
 import { useRoute, useRouter } from 'vue-router';
 import {ElMessage} from "element-plus";
-import Address from "../../user-h5/address/list.vue";
+import Address from "../../user-h5/address/selectList.vue";
 
 const router = useRouter();
 const route = useRoute();
 const assetsId = ref<string>('');
+const titleBar = ref();
 const addressText = ref('');
 const copyList = ref([]);
 const drawerVisible = ref(false);
+const { assetsApi } = useServer();
+const headers = getHeader();
 
 // 读取剪贴板内容并添加到 copyList
 const readClipboard = async () => {
@@ -51,6 +54,11 @@ const readClipboard = async () => {
     console.error('无法读取剪贴板内容:', err);
     ElMessage.error( '请确保您已允许访问剪贴板');
   }
+};
+// 设置地址
+const setAddress = (address) => {
+  addressText.value = address;
+  drawerVisible.value = false;
 };
 // 检查剪贴板是否有内容
 const checkClipboardContent = async () => {
@@ -69,16 +77,37 @@ const copyToAddress = (item: string) => {
 };
 const nextTick = () => {
   if(!addressText.value){
-    ElMessage.error( '地址不能为空!');
+    showErrorMessage(0, '地址不能为空')
     return;
   }
-  router.push({ path: '/charge-withdraw-h5/withdrawal', query: { assetsId: assetsId.value, address: addressText.value } });
+  // TODO 添加地址验证
+  router.push({ path: './', query: { assetsId: assetsId.value, address: encodeURIComponent(addressText.value) } });
+};
+
+// 获取数据
+const fetchData = async (assetsId: number) => {
+  try {
+    let res = await assetsApi.getAccountAssetsById({ assetsId:  assetsId }, headers);
+    if (res.code == 200) {
+      let currencyName = getDataInfo(res.data.currencyId, 'currencyChains')?.name + ' 提款';
+      let chainName = getDataInfo(res.data.currencyId, 'chains')?.name;
+      titleBar.value = currencyName + "||"+ chainName;
+    } else {
+      showErrorMessage(res.code, res.message)
+    }
+  } catch (error) {
+    showCatchErrorMessage()
+  }
 };
 
 // 初始化数据
 onMounted(async () => {
   if (route.query.assetsId) {
     assetsId.value = route.query.assetsId;
+    await fetchData(assetsId.value);
+  }
+  if (route.query.address) {
+    addressText.value = decodeURIComponent(route.query.address);
   }
   // 粘体板
   const hasContent = await checkClipboardContent();
@@ -98,6 +127,23 @@ onMounted(async () => {
   position: relative;
   padding-top: 28px;
   height: calc(100vh - 28px);
+  .currency-title-bar{
+    top: 32px;
+    position: absolute;
+    text-align: center;
+    width: 200px;
+    margin: 0 auto;
+    color: #333333;
+    .title{
+      height: 22px;
+      line-height: 22px;
+    }
+    .text{
+      font-size: 12px;
+      line-height: 16px;
+      height: 16px;
+    }
+  }
   .sub-page{
     padding-top:10px;
     padding-bottom: 20px;

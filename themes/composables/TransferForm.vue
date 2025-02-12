@@ -41,7 +41,7 @@
 import { ref, defineProps, onMounted } from 'vue';
 import {ElForm, ElMessage} from "element-plus";
 import { getHeader } from "@/utils/storageUtils";
-import { getDataInfo } from "@/utils/formatUtils";
+import { getDataInfo } from "~/utils/configUtils";
 import { rules } from "@/utils/validationRules";
 const headers = getHeader();
 const { assetsApi } = useServer();
@@ -128,28 +128,29 @@ onMounted(() => {
 <style scoped>
 
 .input_box{
-  :deep .el-input{
+  :deep(.el-input){
     width: 100%;
     height: 56px;
     border-radius: 16px;
     font-size: 16px;
+    border: 0;
   }
-  :deep .el-input__wrapper {
-    border-radius: 16px;
-    border: 3px #C8DCE8 solid;
-  }
-  :deep .el-select__wrapper {
+  :deep(.el-select__wrapper) {
     height: 56px;
     border-radius: 16px;
     border: 3px #C8DCE8 solid;
   }
-  :deep .checkbox__label{
+  :deep(.el-input__wrapper) {
+    border-radius: 16px;
+    border: 3px #C8DCE8 solid;
+  }
+  :deep(.checkbox__label){
     color: #dcdcdc !important;
   }
-  :deep .el-form-item__error{
+  :deep(.el-form-item__error){
     padding-left: 14px;
   }
-  :deep .el-checkbox__label{
+  :deep(.el-checkbox__label){
     font-weight: normal !important;
   }
 }

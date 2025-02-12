@@ -24,7 +24,6 @@ import { ref, onMounted } from 'vue';
 import GoBack from "@/composables/GoPageBack.vue";
 import {Search} from "@element-plus/icons-vue";
 import {getHeader} from "@/utils/storageUtils";
-import {ElMessage} from "element-plus";
 import btc from '@@/public/images/btc.svg'
 const headers = getHeader();
 import { useRoute, useRouter } from 'vue-router';
@@ -80,10 +79,10 @@ const fetchData = async () => {
       originalCurrencyList.value = currencyData;
       currencyChainList.value = chainData;
     } else {
-      ElMessage.error(res.message || '查询失败');
+      showErrorMessage(res.code, res.message)
     }
   } catch (error) {
-    ElMessage.error('请求失败，请重试');
+    showCatchErrorMessage()
   }
 };
 

@@ -73,7 +73,7 @@
 import { ref, defineProps, onMounted } from 'vue';
 import { ElMessage } from "element-plus";
 import { getHeader } from "@/utils/storageUtils";
-import { getDataInfo } from "@/utils/formatUtils";
+import { getDataInfo } from "~/utils/configUtils";
 import { rules } from "@/utils/validationRules";
 const headers = getHeader();
 const dialogVisible = ref(false);
