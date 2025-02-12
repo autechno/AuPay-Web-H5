@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <GoBack :showRightButton="false" :showScan="false"  />
+    <GoBack  />
     <div class="content">
       <div class="exchange-container" style="height: 126px;">
         <div class="title">兑出</div>
@@ -96,7 +96,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import fx from '@@/public/images/fx.svg';
-import GoBack from "@/composables/GoBack.vue";
+import GoBack from "@/composables/GoPageBack.vue";
 import {ArrowDownBold,  Search} from "@element-plus/icons-vue";
 import {getHeader} from "@/utils/storageUtils";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";

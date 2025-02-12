@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <GoBack :showRightButton="false" navigateTo="/order-list" :showScan="false"  />
+    <GoBack  />
     <div class="flash-title-wrap">
       <div class="title">{{yearText}}年度闪兑单</div>
       <div class="select-wrap" @click="dialogDrawer = true">
@@ -81,7 +81,7 @@ import { ElMessage } from 'element-plus';
 import { useRouter, useRoute } from 'vue-router';
 import { getHeader } from "@/utils/storageUtils";
 import { formatDate } from "@/utils/formatUtils";
-import GoBack from "@/composables/GoBack.vue";
+import GoBack from "@/composables/GoPageBack.vue";
 import { ArrowDownBold } from '@element-plus/icons-vue'
 import sol from '@@/public/images/sol.svg'
 import arrow from '@@/public/images/jiantou.svg'

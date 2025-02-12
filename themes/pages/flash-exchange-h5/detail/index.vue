@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <GoBack :showRightButton="false" :showScan="false"  />
+    <GoBack  />
       <div :class="['tips', statusClass]">
         <span class="status"><el-image :src="statusImage" /></span>
         <p class="text">{{ getStatusText(assets.status, 'ACCOUNT') }}</p>
@@ -27,7 +27,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import GoBack from "@/composables/GoBack.vue";
+import GoBack from "@/composables/GoPageBack.vue";
 import { formatDate, getDataInfo, getStatusText } from "@/utils/formatUtils";
 import { ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
