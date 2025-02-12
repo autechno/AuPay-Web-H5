@@ -1,52 +1,63 @@
 <template>
   <div class="page">
-    <GoBack :showRightButton="false"  :showScan="false"   />
+    <GoBack :showRightButton="false" :showScan="false"   />
     <div class="box-wrap">
       <div class="title">您的 {{form.currencyChainName}} 地址</div>
       <div class="text">欢迎使用auPay</div>
       <div class="code-wrap">
         <QCcode :value="form.walletAddress" :size="180" />
+        <el-image class="arrow top-left" :src="arrow" />
+        <el-image class="arrow top-right" :src="arrow" />
+        <el-image class="arrow bottom-left" :src="arrow" />
+        <el-image class="arrow bottom-right" :src="arrow" />
       </div>
       <div class="text">请注意！此地址仅能接受 Ethereum （ETH，USTD，OZC，TOTO）</div>
-      <div class="address-bg-wrap" @click="copyText(form.walletAddress)">
-       {{ formatAddressString(form.walletAddress, 16, 20) }} <el-image :src="copy" />
-      </div>
     </div>
-    <el-button class="custom-button" >分享</el-button>
-    <el-drawer v-model="drawerBox"
+    <el-drawer v-model="drawerVisible"
                title="请注意！"
                :show-close="false"
                direction="btt"
                size="70%">
       <div>
-        <p>本地址仅接受 Ethereum 上的 USTD，OZC，TOTO，ETH 四种代币</p>
+        <p>本地址仅接受 {{form.currencyChainName}} 上的 {{form.currencyName}}</p>
         <p>请您在充值前仔细核对币种, 不支持币种的任何转账, 不可退还和取消。</p>
       </div>
-      <el-button class="custom-button" @click="drawerBox = false">我已知晓，会仔细核对充值币种</el-button>
+      <el-button class="custom-button custom-button-pos" @click="drawerVisible = false">我已知晓，会仔细核对充值币种</el-button>
     </el-drawer>
-
+    <div class="address-bg-wrap" @click="copyText(form.walletAddress)">
+      {{ formatAddressString(form.walletAddress, 16, 20) }} <el-image :src="copy" />
+    </div>
+    <el-button class="custom-button custom-button-pos" @click="shareVisible = true">分享</el-button>
+    <Share
+        v-if="shareVisible"
+        :generateQR="form.walletAddress"
+        type="pay"
+        @close="shareVisible = false" />
   </div>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import GoBack from "@/composables/GoBack.vue";
+import GoBack from "@/composables/GoPageBack.vue";
 import { useRoute, useRouter } from 'vue-router';
 import {ElMessage} from "element-plus";
 import copy from "@@/public/images/copy.svg";
 import {copyText} from "@/utils/funcUtil";
 import QCcode from "@/composables/QCcode.vue";
+import arrow from '@@/public/images/arrow-right.svg';
+import Share from "@/composables/Share.vue";
 
 const { assetsApi } = useServer();
 const headers = getHeader();
-const router = useRouter();
 const route = useRoute();
-const drawerBox = ref(true);
-const address = ref('');
+const drawerVisible = ref(false);
+const shareVisible = ref(false);
 
 const form = ref({
   currencyId: '',
+  currencyChainName: '',
   currencyChain: '',
   walletAddress: '',
+  currencyName: '',
 })
 
 // 获取数据
@@ -64,6 +75,7 @@ const fetchData = async (id: number) => {
         currencyChain: currencyChain,
         currencyChainName: getDataInfo(currencyChain, 'chains')?.name,
       };
+      console.log(form.value);
       // 获取充值配置
       const rechargeConfigRes = await assetsApi.getAccountRechargeConfig({ currencyId, currencyChain }, headers);
       if (rechargeConfigRes.code === 200) {
@@ -88,14 +100,11 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .code-wrap{
-  margin: 0 auto;
   width: 250px;
   height: 250px;
-  text-align: center;
-  canvas{
-    margin-top: 35px;
-  }
+  margin: 35px auto;
 }
+
 *{
   margin: 0;
   padding: 0;
@@ -125,13 +134,6 @@ onMounted(() => {
   position: relative;
   padding-top: 28px;
   height: calc(100vh - 28px);
-  .custom-button{
-    position: fixed;
-    bottom: 45px;
-    left: 50%;
-    width: 90%;
-    transform: translate(-50%);
-  }
   .address-bg-wrap{
     background: #EAF3FA;
     height: 56px;
@@ -141,16 +143,17 @@ onMounted(() => {
     color: #5686E1;
     width: 90%;
     position: fixed;
-    bottom: 115px;
+    bottom: 110px;
     left: 50%;
     transform: translate(-50%);
     .el-image{
-      margin-top: 15px;
+      position: relative;
+      top: 3px;
       width: 17px;
       height: 19px;
     }
   }
-  /deep/ .el-drawer__header{
+  :deep(.el-drawer__header){
     text-align: center;
     padding:40px;
     margin: 0;
@@ -160,7 +163,7 @@ onMounted(() => {
       color: #333333;
     }
   }
-  /deep/ .el-drawer__body{
+  :deep(.el-drawer__body){
     color: #333333;
     font-size: 18px;
     text-align: center;

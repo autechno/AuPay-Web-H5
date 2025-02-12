@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <GoBack :showRightButton="false"  :showScan="true"  />
+    <GoBack :showScan="true" :goBackTo="'/assets-account-h5'" />
     <div class="sub-page">
       <div class="search-wrap">
         <el-icon class="arrow" size="26"><Search /></el-icon>
@@ -21,14 +21,14 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import GoBack from "@/composables/GoBack.vue";
+import GoBack from "@/composables/GoPageBack.vue";
 import {Search} from "@element-plus/icons-vue";
 import {getHeader} from "@/utils/storageUtils";
 import {ElMessage} from "element-plus";
 import btc from '@@/public/images/btc.svg'
-
 const headers = getHeader();
 import { useRoute, useRouter } from 'vue-router';
+
 const router = useRouter();
 const { assetsApi } = useServer();
 // 整合数据列表
@@ -39,9 +39,8 @@ const searchText = ref('');
 
 // 选择货币
 const selectCurrency = async (currency: any) => {
-  console.log(currency);
-  const currencyId = currency.id;
-  router.push({ path: '/charge-withdraw-h5/withdrawal/selected', query: { currencyId } });
+  const assetsId = currency.id;
+  router.push({ path: '/charge-withdraw-h5/withdrawal/selected', query: { assetsId } });
 }
 
 // 重置 currencyList
@@ -50,7 +49,6 @@ const resetCurrencyList = () => {
     return currency.currencyName.toLowerCase().includes(searchText.value.toLowerCase());
   });
 };
-
 
 // 获取数据
 const fetchData = async () => {
@@ -88,7 +86,6 @@ const fetchData = async () => {
     ElMessage.error('请求失败，请重试');
   }
 };
-
 
 // 监听
 watch(searchText, () => {

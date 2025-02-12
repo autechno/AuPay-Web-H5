@@ -376,10 +376,6 @@ const swapCurrencies = async () => {
   padding: 30px;
   margin: 0 10px; /* 添加左右间距 */
 }
-.button-container {
-  display: flex;
-  align-items: center; /* 垂直居中对齐 */
-}
 .select-container {
   display: flex;
   flex-direction: column; /* 垂直排列 */

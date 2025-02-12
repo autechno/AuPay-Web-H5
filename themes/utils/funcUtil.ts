@@ -57,11 +57,13 @@ export const getQueryParams = () => {
 };
 
 export const formatAddressString = (input: string, endNumber: number, count: number) => {
-    if (input.length > count) {
-        const start = input.substring(0, endNumber);
-        const end = input.substring(input.length - 4);
-        return `${start}...${end}`;
+    if(input && input.length){
+        if (input.length > count) {
+            const start = input.substring(0, endNumber);
+            const end = input.substring(input.length - 4);
+            return `${start}...${end}`;
+        }
+        return input;
     }
-    return input;
 }
 

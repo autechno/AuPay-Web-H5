@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import logo from '@@/public/images/LOGO3.png';
+import logo from '@@/public/images/LOGO.svg';
 import { rules } from "@/utils/validationRules";
 import {ElForm, ElMessage} from "element-plus";
 import {getHeader} from "@/utils/storageUtils";
@@ -138,9 +138,12 @@ const handleSubmit = async () => {
         ElMessage.error(res.message);
       }
     }else {
-      let res = await userApi.passwrodResetSet(form.value, headers);
+      let res = await userApi.passwrodResetSet(form.value, {});
       if (res.code === 200) {
-        window.location.href = '/user/login';
+        ElMessage.success('重置密码成功，请重新登录');
+        setTimeout(() => {
+          window.location.href = '/user/login';
+        }, 500);
       } else {
         ElMessage.error(res.message);
       }
@@ -185,31 +188,26 @@ const sendEamil = async () => {
   font-weight: 400;
   padding-bottom: 28px;
 }
-.agreement{
-  font-weight: normal;
-  font-size: 12px !important;
-  position: relative;
-  top: -10px;
-}
+
 .input_box{
-  :deep .el-input{
+  :deep(.el-input){
     width: 100%;
     height: 56px;
     border-radius: 16px;
     font-size: 16px;
     border: 0;
   }
-  :deep .el-input__wrapper {
+  :deep(.el-input__wrapper) {
     border-radius: 16px;
     border: 3px #C8DCE8 solid;
   }
-  :deep .checkbox__label{
+  :deep(.checkbox__label){
     color: #dcdcdc !important;
   }
-  :deep .el-form-item__error{
+  :deep(.el-form-item__error){
     padding-left: 14px;
   }
-  :deep .el-checkbox__label{
+  :deep(.el-checkbox__label){
     font-weight: normal !important;
   }
 }

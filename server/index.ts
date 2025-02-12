@@ -73,7 +73,7 @@ class UserApi extends Http {
      * @param headers
      */
     public getCheckTransferCode(params: any, headers: any): Promise<any> {
-        return this.get('/aupay-user/base/check/transferCode', params, headers)
+        return this.get('/aupay-user/transferQrcode/check', params, headers)
     }
     /**
      * 常用地址列表

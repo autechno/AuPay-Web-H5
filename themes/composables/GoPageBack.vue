@@ -8,11 +8,12 @@
     <div class="middle-text">{{ title }}</div>
     <!-- 右侧按钮 -->
     <el-button
-        v-if="buttonConfig"
-        class="right-button"
+        v-if="buttonConfig && Object.keys(buttonConfig).length"
+        :class="['right-button', buttonConfig.type]"
         @click="() => goList()">
-      {{buttonConfig.btnName}}
-      <el-image  v-if="buttonConfig.type == 'pay'" :src="pay" />
+      {{ buttonConfig.btnName }}
+      <el-image v-if="buttonConfig.type === 'pay'" :src="pay" />
+      <el-image v-if="buttonConfig.type === 'collect'" :src="collect" />
     </el-button>
 
     <div class="scan-wrap" v-if="showScan">
@@ -26,12 +27,13 @@ import { defineProps } from 'vue';
 import { useRouter } from 'vue-router';
 import { ArrowLeftBold } from "@element-plus/icons-vue";
 import scan from "@@/public/images/Scana.svg";
-import pay from "@@/public/images/Group.svg";
+import collect from "@@/public/images/Group.svg";
+import pay from "@@/public/images/Group2.svg";
 
 const props = defineProps({
   buttonConfig: {
     type: Object,
-    default: ''
+    default: () => ({})
   },
   title: {
     type: String,
@@ -40,23 +42,27 @@ const props = defineProps({
   showScan: {
     type: Boolean,
     default: false
+  },
+  goBackTo: {
+    type: String,
+    default: ''
   }
 });
 
+//历史记录跳转
 const router = useRouter();
-
 const goBack = () => {
-  router.back();
+  if (props.goBackTo) {
+    router.replace(props.goBackTo);
+  } else {
+    router.back();
+  }
 };
-
+// 按钮跳转
 const goList = () => {
   if (props.buttonConfig.navigateTo) {
     router.push(props.buttonConfig.navigateTo);
   }
-};
-
-const scanPage = () => {
-  // 执行扫码的逻辑
 };
 </script>
 
@@ -90,27 +96,39 @@ const scanPage = () => {
   width: 46px;
   height: 46px;
   background: #F4F4F4;
-  text-align: center;
   border-radius: 50%;
-  .scan {
-    padding-top: 10px;
-  }
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
+
 .right-button {
-  margin-top: 5px;
-  background: #5686E1;
+  margin-top: 4px;
   height: 34px;
   border-radius: 15px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 34px;
-  padding:0 15px;
-  color: #fff;
+  padding: 0 15px;
   border: 0;
-  display: inline-flex;
-  .el-image{
-    margin-top: 20px;
-    margin-left: 3px;
+  display: flex;
+  .el-image {
+    margin-top: 22px;
+    width: 11px;
+    margin-left: 5px;
   }
 }
+
+.right-button.pay {
+  background: #FFD862;
+  color: #333333;
+}
+
+.right-button.collect {
+  background: #5686E1;
+  color: #fff;
+}
+
+
 </style>

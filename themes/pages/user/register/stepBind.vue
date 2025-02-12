@@ -271,24 +271,24 @@ onMounted(async () => {
 }
 
 .input_box{
-  :deep .el-input{
+  :deep(.el-input){
     width: 100%;
     height: 56px;
     border-radius: 16px;
     font-size: 16px;
     border: 0;
   }
-  :deep .el-input__wrapper {
+  :deep(.el-input__wrapper) {
     border-radius: 16px;
     border: 3px #C8DCE8 solid;
   }
-  :deep .checkbox__label{
+  :deep(.checkbox__label){
     color: #dcdcdc !important;
   }
-  :deep .el-form-item__error{
+  :deep(.el-form-item__error){
     padding-left: 14px;
   }
-  :deep .el-checkbox__label{
+  :deep(.el-checkbox__label){
     font-weight: normal !important;
   }
 }

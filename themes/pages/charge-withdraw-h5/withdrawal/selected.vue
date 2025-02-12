@@ -1,11 +1,11 @@
 <template>
   <div class="page">
-    <GoBack :showRightButton="false"  :showScan="true"  />
+    <GoBack  :showScan="true"  />
     <div class="tips">至</div>
     <div class="sub-page">
       <div class="search-wrap">
         <input v-model="addressText" placeholder="请填写地址" class="custom-input" />
-        <div class="select-address" @click="selectAddress"><el-icon class="icon" size="10" ><CloseBold /></el-icon> 选地址</div>
+        <div class="select-address" @click="drawerVisible = true"><el-icon class="icon" size="10" ><CloseBold /></el-icon> 选地址</div>
       </div>
       <div class="copy-list">
         <div class="item" v-for="item in copyList" :key="item" @click="copyToAddress(item)">
@@ -14,20 +14,31 @@
       </div>
     </div>
     <el-button @click="nextTick()" class="custom-button custom-button-pos" >下一步</el-button>
+    <el-drawer class="custom-drawer" v-model="drawerVisible"
+               title=""
+               :show-close="false"
+               @close="drawerVisible = false"
+               direction="rtl"
+               size="100%">
+      <Address />
+    </el-drawer>
   </div>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import GoBack from "@/composables/GoBack.vue";
+import GoBack from "@/composables/GoPageBack.vue";
 import clip from '@@/public/images/ClipBoard.svg';
 import { CloseBold } from "@element-plus/icons-vue";
 import { useRoute, useRouter } from 'vue-router';
 import {ElMessage} from "element-plus";
+import Address from "../../user/address/list.vue";
+
 const router = useRouter();
 const route = useRoute();
-const currencyId = ref('');
+const assetsId = ref<string>('');
 const addressText = ref('');
 const copyList = ref([]);
+const drawerVisible = ref(false);
 
 // 读取剪贴板内容并添加到 copyList
 const readClipboard = async () => {
@@ -61,15 +72,14 @@ const nextTick = () => {
     ElMessage.error( '地址不能为空!');
     return;
   }
-  router.push({ path: '/charge-withdraw-h5/withdrawal', query: { currencyId: currencyId.value, address: addressText.value } });
-};
-const selectAddress = () => {
-  router.push({ path: '/charge-withdraw-h5/withdrawal/address', query: { currencyId: currencyId.value } });
+  router.push({ path: '/charge-withdraw-h5/withdrawal', query: { assetsId: assetsId.value, address: addressText.value } });
 };
 
 // 初始化数据
 onMounted(async () => {
-  currencyId.value = route.query.currencyId;
+  if (route.query.assetsId) {
+    assetsId.value = route.query.assetsId;
+  }
   // 粘体板
   const hasContent = await checkClipboardContent();
   if (hasContent) {

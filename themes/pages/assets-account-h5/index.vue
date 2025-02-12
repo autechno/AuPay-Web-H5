@@ -237,19 +237,19 @@ onMounted(() => {
   margin: 7px auto 4px auto;
 }
 .icon-container  i.i1{
-  background: url(@@/public/images/cz2.png)  no-repeat;
+  background: url(@@/public/images/cz3.png)  no-repeat;
   background-size: 100%;
 }
 .icon-container  i.i2{
-  background: url(@@/public/images/tx@2x.png)  no-repeat;
+  background: url(@@/public/images/tx@3x.png)  no-repeat;
   background-size: 100%;
 }
 .icon-container  i.i3{
-  background: url(@@/public/images/zh2x.png)  no-repeat;
+  background: url(@@/public/images/zh3x.png)  no-repeat;
   background-size: 100%;
 }
 .icon-container  i.i4{
-  background: url(@@/public/images/sd2x.png)  no-repeat;
+  background: url(@@/public/images/sd@3x.png)  no-repeat;
   background-size: 100%;
 }
 .icon-container i img{
@@ -289,19 +289,19 @@ onMounted(() => {
   margin: 7px auto 4px auto;
 }
 .home-container  i.i1{
-  background: url(@@/public/images/Home@2x.png)  no-repeat;
+  background: url(@@/public/images/Home@3x.png)  no-repeat;
   background-size: 100%;
 }
 .home-container  i.i2{
-  background: url(@@/public/images/zichan@2x.png)  no-repeat;
+  background: url(@@/public/images/zichan@3x.png)  no-repeat;
   background-size: 100%;
 }
 .home-container  i.i3{
-  background: url(@@/public/images/hangqing@2x.png)  no-repeat;
+  background: url(@@/public/images/hangqing@3x.png)  no-repeat;
   background-size: 100%;
 }
 .home-container  i.i4{
-  background: url(@@/public/images/wo@2x.png)  no-repeat;
+  background: url(@@/public/images/wo@3x.png)  no-repeat;
   background-size: 100%;
 }
 .home-container  i.cur1{
@@ -309,15 +309,15 @@ onMounted(() => {
   background-size: 100%;
 }
 .home-container  i.cur2{
-  background: url(@@/public/images/zichan2@2x.png)  no-repeat;
+  background: url(@@/public/images/zichan2@3x.png)  no-repeat;
   background-size: 100%;
 }
 .home-container  i.cur3{
-  background: url(@@/public/images/hangqing2@2x.png)  no-repeat;
+  background: url(@@/public/images/hangqing2@3x.png)  no-repeat;
   background-size: 100%;
 }
 .home-container  i.cur4{
-  background: url(@@/public/images/yonghu2@2x.png)  no-repeat;
+  background: url(@@/public/images/yonghu2@3x.png)  no-repeat;
   background-size: 100%;
 }
 .home-container i img{

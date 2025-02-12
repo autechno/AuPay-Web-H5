@@ -47,6 +47,7 @@ const headers = getHeader();
 const { assetsApi } = useServer();
 
 const currencyList = ref([]);
+const currencyOriginList = ref([]);
 const currencyChainList = ref([]);
 const formRef = ref(null);
 
@@ -67,7 +68,11 @@ const handleCurrencyChain = () => {
 const handleSubmit = async () => {
   const valid = await formRef.value.validate();
   if (valid) {
-    props.form.generateQR = `/charge-withdraw/transfer/detail?qr=${props.form.transferQR}&currencyId=${props.form.currencyId}&currencyChain=${props.form.currencyChain}&amount=${props.form.amount}&remark=${props.form.remark}`;
+    const currentCurrency = currencyOriginList.value.find(currency =>
+        currency.currencyId === props.form.currencyId && currency.currencyChain === props.form.currencyChain
+    );
+    const encodedRemark = encodeURIComponent(props.form.remark);
+    props.form.generateQR = `/charge-withdraw-h5/transfer?qr=${props.form.transferQR}&assetsId=${currentCurrency.id}&amount=${props.form.amount}&remark=${encodedRemark}&isCollect=1`;
     emit('update:form', { ...props.form });
     emit('close');
   } else {
@@ -100,6 +105,7 @@ const assetsData = async () => {
         });
       });
       currencyList.value = Array.from(currencyMap.values());
+      currencyOriginList.value = dataList;
       if(currencyList.value){
         let currencyId = currencyList.value[0].currencyId;
         props.form.currencyId = currencyId;

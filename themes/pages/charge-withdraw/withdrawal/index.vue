@@ -58,8 +58,6 @@ const updateForm = async (newForm: Object) => {
         ElMessage.error(res.message);
       }
     }else if(form.value.withdrawalStatus && !form.value.permissionStatus) {
-      console.log(form.value)
-      console.log(form.value)
       dialogCheckVisible.value = true;
     }
   } catch (error) {

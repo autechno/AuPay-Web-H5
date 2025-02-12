@@ -26,7 +26,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import GoBack from "@/composables/GoBack.vue";
+import GoBack from "@/composables/GoPageBack.vue";
 import {getHeader} from "@/utils/storageUtils";
 import shape from '@@/public/images/Shape.svg'
 import {ElMessage} from "element-plus";
@@ -47,7 +47,7 @@ const cost = ref({
 });
 
 const resetBtn = () => {
-  router.push({ path: '/charge-withdraw-h5/withdrawal/selected', query: { currencyId: form.value.id } });
+  router.push({ path: '/charge-withdraw-h5/withdrawal/selected', query: { assetsId: form.value.id } });
 }
 // 更新父组件的 form 数据
 const updateForm = (newForm: Object) => {
@@ -108,9 +108,9 @@ const form = ref({
 })
 
 // 获取数据
-const fetchData = async (currencyId: number) => {
+const fetchData = async (assetsId: number) => {
   try {
-    let res = await assetsApi.getAccountAssetsById({ assetsId:  currencyId }, headers);
+    let res = await assetsApi.getAccountAssetsById({ assetsId:  assetsId }, headers);
     if (res.code == 200) {
       form.value = res.data;
       form.value.amount = '';
@@ -126,7 +126,7 @@ const fetchData = async (currencyId: number) => {
 // 初始化数据
 onMounted(() => {
   addressText.value = route.query.address;
-  fetchData(route.query.currencyId);
+  fetchData(route.query.assetsId);
 });
 </script>
 

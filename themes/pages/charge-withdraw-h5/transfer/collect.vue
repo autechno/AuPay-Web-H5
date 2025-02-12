@@ -1,53 +1,62 @@
 <template>
   <div class="page">
-    <GoBack :buttonConfig="buttonConfig" />
+    <GoBack :buttonConfig="buttonConfig" :goBackTo="'/assets-account-h5'" />
     <div class="box-wrap">
-      <div class="title-tips">收款</div>
-      <div class="text-tips"  @click="copyText(form.transferQR)">auPayID: {{formatAddressString(form.transferQR, 8, 14)}}<el-image :src="copy" /></div>
+      <div class="title-tips"><span class="btn">收款</span></div>
+      <div class="tips-text"  @click="copyText(form.transferQR)">auPayID: {{formatAddressString(form.transferQR, 8, 14)}}<el-image :src="copy" /></div>
       <div class="code-wrap">
         <QCcode :value="form.generateQR" :size="180" />
+        <el-image class="arrow top-left" :src="arrow" />
+        <el-image class="arrow top-right" :src="arrow" />
+        <el-image class="arrow bottom-left" :src="arrow" />
+        <el-image class="arrow bottom-right" :src="arrow" />
       </div>
       <div class="select-wrap" v-if="form.currencyId == ''">
-        <div class="select" @click="isDrawerVisible = true">编辑收款<el-icon size="12"><ArrowRightBold /></el-icon></div>
+        <div class="select" @click="drawerVisible = true">编辑收款<el-icon size="12"><ArrowRightBold /></el-icon></div>
       </div>
       <div class="select-wrap" v-else>
         <div class="select">
-          <button class="btn" @click="isDrawerVisible = true">编辑</button><button class="btn" @click="cleanQR">清除</button>
-          <div class="row-wrap"><span class="text">币种：</span><span>{{form.currencyId}}</span></div>
-          <div class="row-wrap"><span class="text">网络：</span><span>{{form.currencyChain}}</span></div>
+          <button class="btn" @click="drawerVisible = true">编辑</button><button class="btn" @click="cleanQR">清除</button>
+          <div class="row-wrap" style="margin-top: 10px;"><span class="text">币种：</span><span>{{getDataInfo(form.currencyId, 'currencyChains')?.name}}</span></div>
+          <div class="row-wrap"><span class="text">网络：</span><span>{{getDataInfo(form.currencyChain, 'currencyChains')?.name}}</span></div>
           <div class="row-wrap"><span class="text">数量：</span><span>{{formatCurrency(form.amount)}}</span></div>
           <div class="row-wrap"><span class="text">备注：</span><span>{{formatAddressString(form.remark, 4, 8)}}</span></div>
         </div>
       </div>
-
     </div>
-    <el-drawer class="custom-drawer" v-model="isDrawerVisible"
+    <div class="tips-wrap">编辑收款功能仅能编辑“二维码”auPayID不受编辑影响</div>
+    <el-drawer class="custom-drawer" v-model="drawerVisible"
          title=""
          :show-close="false"
-         @close="isDrawerVisible = false"
+         @close="drawerVisible = false"
          direction="rtl"
          size="100%">
-      <GoClose @close="isDrawerVisible = false" />
+      <GoClose @close="drawerVisible = false" />
       <div class="icon-edit-wrap">
         <div class="icon-edit"><el-image :src="Shape"></el-image></div>
       </div>
-      <div class="title">
-        编辑收款
-      </div>
+      <div class="title"> 编辑收款 </div>
       <TransferForm
           style="margin-top: 20px;"
           :form="form"
           @update:form="updateForm"
       />
     </el-drawer>
-    <el-button class="custom-button-down" >分享</el-button>
+    <el-button class="custom-button-down" @click="shareVisible = true">分享</el-button>
     <el-button class="custom-button-down-default">下载</el-button>
+    <Share
+        v-if="shareVisible"
+        :generateQR="form.generateQR"
+        :transferQR="form.transferQR"
+        type="collect"
+        @close="shareVisible = false" />
   </div>
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import GoBack from "@/composables/GoPageBack.vue";
 import GoClose from "@/composables/GoPageClose.vue";
+import Share from "@/composables/Share.vue";
 import { useRoute, useRouter } from 'vue-router';
 import copy from "@@/public/images/copy2.svg";
 import Shape from "@@/public/images/Shape2.svg";
@@ -56,31 +65,30 @@ import QCcode from "@/composables/QCcode.vue";
 import {ArrowRightBold} from "@element-plus/icons-vue";
 import TransferForm from "@/composables/TransferForm.vue";
 import {formatCurrency, getDataInfo} from "@/utils/formatUtils";
-const isDrawerVisible = ref(false);
-
+import arrow from '@@/public/images/arrow-right.svg';
+const drawerVisible = ref(false);
+const shareVisible = ref(false);
 // 更新父组件的 form 数据
-const updateForm = (newForm) => {
+const updateForm = (newForm: any) => {
   form.value = newForm;
-  isDrawerVisible.value = false;
+  drawerVisible.value = false;
   console.log(newForm);
 };
-
 const router = useRouter();
 const route = useRoute();
 const form = ref({
   transferQR: '',
   generateQR: '',
-  currencyId: '2',
-  currencyChain: '3',
-  amount: '100',
-  remark: '我们去吃饭好不好呀我们',
+  currencyId: '',
+  currencyChain: '',
+  amount: '',
+  remark: '',
 })
 const buttonConfig = ref({
   navigateTo: '/charge-withdraw-h5/transfer/pay',
   btnName: '付款',
   type: 'pay',
 })
-
 // 清空表单
 const cleanQR = () => {
   form.value.generateQR = form.value.transferQR;
@@ -89,7 +97,6 @@ const cleanQR = () => {
   form.value.amount = '';
   form.value.remark = '';
 };
-
 // 初始化数据
 onMounted(() => {
   const userStore = UseUserStore();
@@ -97,16 +104,31 @@ onMounted(() => {
   form.value.generateQR = userStore.userInfo.transferQR;
 });
 </script>
-
 <style lang="less" scoped>
 *{
   margin: 0;
   padding: 0;
 }
+.code-wrap{
+  width: 250px;
+  height: 250px;
+  margin: 33px auto 0 auto;
+}
+
+.tips-wrap {
+ color:  #FD6B2E;
+  line-height: 20px;
+  text-align: center;
+  background-color: #FFEEEE;
+  padding: 6px 20px;
+  font-size: 12px;
+  border-radius: 8px;
+  margin-top: 11px;
+}
 .select-wrap{
   line-height: 26px;
   text-align: center;
-  margin: 15px 0 20px 0;
+  margin: 44px 0 20px 0;
   .select{
     font-size: 18px;
     color: #333333;
@@ -145,15 +167,6 @@ onMounted(() => {
     }
   }
 }
-.code-wrap{
-  margin: 0 auto;
-  width: 250px;
-  height: 250px;
-  text-align: center;
-  canvas{
-    margin-top: 35px;
-  }
-}
 .box-wrap{
   background: #ffffff;
   margin-top:18px;
@@ -162,14 +175,24 @@ onMounted(() => {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   .title-tips{
-    padding: 25px 20px 3px 20px;
-    height: 41px;
-    line-height: 41px;
-    overflow: hidden;
-    font-size: 24px;
-    color: #0D0D0D;
+    padding: 25px 20px 6px 20px;
+    text-align: center;
+    color: #333333;
+    .text{
+      font-size: 16px;
+    }
+    .btn{
+      height: 48px;
+      line-height: 48px;
+      font-size: 24px;
+      background: #EAF3FA;
+      border-radius: 16px;
+      display: inline-block;
+      width: 226px;
+      height: 100%
+    }
   }
-  .text-tips{
+  .tips-text{
     padding: 0 20px;
     font-size: 16px;
     color: #0D0D0D;

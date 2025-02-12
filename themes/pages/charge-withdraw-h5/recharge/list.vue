@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <GoBack :showRightButton="false"  :showScan="false"  />
+    <GoBack :goBackTo="'/assets-account-h5'"  />
     <div class="sub-page">
       <div class="search-wrap">
         <el-icon class="arrow" size="26"><Search /></el-icon>
@@ -21,7 +21,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import GoBack from "@/composables/GoBack.vue";
+import GoBack from "@/composables/GoPageBack.vue";
 import {Search} from "@element-plus/icons-vue";
 import {getHeader} from "@/utils/storageUtils";
 import {ElMessage} from "element-plus";

@@ -1,24 +1,24 @@
 <template>
-  <el-dialog :title="title" v-model="isSelfDialogVisible" @close="cancel">
-    <el-form :model="checkForm" :rules="rules" ref="formRef"  @submit.prevent="handleSubmit">
-      <el-form-item  v-if="activeStepId == 1" label="资金密码" prop="checkAssetsPassword">
+  <el-dialog class="custom-dialog" v-model="isSelfDialogVisible" :show-close="false" @close="cancel">
+     <div class="custom-dialog-wrap"> {{title}}</div>
+    <el-form :model="checkForm" class="customer-input" :rules="rules" ref="formRef" @submit.prevent="handleSubmit">
+      <el-form-item  v-if="activeStepId == 1" prop="checkAssetsPassword">
         <el-input v-model="checkForm.checkAssetsPassword" type="password" placeholder="请转入资金密码" />
       </el-form-item>
       <div v-if="activeStepId == 2">
-        <el-form-item  label="邮箱" >
+        <el-form-item >
           <el-input :value="props.form.email" disabled />
         </el-form-item>
-        <el-form-item  label="邮箱验证码" prop="emailCode">
+        <el-form-item  prop="emailCode">
           <el-input v-model="checkForm.emailCode" placeholder="请输入邮箱验证码" />
         </el-form-item>
       </div>
-      <el-form-item v-if="activeStepId == 3" label="google验证码" prop="googleCode" >
+      <el-form-item v-if="activeStepId == 3"  prop="googleCode" >
         <el-input v-model="checkForm.googleCode" type="password" placeholder="请输入google验证码" />
       </el-form-item>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" native-type="submit">确 定</el-button>
-      </span>
+      <div class="button-container" style="margin-top: 94px;">
+        <el-button class="custom-button-sm"  style="width: 190px;" native-type="submit">确 定</el-button>
+      </div>
     </el-form>
   </el-dialog>
 </template>
@@ -187,5 +187,39 @@ watch(() => props.isDialogVisible, (newVal) => {
 
 </script>
 
-<style scoped>
+<style lang="less" scoped>
+.custom-dialog-wrap {
+  color: #0D0D0D;
+  font-size: 18px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  margin-top: 9px;
+  margin-bottom: 28px;
+}
+
+.customer-input {
+  padding: 0 10%;
+  :deep(.el-input) {
+    width: 100%;
+    height: 46px;
+    border-radius: 16px;
+    font-size: 16px;
+    border: 0;
+  }
+  :deep(.el-input__wrapper) {
+    border-radius: 16px;
+    border: 3px #C8DCE8 solid;
+  }
+  :deep(.checkbox__label) {
+    color: #dcdcdc !important;
+  }
+  :deep(.el-form-item__error) {
+    padding-left: 14px;
+  }
+  :deep(.el-checkbox__label) {
+    font-weight: normal !important;
+  }
+}
+
 </style>
