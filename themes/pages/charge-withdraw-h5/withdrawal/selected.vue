@@ -31,7 +31,7 @@ import clip from '@@/public/images/ClipBoard.svg';
 import { CloseBold } from "@element-plus/icons-vue";
 import { useRoute, useRouter } from 'vue-router';
 import {ElMessage} from "element-plus";
-import Address from "../../user/address/list.vue";
+import Address from "../../user-h5/address/list.vue";
 
 const router = useRouter();
 const route = useRoute();
