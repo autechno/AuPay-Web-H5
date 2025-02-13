@@ -21,8 +21,21 @@
           </router-link>
         </el-col>
       </el-row>
-      <div class="table-title"><span style="font-size: 18px;">我的代币</span><span style="color: #FDC92E" @click="jumpPage">要看更多</span></div>
-
+      <div class="table-title"><span style="font-size: 18px;">订单记录</span><span style="color: #FDC92E" @click="jumpPage">要看更多</span></div>
+      <div class="table-list">
+        <div class="item" v-for="item in assetsList" :key="item.id">
+          <div class="list">
+            <span style="font-size: 20px; ">{{getDataInfo(item.tradeType, 'trade')?.name}}</span>
+            <span style="font-size: 14px;" :class="item.tradeType == 1? 'pay' : 'collect'">
+                {{ formatCurrency(item.amount) }}
+            </span>
+          </div>
+          <div class="list">
+            <span>{{formatDate(item.createTime)}}</span>
+            <span>{{getDataInfo(item.currencyChain, 'currencyChains')?.name}}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -39,6 +52,7 @@ const headers = getHeader();
 const router = useRouter();
 const route = useRoute();
 const titleBar = ref();
+const assetsList = ref([]);
 const assets = ref({
   fee: '',
   totalBalanceUsdt: '',
@@ -61,31 +75,36 @@ const fetchData = async (assetsId: number, currencyUnit: string) => {
       assetsApi.getRateU2Currency({ currency: currencyUnit }, headers),
       await assetsApi.getAccountAssetsById({ assetsId:  assetsId }, headers)
     ]);
-
+    // 汇率
     let exchangeRate = rateRes.code == 200?rateRes.data:1;
     if (assetsRes.code == 200) {
       let currencyId = assetsRes.data.currencyId
       let currencyChain = assetsRes.data.currencyChain
-      let currencyName = getDataInfo(currencyId, 'currencyChains')?.name;
-      let chainName = getDataInfo(currencyChain, 'chains')?.name;
-      titleBar.value = currencyName + "||"+ chainName;
       assets.value = assetsRes.data;
       assets.value.amount = assetsRes.data.totalBalanceUsdt * exchangeRate;
 
       // 获取充值配置
-      const rechargeConfigRes = await assetsApi.getAccountRechargeConfig({ currencyId, currencyChain }, headers);
+      const rechargeConfigRes = await assetsApi.getAccountRechargeConfig({currencyId, currencyChain}, headers);
       if (rechargeConfigRes.code === 200) {
         assets.value.walletAddress = rechargeConfigRes.data.address
       } else {
         showErrorMessage(rechargeConfigRes.code, rechargeConfigRes.message)
       }
-    } else {
-      showErrorMessage(assetsRes.code, assetsRes.message)
+      // 资金列表
+      const assetsListRes = await assetsApi.accountAssetsList({
+        pageNo: 1,
+        pageSize: 10,
+        conditions: {currencyId: currencyId, currencyChain: currencyChain}
+      }, headers);
+      if (assetsListRes.code == 200) {
+        assetsList.value = assetsListRes.data.records;
+      }
     }
   } catch (error) {
     showCatchErrorMessage()
   }
 };
+
 // 计算字体大小
 const computedFontSize = computed(() => {
   const length = assets.value.toString().length;
@@ -116,6 +135,33 @@ onMounted(() => {
   height: calc(100vh - 28px);
 }
 .category-wrap{
+  .table-list{
+    padding-bottom: 28px;
+    .item{
+      height: 76px;
+      border: #E0EBF2 solid 3px;
+      padding: 0 17px;
+      border-radius: 16px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: #333333;
+      .list{
+        display: flex;
+        justify-content: space-between;
+      }
+      .list:first-child{
+        padding-top: 14px;
+        line-height: 28px;
+        padding-bottom: 4px;
+      }
+      .pay {
+        color: #F36A35;
+      }
+      .collect{
+        color: #0F9A50;
+      }
+    }
+  }
   .copy-wrap{
     margin-bottom: 6px;
     color: #666666;

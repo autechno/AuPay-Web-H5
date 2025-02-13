@@ -92,7 +92,7 @@ export const StatusEnum = {
 export const formatCurrency = (
     amount: number,
     locale: string = 'en-US',
-    minimumFractionDigits: number = 0,
+    minimumFractionDigits: number = 2,
     maximumFractionDigits: number = 8
 ): string => {
     // 使用 Intl.NumberFormat 进行格式化

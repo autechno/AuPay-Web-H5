@@ -164,7 +164,7 @@ const submitPay = async () =>{
     if(res.code == 200) {
       let remarkStr = remark.value?encodeURIComponent(remark.value):'';
       let qrStr = encodeURIComponent(account.value.qr);
-      router.push({ path: 'successed', query: { qr: qrStr, remark: remarkStr, tradeNo:  res.data} });
+      router.push({ path: './successed', query: { qr: qrStr, remark: remarkStr, tradeNo:  res.data} });
     }else{
       showErrorMessage(res.code, res.message)
     }

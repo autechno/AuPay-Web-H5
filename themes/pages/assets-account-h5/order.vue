@@ -10,38 +10,38 @@
     </div>
     <div class="flash-content">
       <div class="exchange-container" v-for="item in recordList" @click="jumpDetail(`/flash-exchange-h5/detail?id=${item.id}&tradeNo=${item.tradeNo}`)">
-          <div class="item-wrap">
-            <el-row type="flex" >
-              <el-col :span="11">
-                <div class="item" >
-                  <div class="flash-img-wrap">
-                    <el-image :src="sol" />
-                  </div>
-                  <div class="text-wrap">
-                    <p class="title">{{item.cashOutAmount}} </p>
-                    <p class="text">{{ getDataInfo(item.cashOutChain, 'chains').name }}</p>
-                  </div>
+        <div class="item-wrap">
+          <el-row type="flex" >
+            <el-col :span="11">
+              <div class="item" >
+                <div class="flash-img-wrap">
+                  <el-image :src="sol" />
                 </div>
-              </el-col>
-              <el-col :span="2">
-                <div class="flash-img-wrap separator">
-                  <div class="arrow-wrap"><el-image :src="arrow" /></div>
+                <div class="text-wrap">
+                  <p class="title">{{item.cashOutAmount}} </p>
+                  <p class="text">{{ getDataInfo(item.cashOutChain, 'chains').name }}</p>
                 </div>
-              </el-col>
-              <el-col :span="11">
-                <div class="item" style="text-align: right">
-                  <div class="text-wrap">
-                    <p class="title">{{item.cashInAmount}} </p>
-                    <p class="text"> {{ getDataInfo(item.cashInChain, 'chains').name }}</p>
-                  </div>
-                  <div class="flash-img-wrap" style="right: 0; left: auto">
-                    <el-image :src="btc" />
-                  </div>
+              </div>
+            </el-col>
+            <el-col :span="2">
+              <div class="flash-img-wrap separator">
+                <div class="arrow-wrap"><el-image :src="arrow" /></div>
+              </div>
+            </el-col>
+            <el-col :span="11">
+              <div class="item" style="text-align: right">
+                <div class="text-wrap">
+                  <p class="title">{{item.cashInAmount}} </p>
+                  <p class="text"> {{ getDataInfo(item.cashInChain, 'chains').name }}</p>
                 </div>
-              </el-col>
-            </el-row>
-          </div>
-          <div class="date-wrap"> {{ formatDate(item.createTime) }} </div>
+                <div class="flash-img-wrap" style="right: 0; left: auto">
+                  <el-image :src="btc" />
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+        <div class="date-wrap"> {{ formatDate(item.createTime) }} </div>
       </div>
       <!-- 分页组件 -->
       <el-pagination
@@ -62,16 +62,16 @@
         :show-close="false"
         @click="handleClose"
         @opened="datePicker.handleOpen()">
-        <el-date-picker
-            size="small"
-            ref="datePicker"
-            v-model="selectedDate"
-            type="month"
-            popper-class="custom-picker"
-            :clearable="false"
-            :editable="false"
-            @change="handleDateChange"
-        />
+      <el-date-picker
+          size="small"
+          ref="datePicker"
+          v-model="selectedDate"
+          type="month"
+          popper-class="custom-picker"
+          :clearable="false"
+          :editable="false"
+          @change="handleDateChange"
+      />
     </el-drawer>
   </div>
 </template>
