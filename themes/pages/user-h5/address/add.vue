@@ -4,18 +4,18 @@
     <div class="title-wrap">新增地址</div>
     <el-form :model="form" :rules="rules" class="custom-input" ref="formRef" @submit.prevent="handleSubmit">
       <el-form-item prop="name" >
-        <el-input v-model="form.name"  placeholder="请输入数量"  />
+        <el-input v-model="form.name"  placeholder="地址名称"  />
       </el-form-item>
       <el-form-item prop="currencyChain" >
         <el-select
             id="currency-select"
             v-model="form.currencyChain"
-            placeholder="请选择链">
+            placeholder="选择网络">
           <el-option v-for="item in currencyChainList" :key="item.chainId" :label="item.chainSymbol" :value="item.chainId" />
         </el-select>
       </el-form-item>
       <el-form-item prop="address" >
-        <el-input v-model="form.address" placeholder="请输入地址"  />
+        <el-input v-model="form.address" placeholder="地址"  />
       </el-form-item>
       <el-form-item label="是否加入白名单" prop="white">
         <el-radio-group v-model="form.white">
@@ -24,7 +24,7 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item  >
-        <el-input v-model="form.remark" placeholder="请输入描述"  />
+        <el-input v-model="form.remark" placeholder="描述"  />
       </el-form-item>
       <el-button class="custom-button custom-button-pos" native-type="submit">保存地址</el-button>
     </el-form>
