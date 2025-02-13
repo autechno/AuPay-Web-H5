@@ -5,10 +5,10 @@
       <div class="title-box-wrap">
         <div class="title-wrap">付款至</div>
         <div class="title-item">
-          <el-icon><el-image :src="assets.toLogo ? assets.toLogo : head" /></el-icon>
+          <el-icon><el-image :src="account.accountLogo ? account.accountLogo : head" /></el-icon>
           <div class="column">
-            <div class="title">{{assets.toNikeName?assets.toNikeName:qrCode}}</div>
-            <div class="text" v-if="assets.toSign">{{assets.toSign}}</div>
+            <div class="title">{{account.accountName?account.accountName:account.accountNo}}</div>
+            <div class="text" v-if="account.sign">{{account.sign}}</div>
             <div class="remark" v-if="remark">留言：{{remark}}</div>
           </div>
         </div>
@@ -18,7 +18,7 @@
         <p class="trade-text">{{ getStatusText(assets.status, 'ACCOUNT') }}</p>
       </div>
       <div class="text-wrap">
-        您已向<span style="color: #F36A35">{{assets.toNikeName?assets.toNikeName:qrCode}}</span>成功转账{{assets.toAmount}} {{getDataInfo(assets.toCurrencyId, 'currencyChains')?.name}}请及时关注账户变动
+        您已向<span style="color: #F36A35">{{account.accountName?account.accountName:account.accountNo}}</span>成功转账{{assets.transferAmount}} {{getDataInfo(assets.toCurrencyId, 'currencyChains')?.name}}请及时关注账户变动
       </div>
       <div style="font-size: 20px; text-align: center"> {{countdown}}秒回返回</div>
       <el-button class="custom-button custom-button-pos" @click="jumpPage">确认</el-button>
@@ -43,15 +43,20 @@ import s3 from '@@/public/images/s3.svg';
 import {showCatchErrorMessage} from "~/utils/messageUtils";
 
 // 消息数据
-const recordId = ref(0);
 const assets = ref({
   toLogo: '',
   status: '',
   toNikeName: '',
-  toAmount: '',
+  transferAmount: '',
   toCurrencyId: '',
   toSign: '',
 });
+const account = ref({
+  accountLogo: '',
+  accountName: '',
+  accountNo: '',
+  sign: '',
+})
 const statusMap = {
   1: { percentage: 50, image: s2, class: 's1' },
   2: { percentage: 100, image: s1, class: 's2' },
@@ -64,14 +69,25 @@ const jumpPage = () => {
   window.location.href = "pay";
 }
 // 获取消息数据
-const fetchData = async () => {
+const fetchData = async (tradeNo: string,qrCode: string) => {
   try {
-    const res = await assetsApi.accountAssetsDetail({recordId: recordId.value}, headers);
-    if (res.code === 200) {
-      assets.value = res.data;
+    const [orderDetailRes, accountRes] = await Promise.all([
+      assetsApi.getTransferOrderDetail({ tradeNo: tradeNo }, headers),
+      userApi.getCheckTransferCode({ qrCode: qrCode }, headers),
+    ]);
+    if (orderDetailRes.code === 200) {
+      assets.value = orderDetailRes.data;
     } else {
-      showErrorMessage(res.code, res.message);
+      showErrorMessage(orderDetailRes.code, orderDetailRes.message);
+      return;
     }
+    if (accountRes.code === 200) {
+      // 处理成功的情况
+      account.value = accountRes.data;
+    } else {
+      showErrorMessage(accountRes.code, accountRes.message);
+    }
+
   } catch (error) {
     showCatchErrorMessage();
   }
@@ -104,12 +120,15 @@ const startCountdown = (duration) => {
 
 // 初始化数据
 onMounted(() => {
-  recordId.value = route.query.id;
-  remark.value = route.query.remark;
-  qrCode.value = route.query.qr;
-  fetchData();
+  if(route.query.remark){
+    remark.value = decodeURIComponent(route.query.remark);
+  }
+  if(route.query.tradeNo){
+    let qrCode = decodeURIComponent(route.query.qr);
+    fetchData(route.query.tradeNo, qrCode);
+  }
   // 启动倒计时，设置为3秒
-  startCountdown(3);
+  // startCountdown(3);
 });
 </script>
 

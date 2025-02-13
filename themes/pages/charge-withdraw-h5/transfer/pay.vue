@@ -112,7 +112,7 @@ const handleSubmit = async () => {
     if(!errorMessage.value){
       const res = await userApi.getCheckTransferCode({ qrCode: form.value.transferQR }, headers);
       if(res.code == 200){
-        router.push({ path: 'selected', query: { qr: form.value.transferQR } });
+        router.push({ path: 'selected', query: { qr: encodeURIComponent(form.value.transferQR) } });
       }else{
         showErrorMessage(res.code, res.message)
       }

@@ -105,7 +105,7 @@ onMounted(async ()=>{
     userStore.setTokenState(token);
     const result = await userStore.fetchUserInfo();
     if(result){
-        window.location.href = '/assets-account'
+        window.location.href = '/assets-account-h5'
     }
   }
 })

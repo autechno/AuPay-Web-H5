@@ -76,7 +76,7 @@ const handleSubmit = async () => {
         // if(firstLogin.value == 1) {
         //   window.location.href = '/user/info'
         // }else{
-          window.location.href = '/assets-account'
+          window.location.href = '/assets-account-h5'
         // }
       }
     } else {

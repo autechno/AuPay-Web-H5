@@ -42,7 +42,6 @@ const route = useRoute();
 const searchText = ref('');
 import head from '@@/public/images/head.svg';
 import sol from "@@/public/images/sol.svg";
-import {ElMessage} from "element-plus";
 import {getHeader} from "@/utils/storageUtils";
 import {showCatchErrorMessage} from "~/utils/messageUtils";
 // 整合数据
@@ -68,11 +67,12 @@ const resetCurrencyList = () => {
 };
 
 const selectCurrency = async (item: any) => {
-  router.push({ path: './', query: { qr: form.value.transferQR, assetsId: item.id} });
+  let qr = encodeURIComponent(form.value.transferQR);
+  router.push({ path: './', query: { qr: qr, assetsId: item.id} });
 }
 
 // 获取数据
-const fetchData = async (transferQR: number) => {
+const fetchData = async (transferQR: string) => {
   try {
     // 并发请求账户资产和二维码验证
     const [resAssets, resQR] = await Promise.all([
@@ -120,8 +120,10 @@ watch(searchText, () => {
 
 // 初始化数据
 onMounted(() => {
-  form.value.transferQR = route.query.qr;
-  fetchData(route.query.qr);
+  if(route.query.qr){
+    form.value.transferQR = decodeURIComponent(route.query.qr);
+    fetchData(form.value.transferQR);
+  }
 });
 </script>
 

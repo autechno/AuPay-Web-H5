@@ -116,6 +116,7 @@ const selectedChain = ref(null);
 const isAllSelected = ref(true);
 const isAmountError = ref(false);
 const isAmountSame = ref(false);
+const maxAmountFee = ref(0);
 
 // 搜索
 const selectAll = () => {
@@ -257,6 +258,7 @@ const fetchData = async () => {
           chainData.push(chainInfo);
         }
       });
+
       currencyList.value = currencyData;
       originalCurrencyList.value = currencyData;
       currencyChainList.value = chainData;
@@ -328,20 +330,13 @@ const calculateAndFetchFee = async (inputAmount: number,  type: number) => {
       form.value.inputAmount = inputAmount;
       form.value.inputAmountTo = form.value.inputAmount / rate;
     }
-    const res = await assetsApi.getFastRateFee({ currencyId: form.value.selectedCurrencyToId, currencyChain: form.value.selectedChainTo, amount: inputAmount }, headers);
-    if (res.code === 200) {
-      const fee = res.data.fee;
-      cost.value.content = `${fee} ${form.value.selectedCurrencyTo}`;
-      cost.value.amount = fee;
-      let maxAmount = form.value.inputAmountTo + fee;
-      if (maxAmount > form.value.bigNumCost) {
-        isAmountError.value = true;
-      } else {
-        isAmountError.value = false;
-        checkAmountSame();
-      }
-    } else {
-      showErrorMessage(res.code, res.message);
+    let getFee = await getAmountFee(inputAmount, false);
+    console.log(getFee);
+    if(getFee){
+      isAmountError.value = true;
+    }else{
+      isAmountError.value = false;
+      checkAmountSame();
     }
   } catch (error) {
     showCatchErrorMessage();
@@ -376,9 +371,38 @@ const swapCurrencies = async () => {
   fetchRateExchange();
 };
 
+//手续费查询
+const getAmountFee = async (inputAmount: number, isMaxFee: boolean) => {
+  const res = await assetsApi.getFastRateFee({ currencyId: form.value.selectedCurrencyToId, currencyChain: form.value.selectedChainTo, amount: inputAmount }, headers);
+  if (res.code === 200) {
+    const fee = res.data.fee;
+    if(isMaxFee){
+      maxAmountFee.value = fee;
+    }else{
+      cost.value.content = `${fee} ${form.value.selectedCurrencyTo}`;
+      cost.value.amount = fee;
+      let maxAmount = form.value.inputAmountTo + fee;
+      if (maxAmount > form.value.bigNumCost) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  } else {
+    showErrorMessage(res.code, res.message);
+  }
+}
+
 // 百分比方式
-const percentage = (number: number) => {
-  form.value.inputAmountTo = form.value.bigNumCost * number;
+const percentage = async (number: number) => {
+  let inputAmount = form.value.bigNumCost;
+  if (number == 1) {
+    await getAmountFee(inputAmount, true);
+    inputAmount = inputAmount - maxAmountFee.value;
+  }else{
+    inputAmount = inputAmount * number;
+  }
+  form.value.inputAmountTo = inputAmount;
   syncInputAmountTo();
 }
 

@@ -70,6 +70,7 @@ const updateForm = (newForm: Object) => {
 // 设置最大金额
 const setAmount = async () => {
   form.value.amount = parseFloat(form.value.balance) - maxFee.value;
+  form.value.fee = maxFee.value;
 };
 
 // 验证输入金额

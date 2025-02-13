@@ -29,7 +29,6 @@
 import { ref, onMounted, computed } from 'vue';
 import GoBack from "@/composables/GoPageBack.vue";
 import { formatDate, getDataInfo, getStatusText } from "~/utils/configUtils";
-import { ElMessage } from 'element-plus';
 import { getHeader } from "@/utils/storageUtils";
 import { useRoute } from 'vue-router';
 import s1 from '@@/public/images/s1.svg';

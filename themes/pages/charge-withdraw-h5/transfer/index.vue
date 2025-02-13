@@ -61,7 +61,6 @@ import GoBack from "@/composables/GoPageBack.vue";
 import { useRoute, useRouter } from 'vue-router';
 import head from '@@/public/images/head.svg';
 import {formatCurrency, getDataInfo} from "~/utils/configUtils";
-import {ElMessage} from "element-plus";
 import {getHeader} from "@/utils/storageUtils";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 import {showCatchErrorMessage} from "~/utils/messageUtils";
@@ -163,9 +162,9 @@ const submitPay = async () =>{
     setHeadersAuth(headers, checkForm);
     let res = await assetsApi.transferApply(params, headers);
     if(res.code == 200) {
-      let id = 384;
-      // TODO 返回了一个tradeNO,
-      router.push({ path: 'successed', query: { qr: account.value.qr, remark: remark.value, id:  id} });
+      let remarkStr = remark.value?encodeURIComponent(remark.value):'';
+      let qrStr = encodeURIComponent(account.value.qr);
+      router.push({ path: 'successed', query: { qr: qrStr, remark: remarkStr, tradeNo:  res.data} });
     }else{
       showErrorMessage(res.code, res.message)
     }
@@ -176,6 +175,7 @@ const submitPay = async () =>{
 // 设置最大金额
 const setAmount = async () => {
   form.value.amount = parseFloat(form.value.balance) - maxFee.value;
+  form.value.fee = maxFee.value;
 };
 
 // 获取数据
@@ -238,13 +238,15 @@ onMounted(() => {
   if(route.query.remark){
     remark.value = decodeURIComponent(route.query.remark);
   }
-  if(route.query.amount){
+  if(route.query.amount && route.query.isCollect && route.query.isCollect == 1 ){
+    isCollectAmount.value = true;
     amount.value = route.query.amount;
   }
-  if(route.query.amount && route.query.isCollect==1 ){
-    isCollectAmount.value = true;
+  if(route.query.qr){
+    let qr = decodeURIComponent(route.query.qr);
+    fetchData(route.query.assetsId, qr);
   }
-  fetchData(route.query.assetsId, route.query.qr);
+
 });
 </script>
 <style lang="less" scoped>

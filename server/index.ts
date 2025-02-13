@@ -315,6 +315,12 @@ class AssetsApi extends Http {
         return this.get('/aupay-user/assets/getAssetsRecordDetail', params, headers)
     }
     /**
+     * 获取账户转账-详情
+     */
+    public getTransferOrderDetail(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-trade/transfer/getTransferOrderDetail', params, headers)
+    }
+    /**
      * 行情
      */
     public marketList(params: any, headers: any): Promise<any> {
