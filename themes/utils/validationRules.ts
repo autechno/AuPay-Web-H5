@@ -71,9 +71,29 @@ export const rules = {
     ],
     address: [
         { required: true, message: '地址不能为空', trigger: 'blur' },
+        {
+            validator: (rule, value, callback) => {
+                if (value && value.includes(' ')) {
+                    callback(new Error('地址不能包含空格'));
+                } else {
+                    callback();
+                }
+            },
+            trigger: 'blur'
+        }
     ],
     toAddress: [
-        { required: true, message: '地址不能为空' }
+        { required: true, message: '地址不能为空', trigger: 'blur' },
+        {
+            validator: (rule, value, callback) => {
+                if (value && value.includes(' ')) {
+                    callback(new Error('地址不能包含空格'));
+                } else {
+                    callback();
+                }
+            },
+            trigger: 'blur'
+        }
     ],
     currencyChainId: [
         { required: true, message: '链不能为空', trigger: 'blur' }

@@ -1,207 +1,162 @@
 <template>
   <div class="page">
-    <h4>基本信息</h4>
-    <table class="table">
-      <tr>
-        <td>订单ID: </td><td>{{assets.tradeNo}}</td>
-      </tr>
-      <tr>
-        <td>订单类型: </td><td>{{ getDataInfo(assets.tradeType, 'trade')?.name }}</td>
-      </tr>
-      <tr>
-        <td>当前状态: </td><td>{{getStatusText(assets.status, 'ACCOUNT')}}</td>
-      </tr>
-      <tr>
-        <td>发起时间: </td><td>{{formatDate(assets.createTime)}}</td>
-      </tr>
-      <tr>
-        <td>结束时间: </td><td>{{formatDate(assets.finishTime)}}</td>
-      </tr>
-    </table>
-    <h4>交易进度</h4>
-    <table class="table">
-      <tr>
-        <td>进度条:{{assets.status}}</td>
-        <td>
-          <div class="progress-bar-container">
-            <div class="progress-bar" style="width: 67%;">67%</div>
-          </div>
-        </td>
-      </tr>
-      <tr v-if="assets.txHash">
-        <td>区块链ID: </td><td>{{assets.txHash}}</td>
-      </tr>
-    </table>
-    <h4>概览</h4>
-    <table class="table" width="100%">
-      <tr>
-        <td>
-          <table class="table">
-            <tr v-if="assets.fromLogo">
-              <td>用户头像:</td><td><img :src="assets.fromLogo" width="100" /></td>
-            </tr>
-            <tr v-if="assets.fromNikeName">
-              <td>用户昵称: </td><td>{{assets.fromNikeName}}</td>
-            </tr>
-            <tr v-if="assets.fromAccountName">
-              <td>用户账户: </td><td>{{assets.fromAccountName}}</td>
-            </tr>
-            <tr v-if="assets.fromWalletAddress">
-              <td>交易地址: </td><td>{{assets.fromWalletAddress}}</td>
-            </tr>
-          </table>
-        </td>
-        <td>
-          <table class="table">
-            <tr >
-              <td>交易类型:</td><td>{{getDataInfo(assets.tradeType, 'trade')?.name}}</td>
-            </tr>
-            <tr v-if="assets.fromAmount">
-              <td>数量: </td><td>{{assets.fromAmount}}</td>
-            </tr>
-            <tr v-if="assets.fromCurrencyId">
-              <td>币种: </td><td>{{getDataInfo(assets.fromCurrencyId, 'currencyChains')?.name}}</td>
-            </tr>
-            <tr v-if="assets.fromCurrencyChain">
-              <td>链: </td><td>{{getDataInfo(assets.fromCurrencyChain, 'chains')?.name}}</td>
-            </tr>
-          </table>
-        </td>
-        <td>
-          <table class="table">
-            <tr v-if="assets.toLogo">
-              <td >用户头像:</td><td><img :src="assets.toLogo" width="100" /></td>
-            </tr>
-            <tr v-if="assets.toNikeName">
-              <td>用户昵称: </td><td>{{assets.toNikeName}}</td>
-            </tr>
-            <tr v-if="assets.toAccountName">
-              <td>用户账户: </td><td>{{assets.toAccountName}}</td>
-            </tr>
-            <tr v-if="assets.toWalletAddress">
-              <td>交易地址: </td><td>{{assets.toWalletAddress}}</td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-    <h4>代币转移</h4>
-    <table class="table" width="100%">
-      <tr>
-        <td>
-          <table class="table">
-            <tr v-if="assets.fromAccountName">
-              <td>账户:</td><td>{{assets.fromAccountName}}</td>
-            </tr>
-            <tr v-if="assets.fromWalletAddress">
-              <td>地址: </td><td>{{assets.fromWalletAddress}}</td>
-            </tr>
-            <tr v-if="assets.fromCurrencyChain">
-              <td>网络: </td><td>{{ getDataInfo(assets.fromCurrencyChain, 'chains')?.name}}</td>
-            </tr>
-            <tr v-if="assets.fromCurrencyId">
-              <td>币种: </td><td>{{ getDataInfo(assets.fromCurrencyId, 'currencyChains')?.name }}</td>
-            </tr>
-            <tr v-if="assets.fromAmount">
-              <td> {{assets.fromAmount	}}</td><td></td>
-            </tr>
-          </table>
-        </td>
-        <td>
-          <table class="table">
-            <tr v-if="assets.toAccountName">
-              <td>账户:</td><td>{{assets.toAccountName}}</td>
-            </tr>
-            <tr v-if="assets.toWalletAddress">
-              <td>地址: </td><td>{{assets.toWalletAddress}}</td>
-            </tr>
-            <tr v-if="assets.toCurrencyChain">
-              <td>网络: </td><td>{{getDataInfo(assets.toCurrencyChain, 'chains')?.name}}</td>
-            </tr>
-            <tr v-if="assets.toCurrencyId">
-              <td>币种: </td><td>{{getDataInfo(assets.toCurrencyId, 'currencyChains')?.name}}</td>
-            </tr>
-            <tr v-if="assets.toAmount">
-              <td> {{assets.toAmount	}}</td><td></td>
-            </tr>
+    <GoBack  />
+    <div :class="['tips', statusClass]">
+      <span class="status"><el-image :src="statusImage" /></span>
+      <p class="text">{{ getStatusText(assets.status, 'ACCOUNT') }}</p>
+    </div>
+    <div class="content">
+      <div class="row"><span class="title">订单ID:</span><span>{{ assets.tradeNo }}</span></div>
+      <div class="row"><span class="text">发起时间:</span><span>{{ formatDate(assets.createTime) }}</span></div>
+      <div class="row"><span class="text">结束时间</span><span>{{ formatDate(assets.finishTime) }}</span></div>
+      <div class="hr"></div>
+      <div class="row"><span class="title">交易进度:</span><span>{{ progressPercentage }}%</span></div>
+      <div class="row">
+        <div class="progress-bar-container">
+          <div class="progress-bar" :style="{ width: progressPercentage + '%' }" />
+        </div>
+      </div>
+      <div class="row" v-if="assets.txHash"><span class="text">区块链ID</span><span>{{assets.txHash}}</span></div>
+      <div class="row"><span class="title">概览:</span></div>
+      <div class="row"><span class="title">代币转移:</span></div>
+      <div class="row"><span class="title">详情:</span></div>
 
-          </table>
-        </td>
-      </tr>
-    </table>
-    <h4>详情</h4>
-    <table class="table">
-      <tr><td>网络</td></tr>
-      <tr> <td>{{getDataInfo(assets.toCurrencyChain, 'chains')?.name}} {{getDataInfo(assets.fromCurrencyChain, 'chains')?.name}}</td></tr>
-      <tr><td>数量</td></tr>
-      <tr> <td>{{assets.toAmount}} </td> </tr>
-      <tr><td>费用</td></tr>
-      <tr> <td>{{assets.fee}} {{getDataInfo(assets.fromCurrencyId, 'currencyChains')?.name}} {{getDataInfo(assets.fromCurrencyChain, 'chains')?.name}}</td></tr>
-      <tr><td>
-        <span v-if="assets.tradeType == 2 || assets.tradeType == 72 || assets.tradeType == 82 || assets.tradeType == 92">实际支出</span>
-        <span v-else>实际到账</span>
-      </td></tr>
-      <tr> <td> {{assets.toAmount}} {{getDataInfo(assets.toCurrencyId, 'currencyChains')?.name}} </td></tr>
-      <tr><td>发起</td></tr>
-      <tr v-if="assets.fromWalletAddress"> <td>{{assets.fromWalletAddress}} <button @click="copyText(assets.fromWalletAddress)">copy</button> </td></tr>
-      <tr><td>接收</td></tr>
-      <tr v-if="assets.toWalletAddress"> <td>{{assets.toWalletAddress}} <button @click="copyText(assets.toWalletAddress)">copy</button> </td></tr>
-      <tr><td>目标</td></tr>
-      <tr v-if="assets.contractAddress"> <td>{{assets.contractAddress}} <button @click="copyText(assets.contractAddress)">copy</button> </td></tr>
-      <tr><td>区块链交易ID</td></tr>
-      <tr v-if="assets.txHash" > <td>{{assets.txHash}} <button @click="copyText(assets.txHash)">copy</button>  <a href="https://sepolia.etherscan.io">区块链浏览器地址链接</a></td></tr>
-    </table>
+    </div>
   </div>
 </template>
-
-<script lang="ts" setup>
-import { ref, onMounted } from 'vue';
-import { ElMessage } from 'element-plus';
-import {getHeader} from "@/utils/storageUtils";
+<script setup lang="ts">
+import { ref, onMounted, computed } from 'vue';
+import GoBack from "@/composables/GoPageBack.vue";
+import { formatDate, getStatusText } from "~/utils/configUtils";
+import { getHeader } from "@/utils/storageUtils";
 import { useRoute } from 'vue-router';
+import s1 from '@@/public/images/s1.svg';
+import s2 from '@@/public/images/s2.svg';
+import s3 from '@@/public/images/s3.svg';
+import {showCatchErrorMessage} from "~/utils/messageUtils";
+import {ElMessage} from "element-plus";
+
 const route = useRoute();
 const headers = getHeader();
-const { assetsApi } = useServer()
-const assets = ref({})
-const recordId = ref(0)
-import { copyText } from "@/utils/funcUtil";
-import {formatDate, getStatusText, getDataInfo} from "~/utils/configUtils";
+const { assetsApi } = useServer();
+const statusMap = {
+  1: { percentage: 50, image: s2, class: 's1' },
+  2: { percentage: 100, image: s1, class: 's2' },
+  3: { percentage: 100, image: s3, class: 's3' },
+};
 
+// 数据
+const recordId = ref(0);
+const assets = ref('');
+
+// 获取数据
 const fetchData = async () => {
   try {
     const res = await assetsApi.accountAssetsDetail({recordId: recordId.value}, headers);
     if (res.code === 200) {
       assets.value = res.data;
     } else {
-      ElMessage.error(res.message || '查询失败')
+      showErrorMessage(res.code, res.message);
     }
   } catch (error) {
-    ElMessage.error('请求失败，请重试')
-  } finally {
+    showCatchErrorMessage();
   }
-}
+};
+
+// 计算交易进度
+const progressPercentage = computed(() => {
+  return statusMap[assets.value.status]?.percentage || 0;
+});
+
+// 计算状态类
+const statusClass = computed(() => {
+  return statusMap[assets.value.status]?.class || '';
+});
+
+// 计算状态图标
+const statusImage = computed(() => {
+  return statusMap[assets.value.status]?.image || '';
+});
 
 // 初始化数据
 onMounted(() => {
-  recordId.value = parseInt(route.query.id);
+  recordId.value = route.query.id;
   fetchData();
-})
+});
 </script>
 
-<style scoped>
+<style lang="less" scoped>
+
 .progress-bar-container {
   width: 100%;
-  background-color: #e0e0e0;
+  background-color: #EBEBEB;
   border-radius: 5px;
   overflow: hidden;
+  height: 12px;
+  margin: 20px 0;
 }
-
 .progress-bar {
-  height: 20px;
-  background-color: #3b82f6; /* Blue color */
+  height: 12px;
+  background-color: #FDC92E;
   text-align: center;
-  line-height: 20px; /* Center text vertically */
+  line-height: 12px;
   color: white;
   font-weight: bold;
 }
+.hr{
+  height: 15px;
+  border-top:#F1F1F1 solid 1px;
+  margin-top: 15px;
+}
+.content{
+  font-size: 14px;
+  .row{
+    display: flex;
+    justify-content: space-between;
+    line-height: 30px;
+    color: #0D0D0D;
+    .title{
+      font-weight: bold;
+    }
+    .text{
+      color: #999999;
+      font-size: 13px;
+    }
+  }
+
+}
+.tips{
+  padding: 50px 0 35px 0;
+  text-align: center;
+  .status{
+    display: inline-block;
+    width: 46px;
+    height: 46px;
+    border-radius: 40%;
+  }
+  .text{
+    padding: 8px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+}
+.s2 {
+  .status{
+    background: #5686E1;
+  }
+  color: #5686E1;
+}
+.s1 {
+  .status{
+    background: #98E175;
+  }
+  color: #333333;
+}
+.s3 {
+  .status{
+    background: #676B6D;
+  }
+  color: #676B6D;
+}
+
 </style>

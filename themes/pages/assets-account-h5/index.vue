@@ -27,7 +27,7 @@
       <div class="banner"> <img :src="banner" /> </div>
       <div class="table-title"><span style="font-size: 18px;">我的代币</span><span style="color: #FDC92E" @click="jumpPage">所有代币</span></div>
       <div class="table-list">
-        <div class="item" v-for="(item, index) in currencyMergedData" :key="index">
+        <div class="item" v-for="(item, index) in currencyMergedData" :key="index" @click="jumpPage(item)">
           <div class="left-column">
             <el-image :src="btc" />
           </div>

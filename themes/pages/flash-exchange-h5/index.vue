@@ -204,6 +204,9 @@ const updateForm = async (newForm: Object) => {
       }, headers);
       if(res.code == 200) {
         ElMessage.success("闪兑成功")
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
       }else{
         ElMessage.error(res.message)
       }
