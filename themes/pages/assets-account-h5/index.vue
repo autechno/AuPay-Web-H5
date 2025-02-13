@@ -25,7 +25,7 @@
         </el-col>
       </el-row>
       <div class="banner"> <img :src="banner" /> </div>
-      <div class="table-title"><span style="font-size: 18px;">我的代币</span><span style="font-size: 12px; color: #FDC92E">所有代币</span></div>
+      <div class="table-title"><span style="font-size: 18px;">我的代币</span><span style="color: #FDC92E" @click="jumpPage">所有代币</span></div>
       <div class="table-list">
         <div class="item" v-for="(item, index) in currencyMergedData" :key="index">
           <div class="left-column">
@@ -71,12 +71,11 @@ import eye from "@@/public/images/eye3x.svg";
 import scan from "@@/public/images/Scan.svg";
 import head from '@@/public/images/head.svg';
 import btc from '@@/public/images/btc.svg'
+import { useRouter, useRoute } from 'vue-router';
 
-import {
-  formatCurrency,
-  getDataInfo,
-} from "@/utils/configUtils";
+import { formatCurrency, getDataInfo} from "@/utils/configUtils";
 const headers = getHeader();
+const router = useRouter();
 const { assetsApi, systemApi } = useServer();
 const currencyMergedData = ref([]);
 const totalAssets = ref(0);
@@ -94,16 +93,18 @@ const icons = ref([
   { iconClass: 'i4', label: '闪兑', url: '/flash-exchange-h5'},
 ]);
 
+const jumpPage = () => {
+  router.push({ path: '/assets-account-h5/list', query: {} });
+}
+
 // 计算字体大小
 const computedFontSize = computed(() => {
   const length = totalAssets.value.toString().length;
-  const baseFontSize = 36;
-  const reducedFontSize = baseFontSize - (length > 10 ? (length - 10) : 0);
-  console.log(reducedFontSize)
-  console.log(length)
+  const reducedFontSize = 36 - (length > 10 ? (length - 10) : 0);
   return `${Math.max(reducedFontSize, 12)}px`;
 });
 
+// 初始化
 const fetchData = async () => {
   try {
     const [rateRes, assetsRes] = await Promise.all([
@@ -217,6 +218,7 @@ onMounted(() => {
   line-height: 20px;
   overflow: hidden;
   display: flex;
+  font-size: 12px;
   justify-content: space-between;
 }
 .banner{

@@ -6,8 +6,9 @@
         <el-form-item prop="email" >
           <el-input v-model="form.email" disabled placeholder="请输入邮箱"  />
         </el-form-item>
-        <el-form-item label="" prop="emailCode">
+        <el-form-item label="" prop="emailCode" style="position: relative">
           <el-input v-model="form.emailCode" placeholder="邮箱验证码" />
+          <div class="emailCode" @click="resetBtn">{{ emailText }}</div>
         </el-form-item>
         <el-form-item label="" prop="password">
           <el-input v-model="form.password" type="password" placeholder="设置登录密码" />
@@ -16,7 +17,7 @@
           <el-input v-model="form.confirmPassword" type="password" placeholder="再次输入登录密码" />
         </el-form-item>
         <el-form-item>
-          <el-button class="custom-button" native-type="submit">{{ submitText }}</el-button>
+          <el-button class="custom-button" native-type="submit">确认</el-button>
         </el-form-item>
       </el-form>
       <div class="href-text" @click="navigateToLogin">使用其它方式<span style="color: #5686E1">直接登录</span></div>
@@ -36,7 +37,7 @@ const router = useRouter();
 const route = useRoute();
 
 const email = ref(route.query.email || '');
-const submitText = ref('确认（60S）');
+const emailText = ref('发送验证');
 const countdown = ref(60);
 
 // 自定义验证器：确认密码
@@ -47,6 +48,14 @@ const validateConfirmPassword = (rule: any, value: string, callback: any) => {
     callback();
   }
 };
+
+// 在次发送email验证码
+const resetBtn = () =>{
+  if (countdown.value == 0) {
+    sendEamil();
+    return;
+  }
+}
 
 // 表单验证规则
 const formRules = {
@@ -60,16 +69,16 @@ const formRules = {
 // 开始倒计时
 const startCountdown = () => {
   countdown.value = 60;
-  submitText.value = `确认（${countdown.value}S）`;
+  emailText.value = `${countdown.value}S`;
   if (timer) clearInterval(timer);
   timer = setInterval(() => {
     if (countdown.value > 0) {
       countdown.value--;
-      submitText.value = `确认（${countdown.value}S）`;
+      emailText.value = `${countdown.value}S`;
     } else {
       clearInterval(timer!);
       timer = null;
-      submitText.value = '再次发送（0S）';
+      emailText.value = '发送验证';
     }
   }, 1000);
 };
@@ -89,10 +98,6 @@ const form = ref({
  * 表单提交
  */
 const handleSubmit = async () => {
-  if (countdown.value == 0) {
-    sendEamil();
-    return;
-  }
   const valid = await formRef.value.validate();
   if (valid) {
     let res = await userApi.register(form.value, {});
@@ -160,6 +165,14 @@ onMounted(() => {
     border-radius: 16px;
     font-size: 16px;
     border: 0;
+  }
+  .emailCode{
+    height: 28px;
+    padding: 5px 20px;
+    color: #5686E1;
+    position: absolute;
+    right: 5px;
+    top: 8px;
   }
   :deep(.el-input__wrapper) {
     border-radius: 16px;

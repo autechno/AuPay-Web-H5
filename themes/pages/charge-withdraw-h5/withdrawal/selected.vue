@@ -90,7 +90,7 @@ const fetchData = async (assetsId: number) => {
     let res = await assetsApi.getAccountAssetsById({ assetsId:  assetsId }, headers);
     if (res.code == 200) {
       let currencyName = getDataInfo(res.data.currencyId, 'currencyChains')?.name + ' 提款';
-      let chainName = getDataInfo(res.data.currencyId, 'chains')?.name;
+      let chainName = getDataInfo(res.data.currencyChain, 'chains')?.name;
       titleBar.value = currencyName + "||"+ chainName;
     } else {
       showErrorMessage(res.code, res.message)

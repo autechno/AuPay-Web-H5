@@ -174,6 +174,7 @@ const submitPay = async () =>{
 }
 // 设置最大金额
 const setAmount = async () => {
+  if(isCollectAmount) return;
   form.value.amount = parseFloat(form.value.balance) - maxFee.value;
   form.value.fee = maxFee.value;
 };

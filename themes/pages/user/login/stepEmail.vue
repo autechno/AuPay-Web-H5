@@ -3,11 +3,12 @@
     <img class="logo" :src="logo" alt="logo" />
     <div class="regTips">请输入{{email}}收到的验证码</div>
     <el-form :model="form" :rules="rules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
-      <el-form-item label="" prop="emailCode">
+      <el-form-item label="" prop="emailCode" style="position: relative;">
         <el-input v-model="form.emailCode" type="emailCode" placeholder="验证码" />
+        <div class="emailCode" @click="resetBtn">{{ emailText }}</div>
       </el-form-item>
       <el-form-item>
-        <el-button class="custom-button" native-type="submit">{{ submitText }}</el-button>
+        <el-button class="custom-button" native-type="submit">确认</el-button>
       </el-form-item>
     </el-form>
     <div class="href-text" @click="navigateToLogin">使用其它方式<span style="color: #5686E1">登录</span></div>
@@ -27,27 +28,33 @@ const router = useRouter();
 const route = useRoute();
 const validateKey = ref(route.query.validateKey);
 const email = ref(route.query.email || '');
-const submitText = ref('确认（60S）');
+const emailText = ref('发送验证');
 const countdown = ref(60);
 
 
 // 开始倒计时
 const startCountdown = () => {
   countdown.value = 60;
-  submitText.value = `确认（${countdown.value}S）`;
+  emailText.value = `${countdown.value}S`;
   if (timer) clearInterval(timer);
   timer = setInterval(() => {
     if (countdown.value > 0) {
       countdown.value--;
-      submitText.value = `确认（${countdown.value}S）`;
+      emailText.value = `${countdown.value}S`;
     } else {
       clearInterval(timer!);
       timer = null;
-      submitText.value = '再次发送（0S）';
+      emailText.value = '发送验证';
     }
   }, 1000);
 };
-
+// 在次发送email验证码
+const resetBtn = () =>{
+  if (countdown.value == 0) {
+    sendEamil();
+    return;
+  }
+}
 
 // 表单数据
 const form = ref({
@@ -58,10 +65,6 @@ const form = ref({
  * 表单提交
  */
 const handleSubmit = async () => {
-  if (countdown.value == 0) {
-    sendEamil();
-    return;
-  }
   const valid = await formRef.value.validate();
   if (valid) {
     let res = await userApi.loginValidateEmail({
@@ -136,6 +139,14 @@ onMounted(() => {
     border-radius: 16px;
     font-size: 16px;
     border: 0;
+  }
+  .emailCode{
+    height: 28px;
+    padding: 5px 20px;
+    color: #5686E1;
+    position: absolute;
+    right: 5px;
+    top: 8px;
   }
   :deep(.el-input__wrapper) {
     border-radius: 16px;
