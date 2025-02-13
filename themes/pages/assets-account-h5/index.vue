@@ -12,8 +12,8 @@
     <div class="main">
       <div @click="switchConfigShow">
         <span style="color: #6E6E6E; font-size: 14px;">你的总资产<img :src="eye"  style="vertical-align: middle; width: 16px;"></span>
-        <p class="amount-input-wrap">
-          {{!isShowCurrency ? '******' : formatCurrency(totalAssets) }}
+        <p class="amount-input-wrap" :style="{ fontSize: computedFontSize }">
+          {{!isShowCurrency ? '******' : userInfo.currencySign + formatCurrency(totalAssets) }}
         </p>
       </div>
       <el-row :gutter="20" class="icon-container">
@@ -32,8 +32,8 @@
             <el-image :src="btc" />
           </div>
           <div class="right-column">
-            <p class="row"><span class="title">{{ item.currencyName }}</span> <span class="title">{{formatCurrency(item.totalBalanceUsdt)}}</span></p>
-            <p class="row"><span class="text">{{!isShowCurrency ? '******' : formatCurrency(item.balance) }}</span> <span class="text" style="color: #0F9A50"></span></p>
+            <p class="row"><span class="title">{{ item.currencyName }}</span> <span class="title">{{!isShowCurrency ? '******' : userInfo.currencySign + formatCurrency(item.totalBalanceUsdt)}}</span></p>
+            <p class="row"><span class="text">{{ item.currencyChainName }}</span> <span class="text">{{!isShowCurrency ? '******' : formatCurrency(item.balance) }}</span></p>
           </div>
         </div>
       </div>
@@ -93,6 +93,17 @@ const icons = ref([
   { iconClass: 'i3', label: '转帐', url: '/charge-withdraw-h5/transfer/pay'},
   { iconClass: 'i4', label: '闪兑', url: '/flash-exchange-h5'},
 ]);
+
+// 计算字体大小
+const computedFontSize = computed(() => {
+  const length = totalAssets.value.toString().length;
+  const baseFontSize = 36;
+  const reducedFontSize = baseFontSize - (length > 10 ? (length - 10) : 0);
+  console.log(reducedFontSize)
+  console.log(length)
+  return `${Math.max(reducedFontSize, 12)}px`;
+});
+
 const fetchData = async () => {
   try {
     const [rateRes, assetsRes] = await Promise.all([
@@ -109,8 +120,8 @@ const fetchData = async () => {
       const dataList = assetsRes.data;
       if (dataList && dataList.length > 0) {
         dataList.forEach( item => {
-          const { currencyId, currencyChain,  balance, freezeBalance, totalBalance,  } = item;
-          let totalBalanceUsdt = balance * exchangeRate;
+          item['totalBalanceUsdt'] = item.totalBalanceUsdt * exchangeRate;
+          const { currencyId, currencyChain,  balance, totalBalanceUsdt, freezeBalance, totalBalance} = item;
           let currencyName =  getDataInfo(currencyId, 'currencyChains')?.name;
           let currencyChainName =  getDataInfo(currencyChain, 'chains')?.name;
           let mergedStore  = { ...item, currencyName: currencyName, currencyChainName: currencyChainName };
@@ -143,9 +154,9 @@ onMounted(() => {
   const userStore = UseUserStore();
   userInfo.value.headPortrait = userStore.userInfo.headPortrait;
   userInfo.value.currencyCode = userStore.userInfo.currencyUnit;
+  isShowCurrency.value = userStore.userInfo.showHide == 1;
   userInfo.value.name = userStore.userInfo.nickname;
   userInfo.value.currencySign = getDataInfo(userInfo.value.currencyCode, 'currency')?.sign;
-
   fetchData();
 })
 

@@ -17,7 +17,7 @@
           </div>
         </div>
         <div v-if="historyLog.length">
-          <div class="table-title"><span>付款历史</span> <div class="more"><el-image :src="addressbook" />通讯录</div></div>
+          <div class="table-title"><span>最近转账用户</span> <div class="more"><el-image :src="addressbook" />通讯录</div></div>
           <div class="table-list">
             <div class="item" v-for="(item, index) in historyLog" @click="copyToAddress(item.qrCode)">
                 <el-icon><el-image :src="item.accountLogo ? item.accountLogo : head" /></el-icon>
@@ -92,16 +92,16 @@ const validateTransferQR = () => {
     return;
   }
   // 检查长度范围
-  if (length < 7 || length > 20) {
-    errorMessage.value = "auPay收款码长度必须在7到20个字符之间";
-    return;
-  }
+  // if (length < 7 || length > 20) {
+  //   errorMessage.value = "auPay收款码长度必须在7到20个字符之间";
+  //   return;
+  // }
   // 检查字符类型
-  const pattern = /^[A-Za-z0-9]{7,20}$/;
-  if (!pattern.test(form.value.transferQR)) {
-    errorMessage.value = "收款码只能包含数字和大小写字母";
-    return;
-  }
+  // const pattern = /^[A-Za-z0-9]{7,20}$/;
+  // if (!pattern.test(form.value.transferQR)) {
+  //   errorMessage.value = "收款码只能包含数字和大小写字母";
+  //   return;
+  // }
   errorMessage.value = '';
 };
 
