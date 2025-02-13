@@ -26,7 +26,7 @@
         <div class="item" v-for="item in assetsList" :key="item.id">
           <div class="list">
             <span style="font-size: 20px; ">{{getDataInfo(item.tradeType, 'trade')?.name}}</span>
-            <span style="font-size: 14px;" :class="item.tradeType == 1? 'pay' : 'collect'">
+            <span style="font-size: 14px;" :class="item.tradeType == 1 || item.tradeType == 71|| item.tradeType == 81|| item.tradeType == 91? 'pay' : 'collect'">
                 {{ formatCurrency(item.amount) }}
             </span>
           </div>

@@ -140,9 +140,9 @@ const fetchData = async () => {
     const userStore = UseUserStore();
     const userInfo = userStore.userInfo;
     let params = {permissionId: props.permissionId};
-    if(props.permissionId == 4){
-      params['data'] = { toAddress: props.form.toAddress }
-    }
+    // if(props.permissionId == 4){
+    //   params['data'] = { toAddress: props.form.toAddress }
+    // }
     let res = await systemApi.checkPermission(params, headers);
     if (res.code === 200) {
       checkForm.value.optToken = res.data.optToken;
@@ -150,6 +150,7 @@ const fetchData = async () => {
       checkForm.value.bindAssetsPassword = verifyMethods.includes("ASSETSPASSWORD");
       checkForm.value.bindGoogleAuth = verifyMethods.includes("GOOGLEAUTHENICATOR");
       checkForm.value.bindEmail = verifyMethods.includes("EMAIL");
+
       if(checkForm.value.bindAssetsPassword){
         if(!userInfo.setAssetsPassword){
           ElMessage.error('您暂未设置资金密码!');
@@ -158,6 +159,7 @@ const fetchData = async () => {
           }, 500);
           return;
         }
+        title.value = '资金密码';
         activeStepId.value = 1;
       } else if(!checkForm.value.bindAssetsPassword && checkForm.value.bindEmail){
         activeStepId.value = 2;
