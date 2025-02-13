@@ -7,8 +7,9 @@
         <el-form-item prop="email" >
           <el-input v-model="form.email" placeholder="请输入邮箱"  />
         </el-form-item>
-        <el-form-item label="" v-if="flag" prop="emailCode">
+        <el-form-item label="" v-if="flag" prop="emailCode" style="position: relative;">
           <el-input v-model="form.emailCode" placeholder="邮箱验证码" />
+          <div class="emailCode" @click="resetBtn">{{ emailText }}</div>
         </el-form-item>
       </div>
       <el-form-item v-if="activeStepId == 2" prop="googleCode">
@@ -23,7 +24,7 @@
         </el-form-item>
       </div>
       <el-form-item>
-        <el-button class="custom-button" native-type="submit">{{submitText}}</el-button>
+        <el-button class="custom-button" native-type="submit">确定</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -41,23 +42,31 @@ let timer: NodeJS.Timeout | null = null;
 const activeStepId = ref(1);
 const flag = ref(false);
 const headers = getHeader();
-const submitText = ref('发送邮箱验证');
+const emailText = ref('发送验证');
 const tips = ref('找回密码');
 const countdown = ref(0);
+
+// 在次发送email验证码
+const resetBtn = () =>{
+  if (countdown.value == 0) {
+    sendEamil();
+    return;
+  }
+}
 
 // 开始倒计时
 const startCountdown = () => {
   countdown.value = 60;
-  submitText.value = `确认（${countdown.value}S）`;
+  emailText.value = `${countdown.value}S`;
   if (timer) clearInterval(timer);
   timer = setInterval(() => {
     if (countdown.value > 0) {
       countdown.value--;
-      submitText.value = `确认（${countdown.value}S）`;
+      emailText.value = `${countdown.value}S`;
     } else {
       clearInterval(timer!);
       timer = null;
-      submitText.value = '再次发送（0S）';
+      emailText.value = '发送验证';
     }
   }, 1000);
 };
@@ -104,15 +113,10 @@ const handleSubmit = async () => {
   const valid = await formRef.value.validate();
   if (valid) {
     if(activeStepId.value == 1) {
-      if (countdown.value == 0) {
-        sendEamil();
-        return;
-      }
       if(form.value.emailCode){
         let res = await systemApi.sendResetValidateEmail(form.value, {});
         if (res.code === 200) {
           form.value.emailCodeToken = res.data.emailCodeToken;
-          submitText.value = '确定';
           if(res.data.bindGoogleAuth){
             tips.value = 'Google App验证码';
             activeStepId.value = 2;
@@ -196,6 +200,14 @@ const sendEamil = async () => {
     border-radius: 16px;
     font-size: 16px;
     border: 0;
+  }
+  .emailCode{
+    height: 28px;
+    padding: 5px 20px;
+    color: #5686E1;
+    position: absolute;
+    right: 5px;
+    top: 8px;
   }
   :deep(.el-input__wrapper) {
     border-radius: 16px;
