@@ -128,7 +128,7 @@ onMounted(() => {
     fetchData(route.query.tradeNo, qrCode);
   }
   // 启动倒计时，设置为3秒
-  // startCountdown(3);
+  startCountdown(3);
 });
 </script>
 
