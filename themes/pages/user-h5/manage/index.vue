@@ -17,6 +17,7 @@
         <div class="text">关于我们</div>
         <div class="text">隐私条款</div>
         <div class="text">服务条款</div>
+
       </div>
       <div class="footer">auPay @2025.001版</div>
     </div>
