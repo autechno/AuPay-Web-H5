@@ -315,6 +315,12 @@ class AssetsApi extends Http {
         return this.post('/aupay-user/assets/getAssetsRecords', params, headers)
     }
     /**
+     * 收入支出合计
+     */
+    public getIncomeExpense(params: any, headers: any): Promise<any> {
+        return this.get('/aupay-user/assets/incomeExpense', params, headers)
+    }
+    /**
      * 获取账户资金流水-详情
      */
     public accountAssetsDetail(params: any, headers: any): Promise<any> {

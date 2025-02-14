@@ -5,19 +5,27 @@
       <div class="table-title-wrap">
         <div class="title">{{yearText}}年度闪兑单</div>
         <div class="select-wrap input_box">
-<!--          <div class="select">-->
-<!--            <el-select v-model="form.conditions.tradeType" placeholder="订单类型">-->
-<!--              <el-option v-for="item in tradeTypeList" :key="item.code" :label="item.name" :value="item.code" />-->
-<!--            </el-select>-->
-<!--          </div>-->
-<!--          <div class="select">-->
-<!--            <span>{{dateText}}</span>-->
-<!--            <el-icon size="12" class="el-icon&#45;&#45;right"><arrow-down-bold /></el-icon>-->
-<!--          </div>-->
-            <el-select v-model="form.conditions.tradeType" placeholder="订单类型">
-              <el-option v-for="item in tradeTypeList" :key="item.code" :label="item.name" :value="item.code" />
-            </el-select>
+          <div class="select">
+            <el-date-picker
+                size="small"
+                ref="datePicker"
+                v-model="dateText"
+                type="month"
+                :clearable="false"
+                :editable="false"
+                :placeholder="dateText"
+                @change="handleDateChange"
+            />
+          </div>
+          <el-select v-model="form.conditions.tradeType" placeholder="订单类型">
+            <el-option v-for="item in tradeTypeList" :key="item.code" :label="item.name" :value="item.code" />
+          </el-select>
         </div>
+
+      </div>
+      <div class="table-title">
+        <div>收入: </div>
+        <div>支出: </div>
       </div>
       <div class="table-list">
         <div class="item" v-for="item in assetsList" :key="item.id" @click="jumpDetail(item.id)">
@@ -49,8 +57,6 @@ import {ref, onMounted, nextTick} from 'vue';
 import GoBack from "@/composables/GoPageBack.vue";
 import {getHeader} from "@/utils/storageUtils";
 import { useRoute, useRouter } from 'vue-router';
-import {ArrowDownBold} from "@element-plus/icons-vue";
-import {getDataList} from "~/utils/configUtils";
 const {  assetsApi } = useServer()
 const headers = getHeader();
 const yearText = ref('2025');
@@ -71,11 +77,11 @@ const tradeTypeList = ref([
   ]
 );
 
-
 // 数据列表
 const assetsList = ref([]);
 const total = ref(0);
-
+const dateText = ref('所有时间');
+const datePicker = ref(null);
 // 表单数据
 const form = ref({
   pageNo: 1,
@@ -90,12 +96,26 @@ const form = ref({
 // 初始化数据
 const fetchData = async () => {
   try {
-    const res = await assetsApi.accountAssetsList(form.value, headers);
-    if (res.code === 200) {
-      assetsList.value = res.data.records;
-      total.value = res.data.total;
+    let startTime = form.value.conditions.startTime;
+    let endTime = form.value.conditions.endTime;
+    let query = {startTime: '2025-01-01', endTime: '2025-12-30'};
+    if(startTime && endTime){
+      query = { startTime: startTime.substring(0, 10), endTime: endTime.substring(0, 10)}
+    }
+    const [assetsRes, incomeRes] = await Promise.all([
+      assetsApi.accountAssetsList(form.value, headers),
+      assetsApi.getIncomeExpense(query, headers)
+    ]);
+    if (assetsRes.code === 200) {
+      assetsList.value = assetsRes.data.records;
+      total.value = assetsRes.data.total;
     } else {
-      showErrorMessage(res.code, res.message)
+      showErrorMessage(assetsRes.code, assetsRes.message);
+    }
+    if (incomeRes.code !== 200) {
+      showErrorMessage(incomeRes.code, incomeRes.message);
+    }else{
+
     }
   } catch (error) {
     showCatchErrorMessage()
@@ -103,13 +123,7 @@ const fetchData = async () => {
   }
 }
 
-const dateText = ref('所有时间');
-const dialogDrawer = ref(false);
-const datePicker = ref(null);
-const handleClose = (done: () => void) => {
-  dialogDrawer.value = false;
-};
-const selectedDate = ref('');
+// 日期查询
 const handleDateChange = (value: string) => {
   const date = new Date(value);
   const year = date.getFullYear();
@@ -121,15 +135,11 @@ const handleDateChange = (value: string) => {
   // 计算当月最后一天
   const lastDay = new Date(year, date.getMonth() + 1, 0).getDate();
   const endTime = `${year}-${month}-${lastDay}T23:59:59`;
-
   // 更新表单数据
   form.value.pageNo = 1;
   form.value.conditions.startTime = startTime;
   form.value.conditions.endTime = endTime;
   fetchData();
-  nextTick(() => {
-    handleClose(); // 关闭抽屉
-  });
 };
 
 // 处理分页变化
@@ -145,17 +155,19 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-*{
-  //margin: 0;
-  //padding: 0;
-}
 .page{
   position: relative;
   padding-top: 28px;
-  height: calc(100vh - 28px);
+}
+.table-title{
+  margin-top: 25px;
+  line-height: 20px;
+  line-height: 28px;
+  font-size: 16px;
+  color: #0D0D0D
 }
 .table-title-wrap{
-  margin-top: 67px;
+  padding-top: 2px;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -166,12 +178,13 @@ onMounted(() => {
     line-height: 34px;
   }
   .select-wrap{
-    width: 200px;
-     display: flex;
+    display: flex;
+    width: 210px;
     .select{
+      margin-right: 10px;
       overflow: hidden;
-      width: 92px;
       height: 30px;
+      min-width: 100px;
       line-height: 30px;
       border: 2px solid #C8DCE8;
       border-radius: 8px;
@@ -179,21 +192,31 @@ onMounted(() => {
       color: #0D0D0D;
       font-size: 14px;
       font-weight: bold;
-      :deep(.el-dropdown){
-        line-height: 30px;
+      :deep(.el-date-editor){
+        width: 110px;
+        position: relative;
       }
-    }
-    .select:first-child{
-      margin-right: 10px;
+      :deep(.el-input__inner){
+        font-size: 14px;
+        color: #0D0D0D;
+      }
+      :deep(.el-input__prefix){
+        display: none;
+      }
+      :deep(.el-input__wrapper){
+        border:0;
+        box-shadow: none;
+      }
     }
   }
 }
 .input_box{
   :deep(.el-select__wrapper) {
-    height: 30px;
-    width: 92px;
+    height: 34px;
+    width: 100px;
     border-radius: 8px;
-    border: 3px #C8DCE8 solid;
+    border: 2px #C8DCE8 solid;
+    box-shadow: none;
   }
   :deep(.checkbox__label){
     color: #dcdcdc !important;
@@ -249,14 +272,6 @@ onMounted(() => {
       margin-left: 3px;
     }
   }
-  .table-title {
-    margin-top: 25px;
-    line-height: 20px;
-    overflow: hidden;
-    display: flex;
-    font-size: 12px;
-    justify-content: space-between;
-  }
   .tips-wrap{
     padding: 5px;
     background: #FFEEEE;
@@ -290,6 +305,21 @@ onMounted(() => {
     }
     .input-wrap::placeholder{
       font-size: 28px;
+    }
+  }
+  .custom-picker {
+    box-shadow: none!important;
+    border:0!important;
+    .el-popper__arrow{
+      display: none !important;
+    }
+    .el-date-picker {
+      margin-top: -30px;
+      width: 100%;
+      .el-picker-panel__content {
+        width: 100%;
+        margin-left: 0;
+      }
     }
   }
 }

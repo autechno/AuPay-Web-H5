@@ -51,7 +51,6 @@ import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
-const headers = getHeader();
 const { userApi, systemApi } = useServer();
 const dialogCheckVisible = ref(false);
 const currencyChainList = ref([]);
@@ -97,6 +96,7 @@ const checkDuplicate = async () => {
   const valid = await formRef.value.validate();
   if (valid) {
     try {
+      const headers = getHeader();
       const res = await userApi.checkAddressDuplicate({address: form.value.address},  headers);
       if (res.code == 200) {
          if(res.data == 0){
@@ -120,6 +120,7 @@ const handleSubmit = async () => {
   const valid = await formRef.value.validate();
   if (valid) {
     try {
+      const headers = getHeader();
       setHeadersAuth(headers, headerForm);
       const res = await userApi.getFrequentlyEdit(form.value,  headers);
       if (res.code === 200) {
@@ -145,6 +146,7 @@ const handleSubmit = async () => {
 // 获取资产数据
 const fetchData = async () => {
   try {
+    const headers = getHeader();
     const res = await systemApi.getChainsList(query, headers);
     if (res.code === 200) {
       currencyChainList.value = res.data;

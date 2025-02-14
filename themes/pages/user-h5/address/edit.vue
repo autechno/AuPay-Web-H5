@@ -54,7 +54,6 @@ import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
-const headers = getHeader();
 const { userApi, systemApi } = useServer();
 const dialogCheckVisible = ref(false);
 const currencyChainList = ref([]);
@@ -95,6 +94,7 @@ const checkDuplicate = async () => {
       if(originalAddress == form.value.address){
         dialogCheckVisible.value = true;
       }else{
+        const headers = getHeader();
         const res = await userApi.checkAddressDuplicate({address: form.value.address},  headers);
         if (res.code == 200) {
           if(res.data == 0){
@@ -137,6 +137,7 @@ const deleteAddress = async () => {
         dialogCheckVisible.value = true;
         return ;
       }
+      const headers = getHeader();
       setHeadersAuth(headers, form);
       const res = await userApi.getFrequentlyDelete(form.value, headers);
       if (res.code === 200) {
@@ -155,6 +156,7 @@ const handleSubmit = async () => {
   const valid = await formRef.value.validate();
   if (valid) {
     try {
+      const headers = getHeader();
       setHeadersAuth(headers, headerForm);
       const res = await userApi.getFrequentlyEdit(form.value,  headers);
       if (res.code === 200) {
@@ -174,9 +176,10 @@ const handleSubmit = async () => {
 // 获取资产数据
 const fetchData = async (id: number) => {
   try {
+    const headers = getHeader();
     const [addressRes, chainsRes] = await Promise.all([
-      userApi.getFrequentlyList({}, headers), // 常用地址查询
-      systemApi.getChainsList(query, headers) // 链列表查询
+      userApi.getFrequentlyList({}, headers),
+      systemApi.getChainsList(query, headers)
     ]);
     if (addressRes.code === 200) {
       form.value = addressRes.data.find(item => item.id == id);
