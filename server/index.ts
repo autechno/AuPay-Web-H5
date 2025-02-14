@@ -24,7 +24,7 @@ class UserApi extends Http {
      * 绑定google登录
      */
     public setBindGoogle(params: any, headers: any): Promise<any> {
-        return this.postFormData('/aupay-user/provider/binding', params, headers, 'post');
+        return this.postFormData('/aupay-user/provider/binding'+params.optToken, params, headers, 'post');
     }
     /**
      * 注册
