@@ -330,6 +330,7 @@ onMounted(async () => {
       }
     }
   }
+
   await fetchData();
 });
 </script>
