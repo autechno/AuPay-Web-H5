@@ -124,7 +124,6 @@ const incomeData = async () => {
   }
 }
 
-
 // 初始化数据
 const fetchData = async () => {
   try {
