@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page" style="padding-top: 50px;">
     <div class="tabs-container">
       <!-- 标签页切换 -->
       <el-tabs v-model="activeTab" type="card" @tab-click="handleClick">
@@ -41,6 +41,28 @@
           @current-change="handlePageChange"
       />
     </div>
+    <el-row :gutter="20" class="menu-container" style="margin-left:0; margin-right: 0">
+      <el-col :span="6">
+        <router-link to="/user-h5" class="icon-text i1">
+          <i></i><span>首页</span>
+        </router-link>
+      </el-col>
+      <el-col :span="6">
+        <router-link to="/assets-account-h5/" class="icon-text i2">
+          <i></i><span>资产</span>
+        </router-link>
+      </el-col>
+      <el-col :span="6">
+        <p class="icon-text cur3">
+          <i></i><span>行情</span>
+        </p>
+      </el-col>
+      <el-col :span="6">
+        <router-link to="/user-h5/manage" class="icon-text i4">
+          <i></i><span>用户</span>
+        </router-link>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -119,7 +141,12 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.button-group {
-  margin: 20px 0
+
+*{
+  margin: 0;
+  padding: 0;
+}
+.page{
+  height: calc(100vh - 28px);
 }
 </style>

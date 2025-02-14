@@ -11,7 +11,7 @@
         <div class="text" @click="jumpPage('/user/info', {})"><span><el-image :src="peo" />用户信息</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text"><span><el-image :src="editSquare" />申请/审批</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text" @click="jumpPage('/user-h5/address/list', {})"><span><el-image :src="add" />地址管理</span><el-icon><ArrowRightBold /></el-icon></div>
-        <div class="text"><span><el-image :src="order" />订单管理</span><el-icon><ArrowRightBold /></el-icon></div>
+        <div class="text" @click="jumpPage('/assets-account-h5/detail/order', {})"><span><el-image :src="order" />订单管理</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text"><span><el-image :src="addressbook" />通讯录</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="title">关于auPay</div>
         <div class="text"><span><el-image :src="settings" />关于我们</span><el-icon><ArrowRightBold /></el-icon></div>
@@ -20,6 +20,28 @@
       </div>
       <div class="footer">auPay @2025.001版</div>
     </div>
+    <el-row :gutter="20" class="menu-container" style="margin-left:0; margin-right: 0">
+      <el-col :span="6">
+        <router-link to="/user-h5" class="icon-text i1">
+          <i></i><span>首页</span>
+        </router-link>
+      </el-col>
+      <el-col :span="6">
+        <router-link to="/assets-account-h5/" class="icon-text i2">
+          <i></i><span>资产</span>
+        </router-link>
+      </el-col>
+      <el-col :span="6">
+        <router-link to="/assets-account-h5/market" class="icon-text i3">
+          <i></i><span>行情</span>
+        </router-link>
+      </el-col>
+      <el-col :span="6">
+        <p class="icon-text cur4">
+          <i></i><span>用户</span>
+        </p>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -59,6 +81,9 @@ onMounted(() => {
 * {
   margin: 0;
   padding: 0;
+}
+.page{
+  height: calc(100vh - 28px);
 }
 .user-title-wrap{
   .row{
@@ -100,13 +125,9 @@ onMounted(() => {
     }
   }
   .footer{
-    position: fixed;
     text-align: center;
     font-size: 12px;
     color: #999999;
-    left: 0;
-    right: 0;
-    bottom: 100px;
     text-align: center;
   }
 }

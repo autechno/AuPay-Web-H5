@@ -108,9 +108,9 @@ const incomeData = async () => {
     const headers = getHeader();
     let startTime = form.value.conditions.startTime;
     let endTime = form.value.conditions.endTime;
-    let query = {startTime: '2025-01-01', endTime: '2025-12-30'};
+    let query = {startTime: '2025-01-01T00:00:00', endTime: '2025-12-30T23:59:59'};
     if(startTime && endTime){
-      query = { startTime: startTime.substring(0, 10), endTime: endTime.substring(0, 10)}
+      query = { startTime: startTime, endTime: endTime}
     }
     const res = await assetsApi.getIncomeExpense(query, headers);
     if (res.code !== 200) {
@@ -170,7 +170,7 @@ const handlePageChange = (page: number) => {
 
 // 初始化数据
 onMounted(() => {
-  fetchData();
+  // fetchData();
   incomeData()
 })
 </script>
