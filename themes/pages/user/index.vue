@@ -12,18 +12,19 @@
         <el-icon :size="20" v-if="item.key">
           <component :is="item.status ? Check : Close" />
         </el-icon>
-        <span v-if="item.status" @click="unBindLogin(item)">解绑</span>
-        <span v-else @click="bindLogin(item)">绑定</span>
+        <span v-if="item.status" @click="checkBindAuth('unBindGoogleLogin', 102)">解绑</span>
+        <span @click="checkBindAuth('bindGoogleLogin', 101)">绑定</span>
       </div>
     </div>
     <h1>验证器</h1>
     <div class="content">
       <div class="status-item" >
         <span>Google Authenticator </span>
-        <span v-if="baseInfo.bindGoogleAuth"><a href="javascript:;" @click="checkGoogleAuth('bindGoogle', 13)">重新绑定</a> | <a  href="javascript:;" @click="checkGoogleAuth('delGoogle', 14)">删除</a></span>
-        <span v-else><a href="javascript:;" @click="checkGoogleAuth('bindGoogle', 13)">绑定</a></span>
+        <span v-if="baseInfo.bindGoogleAuth"><a href="javascript:;" @click="checkBindAuth('bindGoogle', 13)">重新绑定</a> | <a  href="javascript:;" @click="checkBindAuth('delGoogle', 14)">删除</a></span>
+        <span v-else><a href="javascript:;" @click="checkBindAuth('bindGoogle', 13)">绑定</a></span>
       </div>
     </div>
+
     <!-- 密码验证对话框 -->
     <CheckPermissionDialog
         :form="form"
@@ -138,21 +139,23 @@ const statusList = ref([
 ]);
 
 // 绑定登录
-const bindLogin = async (item: any) => {
-  if(item.key == 'bindGoogleLogin'){
+const bindLogin = async (key: string) => {
+  if(key == 'bindGoogleLogin'){
     window.location.href = API_HOST + '/oz-client-auth/oauth2/authorize/google?action=bind'
   }
 }
 
+
 // 解除绑定
-const unBindLogin = async (item: any) => {
+const unBindLogin = async (key: string) => {
   let res;
-  if(item.key == 'bindGoogleLogin'){
+  if(key == 'bindGoogleLogin'){
+    // TODO 接口要传 optken
     res = await  userApi.getUnbindGoogle({providerType: 'google'}, headers);
   }
   if(res.code == 200) {
     const userStore = UseUserStore();
-    userStore.userInfo[item.key] = false;
+    userStore.userInfo[key] = false;
     fetchData();
     ElMessage.success('解绑成功')
   }else{
@@ -169,6 +172,10 @@ const updateForm = (newForm: Object) => {
     isPassDialogVisible.value = true;
   }else if(form.value.paramType === 'delGoogle'){
     deleteGoogleAuth();
+  }else if(form.value.paramType === 'unBindGoogleLogin'){
+    unBindLogin('bindGoogleLogin');
+  }else if(form.value.paramType === 'bindGoogleLogin'){
+    bindLogin('bindGoogleLogin');
   }else{
     bingGoogleAuth(1);
   }
@@ -199,7 +206,7 @@ const deleteGoogleAuth = async () => {
   } finally {
   }
 }
-const checkGoogleAuth = (type: number, id: number) => {
+const checkBindAuth = (type: number, id: number) => {
   form.value.paramType = type;
   permissionId.value = id;
   dialogCheckVisible.value = true;

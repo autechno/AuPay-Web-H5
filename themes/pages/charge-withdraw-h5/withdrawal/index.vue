@@ -4,7 +4,7 @@
     <div class="tips">至</div>
     <div class="withdrawal-page">
       <div class="search-wrap">
-        <input v-model="remarkText" disabled class="custom-input" />
+        <input v-model="addressText" disabled class="custom-input" />
         <div class="select-address" @click="resetBtn"><el-image :src="shape" />编辑</div>
       </div>
       <div class="input-amount-wrap">
@@ -19,7 +19,7 @@
       </div>
       <div class="row-text" v-if="form.fee">手续费：<span>{{ formatCurrency(form.fee) }}</span> </div>
     </div>
-    <el-button @click="dialogCheckVisible = true" class="custom-button custom-button-pos" :class="{ 'disabled-button': !form.amount || isAmountError}" :disabled="!form.amount || isAmountError" >确认</el-button>
+    <el-button @click="checkWhiteList" class="custom-button custom-button-pos" :class="{ 'disabled-button': !form.amount || isAmountError}" :disabled="!form.amount || isAmountError" >确认</el-button>
     <CheckPermissionDialog
         :form="form"
         @update:form="updateForm"
@@ -34,18 +34,17 @@ import { ref, onMounted } from 'vue';
 import GoBack from "@/composables/GoPageBack.vue";
 import {getHeader} from "@/utils/storageUtils";
 import shape from '@@/public/images/Shape.svg'
-import {ElMessage} from "element-plus";
 import { formatCurrency, } from "~/utils/configUtils";
 import { useRoute, useRouter } from 'vue-router';
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 import {goBackDelay, setHeadersAuth} from "@/utils/funcUtil";
-const { assetsApi } = useServer();
+const { assetsApi, userApi } = useServer();
 const headers = getHeader();
 const router = useRouter();
 const route = useRoute();
 const isAmountError = ref(false);
 const maxFee = ref(0);
-const remarkText = ref('');
+const addressText = ref('');
 const dialogCheckVisible = ref(false);
 
 const form = ref({
@@ -66,6 +65,20 @@ const updateForm = (newForm: Object) => {
     handleSubmit();
   }
 };
+
+// 验证白名单
+const checkWhiteList = async () => {
+  let res = await userApi.getFrequentlyWhiteCheck({address: addressText.value}, headers);
+  if (res.code == 200) {
+    if(res.data){
+      handleSubmit();
+    }else{
+      dialogCheckVisible.value = true;
+    }
+  } else {
+    showErrorMessage(res.code, res.message)
+  }
+}
 
 // 设置最大金额
 const setAmount = async () => {
@@ -102,7 +115,8 @@ const validateInputAmount = async () => {
 const handleSubmit = async () => {
   try{
       setHeadersAuth(headers,form);
-      form.value['toAddress'] = remarkText.value;
+      form.value['toAddress'] = addressText.value;
+      // TODO 白名单换去掉验证接口
       let res = await assetsApi.getWithdrawApply(form.value, headers);
       if (res.code == 200) {
         showSuccessMessage(0, '提现成功')
@@ -146,7 +160,7 @@ const fetchData = async (assetsId: number) => {
 // 初始化数据
 onMounted(() => {
   if(route.query.address){
-    remarkText.value = decodeURIComponent(route.query.address);
+    addressText.value = decodeURIComponent(route.query.address);
   }
   fetchData(route.query.assetsId);
 });

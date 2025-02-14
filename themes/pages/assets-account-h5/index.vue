@@ -71,6 +71,7 @@ import eye from "@@/public/images/eye3x.svg";
 import scan from "@@/public/images/Scan.svg";
 import head from '@@/public/images/head.svg';
 import btc from '@@/public/images/btc.svg'
+
 import { useRouter, useRoute } from 'vue-router';
 
 import { formatCurrency, getDataInfo} from "@/utils/configUtils";
