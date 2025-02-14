@@ -322,7 +322,7 @@ onMounted(async () => {
       tmpForm.value = JSON.parse(localStorage.getItem('bindGoogleLogin'));
       setHeadersAuth(headers, tmpForm);
       res = await userApi.setBindGoogle({providerType: 'google', providerId: providerId, optToken: tmpForm.value.optToken}, headers);
-      if(res.code == 200) {
+      if(res.code == 200 && res.data) {
         const userStore = UseUserStore();
         userStore.userInfo.bindGoogleLogin = true;
         // window.location.href = '/user';
