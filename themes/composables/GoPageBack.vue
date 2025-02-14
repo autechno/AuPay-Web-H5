@@ -138,7 +138,10 @@ const goList = () => {
     margin-left: 5px;
   }
 }
-
+.right-button.default{
+  background: #5686E1;
+  color: #fff;
+}
 .right-button.pay {
   background: #FFD862;
   color: #333333;

@@ -19,7 +19,7 @@
       </div>
       <div class="row-text" v-if="form.fee">手续费：<span>{{ formatCurrency(form.fee) }}</span> </div>
     </div>
-    <el-button @click="checkWhiteList" class="custom-button custom-button-pos" :class="{ 'disabled-button': !form.amount || isAmountError}" :disabled="!form.amount || isAmountError" >确认</el-button>
+    <el-button @click="dialogCheckVisible.value = true" class="custom-button custom-button-pos" :class="{ 'disabled-button': !form.amount || isAmountError}" :disabled="!form.amount || isAmountError" >确认</el-button>
     <CheckPermissionDialog
         :form="form"
         @update:form="updateForm"
@@ -52,7 +52,8 @@ const form = ref({
   fee: '',
   totalBalanceUsdt: '',
   balance: '',
-  permissionStatus: ''
+  permissionStatus: '',
+  toAddress:''
 })
 const resetBtn = () => {
   router.push({ path: 'selected', query: { assetsId: form.value.id } });
@@ -137,6 +138,7 @@ const fetchData = async (assetsId: number) => {
       form.value = assetsRes.data;
       form.value.amount = '';
       form.value.fee = '';
+      form.value.toAddress = addressText.value;
       form.value.permissionStatus = false;
       // 计算最大手续费
       let feeRes = await assetsApi.getWithdrawRateFee({

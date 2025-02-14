@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page" style="padding-top: 28px;">
     <GoBack  />
     <div :class="['tips', statusClass]">
       <span class="status"><el-image :src="statusImage" /></span>
@@ -141,8 +141,6 @@ import copy from '@@/public/images/copy2.svg';
 import btc from '@@/public/images/btc.svg';
 import head from '@@/public/images/head.svg';
 import arrow from '@@/public/images/jiantou2.svg';
-import arrowLeft from '@@/public/images/jiantou.svg';
-
 
 const route = useRoute();
 const headers = getHeader();
@@ -198,6 +196,7 @@ onMounted(() => {
   padding: 0;
   margin: 0;
 }
+
 .box-wrap{
   margin-bottom: 5px;
   background: #F5F5F5;

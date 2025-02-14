@@ -9,12 +9,9 @@
         <el-image :src="scan" />
       </el-icon>
     </div>
-    <div class="assets-main">
-      <div @click="switchConfigShow" >
-        <span style="color: #6E6E6E; font-size: 14px;">你的总资产<img :src="eye"  style="vertical-align: middle; width: 16px;"></span>
-        <p class="amount-input-wrap" :style="{ fontSize: computedFontSize }">
-          {{!isShowCurrency ? '******' : userInfo.currencySign + formatCurrency(totalAssets) }}
-        </p>
+    <div class="page-main">
+      <div class="rate-wrap">
+        <el-image :src="prizepool" />
       </div>
       <el-row :gutter="20" class="icon-container">
         <el-col v-for="(item, index) in icons" :key="index" :span="6">
@@ -25,7 +22,7 @@
         </el-col>
       </el-row>
       <div class="banner"> <img :src="banner" /> </div>
-      <div class="table-title"><span style="font-size: 18px;">我的代币</span><span style="color: #FDC92E" @click="jumpPage(1, '')">所有代币</span></div>
+      <div class="table-title"><span style="font-size: 18px;">我的代币</span><span style="color: #FDC92E" @click="jumpPage">所有代币</span></div>
       <div class="table-list">
         <div class="item" v-for="(item, index) in currencyMergedData" :key="index" @click="jumpPage(item)">
           <div class="left-column">
@@ -40,14 +37,14 @@
     </div>
     <el-row :gutter="20" class="menu-container" style="margin-left:0; margin-right: 0">
       <el-col :span="6">
-        <router-link to="/user-h5" class="icon-text i1">
+        <p class="icon-text cur1">
           <i></i><span>首页</span>
-        </router-link>
+        </p>
       </el-col>
       <el-col :span="6">
-        <p class="icon-text cur1">
+        <router-link to="/assets-account-h5" class="icon-text i2">
           <i></i><span>资产</span>
-        </p>
+        </router-link>
       </el-col>
       <el-col :span="6">
         <router-link to="/assets-account-h5/market" class="icon-text i3">
@@ -67,7 +64,7 @@
 import { ref, onMounted } from 'vue';
 import banner from '@@/public/images/banner.png';
 import { getHeader } from "@/utils/storageUtils";
-import eye from "@@/public/images/eye3x.svg";
+import prizepool from "@@/public/images/prizepool.png";
 import scan from "@@/public/images/Scan.svg";
 import head from '@@/public/images/head.svg';
 import btc from '@@/public/images/btc.svg'
@@ -95,15 +92,8 @@ const icons = ref([
 ]);
 
 const jumpPage = () => {
-  router.push({ path: '/assets-account-h5/detail/list', query: {} });
+  router.push({ path: '/assets-account-h5/list', query: {} });
 }
-
-// 计算字体大小
-const computedFontSize = computed(() => {
-  const length = totalAssets.value.toString().length;
-  const reducedFontSize = 36 - (length > 10 ? (length - 10) : 0);
-  return `${Math.max(reducedFontSize, 12)}px`;
-});
 
 // 初始化
 const fetchData = async () => {
@@ -211,10 +201,9 @@ onMounted(() => {
     height: 24px;
   }
 }
-.assets-main{
+.page-main{
   margin-top: 32px;
 }
-
 .table-title {
   line-height: 20px;
   overflow: hidden;

@@ -180,7 +180,7 @@ onMounted(() => {
 }
 
 .icon-container{
-  margin-top: 22px;
+  padding-top: 22px;
   width: 106%;
   text-align: center;
   .icon-text{
@@ -232,6 +232,7 @@ onMounted(() => {
   width: calc(100vw - 40px);
   bottom: 16px;
   .icon-text{
+    text-decoration: none;
     position: relative;
     display: flex;
     flex-direction: column;

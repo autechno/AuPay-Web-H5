@@ -1,6 +1,6 @@
 <template>
   <div class="page" style="padding-top: 28px;">
-    <GoBack  />
+    <GoBack :buttonConfig="buttonConfig" />
     <div class="flash-title-wrap">
       <div class="title">{{yearText}}年度闪兑单</div>
       <div class="select-wrap" @click="dialogDrawer = true">
@@ -113,7 +113,12 @@ const totalRecord = ref(0);
 const jumpDetail = (path: string) => {
   router.push(path);
 }
-
+// 跳转配置
+const buttonConfig = ref({
+  navigateTo: '/assets-account-h5/detail/list',
+  btnName: '订单',
+  type: 'default',
+})
 // 获取消息数据
 const fetchData = async () => {
   try {

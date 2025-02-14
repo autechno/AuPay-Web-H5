@@ -140,9 +140,9 @@ const fetchData = async () => {
     const userStore = UseUserStore();
     const userInfo = userStore.userInfo;
     let params = {permissionId: props.permissionId};
-    // if(props.permissionId == 4){
-    //   params['data'] = { toAddress: props.form.toAddress }
-    // }
+    if(props.permissionId == 4){
+      params['data'] = { toAddress: props.form.toAddress }
+    }
     let res = await systemApi.checkPermission(params, headers);
     if (res.code === 200) {
       checkForm.value.optToken = res.data.optToken;
