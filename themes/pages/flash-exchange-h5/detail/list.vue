@@ -115,7 +115,7 @@ const jumpDetail = (path: string) => {
 }
 // 跳转配置
 const buttonConfig = ref({
-  navigateTo: '/assets-account-h5/detail/list',
+  navigateTo: '/assets-account-h5/detail/order',
   btnName: '订单',
   type: 'default',
 })

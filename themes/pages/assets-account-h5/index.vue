@@ -25,9 +25,9 @@
         </el-col>
       </el-row>
       <div class="banner"> <img :src="banner" /> </div>
-      <div class="table-title"><span style="font-size: 18px;">我的代币</span><span style="color: #FDC92E" @click="jumpPage(1, '')">所有代币</span></div>
+      <div class="table-title"><span style="font-size: 18px;">我的代币</span><span style="color: #FDC92E" @click="jumpPage('./detail/list', {})">所有代币</span></div>
       <div class="table-list">
-        <div class="item" v-for="(item, index) in currencyMergedData" :key="index" @click="jumpPage(item)">
+        <div class="item" v-for="(item, index) in currencyMergedData" :key="index" @click="jumpPage('./detail/category', {assetsId: item.id})">
           <div class="left-column">
             <el-image :src="btc" />
           </div>
@@ -94,8 +94,8 @@ const icons = ref([
   { iconClass: 'i4', label: '闪兑', url: '/flash-exchange-h5'},
 ]);
 
-const jumpPage = () => {
-  router.push({ path: '/assets-account-h5/detail/list', query: {} });
+const jumpPage = (url: string, query: any) => {
+  router.push({ path: url, query: query });
 }
 
 // 计算字体大小

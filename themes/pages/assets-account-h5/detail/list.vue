@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <GoBack :showScan="true" :goBackTo="'./'" />
+    <GoBack :showScan="true"  />
     <div class="sub-page">
       <div class="search-wrap">
         <el-icon class="arrow" size="26"><Search /></el-icon>

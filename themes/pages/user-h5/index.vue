@@ -42,7 +42,7 @@
         </p>
       </el-col>
       <el-col :span="6">
-        <router-link to="/assets-account-h5" class="icon-text i2">
+        <router-link to="/assets-account-h5/" class="icon-text i2">
           <i></i><span>资产</span>
         </router-link>
       </el-col>

@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <GoBack goBackTo="list"  />
+    <GoBack />
     <div class="category-wrap">
       <div class="input-amount-wrap">
         <div class="input-wrap" :style="{ fontSize: computedFontSize }">{{formatCurrency(assets.balance)}} </div>
@@ -21,9 +21,9 @@
           </router-link>
         </el-col>
       </el-row>
-      <div class="table-title"><span style="font-size: 18px;">订单记录</span><span style="color: #FDC92E" @click="jumpOrder">要看更多</span></div>
+      <div class="table-title"><span style="font-size: 18px;">订单记录</span><span style="color: #FDC92E" @click="jumpPage('./order', {})">要看更多</span></div>
       <div class="table-list">
-        <div class="item" v-for="item in assetsList" :key="item.id" @click="jumpDetail(item.id)">
+        <div class="item" v-for="item in assetsList" :key="item.id" @click="jumpPage('./', {id: item.id})">
           <div class="list">
             <span style="font-size: 20px; ">{{getDataInfo(item.tradeType, 'trade')?.name}}</span>
             <span style="font-size: 14px;" :class="item.tradeType == 1 || item.tradeType == 71|| item.tradeType == 81|| item.tradeType == 91? 'pay' : 'collect'">
@@ -113,12 +113,8 @@ const computedFontSize = computed(() => {
 });
 
 // 跳转列表首页
-const jumpOrder= () => {
-  router.push({ path: '/assets-account-h5/order', query: {} });
-}
-// 跳转
-const jumpDetail = (id: number) => {
-  router.push({ path: 'detail', query: {id: id} });
+const jumpPage= (url: string, query: any) => {
+  router.push({ path: url, query: query });
 }
 
 // 初始化数据

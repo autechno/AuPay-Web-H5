@@ -5,8 +5,15 @@
       <div class="table-title-wrap">
         <div class="title">{{yearText}}年度闪兑单</div>
         <div class="select-wrap">
-          <span>{{dateText}}</span>
-          <el-icon size="12" class="el-icon--right"><arrow-down-bold /></el-icon>
+          <div class="select">
+            <el-select v-model="form.conditions.tradeType" placeholder="订单类型">
+              <el-option v-for="item in tradeTypeList" :key="item.code" :label="item.name" :value="item.code" />
+            </el-select>
+          </div>
+          <div class="select">
+            <span>{{dateText}}</span>
+            <el-icon size="12" class="el-icon--right"><arrow-down-bold /></el-icon>
+          </div>
         </div>
       </div>
       <div class="table-list">
@@ -40,6 +47,7 @@ import GoBack from "@/composables/GoPageBack.vue";
 import {getHeader} from "@/utils/storageUtils";
 import { useRoute, useRouter } from 'vue-router';
 import {ArrowDownBold} from "@element-plus/icons-vue";
+import {getDataList} from "~/utils/configUtils";
 const {  assetsApi } = useServer()
 const headers = getHeader();
 const yearText = ref('2025');
@@ -48,6 +56,18 @@ const buttonConfig = ref({
   btnName: '闪兑单',
   type: 'default',
 })
+const tradeTypeList = ref([
+      { code: 1, name: "充值", title: "RECHARGE" },
+      { code: 2, name: "提款", title: "WITHDRAW" },
+      { code: 71, name: "兑入", title: "FAST_SWAP_IN" },
+      { code: 72, name: "兑出", title: "FAST_SWAP_OUT" },
+      { code: 81, name: "转入", title: "TRANSFER_IN" },
+      { code: 82, name: "转出", title: "TRANSFER_OUT" },
+      { code: 91, name: "收入", title: "FEE_IN" },
+      { code: 92, name: "支出", title: "FEE_OUT" },
+  ]
+);
+
 
 // 数据列表
 const assetsList = ref([]);
@@ -143,18 +163,25 @@ onMounted(() => {
     line-height: 34px;
   }
   .select-wrap{
-    overflow: hidden;
-    width: 92px;
-    height: 30px;
-    line-height: 30px;
-    border: 2px solid #C8DCE8;
-    border-radius: 8px;
-    text-align: center;
-    color: #0D0D0D;
-    font-size: 14px;
-    font-weight: bold;
-    :deep(.el-dropdown){
+    width: 200px;
+     display: flex;
+    .select{
+      overflow: hidden;
+      width: 92px;
+      height: 30px;
       line-height: 30px;
+      border: 2px solid #C8DCE8;
+      border-radius: 8px;
+      text-align: center;
+      color: #0D0D0D;
+      font-size: 14px;
+      font-weight: bold;
+      :deep(.el-dropdown){
+        line-height: 30px;
+      }
+    }
+    .select:first-child{
+      margin-right: 10px;
     }
   }
 }
