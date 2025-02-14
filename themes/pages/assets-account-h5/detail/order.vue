@@ -3,7 +3,7 @@
     <GoBack :buttonConfig="buttonConfig" />
     <div class="order-wrap">
       <div class="table-title-wrap">
-        <div class="title">{{yearText}}年度闪兑单</div>
+        <div class="title">{{yearText}}年度订单</div>
         <div class="select-wrap input_box">
           <div class="select">
             <el-date-picker
@@ -17,18 +17,17 @@
                 @change="handleDateChange"
             />
           </div>
-          <el-select v-model="form.conditions.tradeType" placeholder="订单类型">
+          <el-select v-model="form.conditions.tradeType" placeholder="订单类型" @change="handlePageChange(1)">
             <el-option v-for="item in tradeTypeList" :key="item.code" :label="item.name" :value="item.code" />
           </el-select>
         </div>
-
       </div>
       <div class="table-title">
-        <div>收入: </div>
-        <div>支出: </div>
+        <div>收入: {{formatCurrency(showAmount.income)}}</div>
+        <div>支出: {{formatCurrency(showAmount.expense)}}</div>
       </div>
       <div class="table-list">
-        <div class="item" v-for="item in assetsList" :key="item.id" @click="jumpDetail(item.id)">
+        <div class="item" v-for="item in assetsList" :key="item.id" @click="jumpPage('./', {id: item.id})">
           <div class="list">
             <span style="font-size: 20px; ">{{getDataInfo(item.tradeType, 'trade')?.name}}</span>
             <span style="font-size: 14px;" :class="item.tradeType == 1 || item.tradeType == 71|| item.tradeType == 81|| item.tradeType == 91? 'pay' : 'collect'">
@@ -57,14 +56,19 @@ import {ref, onMounted, nextTick} from 'vue';
 import GoBack from "@/composables/GoPageBack.vue";
 import {getHeader} from "@/utils/storageUtils";
 import { useRoute, useRouter } from 'vue-router';
+const router = useRouter();
 const {  assetsApi } = useServer()
-const headers = getHeader();
+const showAmount = ref({
+  income: 0,
+  expense: 0,
+})
 const yearText = ref('2025');
 const buttonConfig = ref({
   navigateTo: '/flash-exchange-h5/detail/list',
   btnName: '闪兑单',
   type: 'default',
 })
+
 const tradeTypeList = ref([
       { code: 1,  name: "充值", title: "RECHARGE" },
       { code: 2,  name: "提款", title: "WITHDRAW" },
@@ -93,29 +97,44 @@ const form = ref({
   }
 })
 
+// 跳转列表
+const jumpPage= (url: string, query: any) => {
+  router.push({ path: url, query: query });
+}
+
 // 初始化数据
-const fetchData = async () => {
+const incomeData = async () => {
   try {
+    const headers = getHeader();
     let startTime = form.value.conditions.startTime;
     let endTime = form.value.conditions.endTime;
     let query = {startTime: '2025-01-01', endTime: '2025-12-30'};
     if(startTime && endTime){
       query = { startTime: startTime.substring(0, 10), endTime: endTime.substring(0, 10)}
     }
-    const [assetsRes, incomeRes] = await Promise.all([
-      assetsApi.accountAssetsList(form.value, headers),
-      assetsApi.getIncomeExpense(query, headers)
-    ]);
-    if (assetsRes.code === 200) {
-      assetsList.value = assetsRes.data.records;
-      total.value = assetsRes.data.total;
-    } else {
-      showErrorMessage(assetsRes.code, assetsRes.message);
-    }
-    if (incomeRes.code !== 200) {
-      showErrorMessage(incomeRes.code, incomeRes.message);
+    const res = await assetsApi.getIncomeExpense(query, headers);
+    if (res.code !== 200) {
+      showErrorMessage(res.code, res.message);
     }else{
 
+    }
+  } catch (error) {
+    showCatchErrorMessage()
+  } finally {
+  }
+}
+
+
+// 初始化数据
+const fetchData = async () => {
+  try {
+    const headers = getHeader();
+    const res = await assetsApi.accountAssetsList(form.value, headers);
+    if (res.code === 200) {
+      assetsList.value = res.data.records;
+      total.value = res.data.total;
+    } else {
+      showErrorMessage(res.code, res.message);
     }
   } catch (error) {
     showCatchErrorMessage()
@@ -139,10 +158,11 @@ const handleDateChange = (value: string) => {
   form.value.pageNo = 1;
   form.value.conditions.startTime = startTime;
   form.value.conditions.endTime = endTime;
-  fetchData();
+  handlePageChange(1);
+  incomeData()
 };
 
-// 处理分页变化
+// 处理分页
 const handlePageChange = (page: number) => {
   form.value.pageNo = page;
   fetchData();
@@ -151,6 +171,7 @@ const handlePageChange = (page: number) => {
 // 初始化数据
 onMounted(() => {
   fetchData();
+  incomeData()
 })
 </script>
 

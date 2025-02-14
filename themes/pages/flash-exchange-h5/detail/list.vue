@@ -3,9 +3,19 @@
     <GoBack :buttonConfig="buttonConfig" />
     <div class="flash-title-wrap">
       <div class="title">{{yearText}}年度闪兑单</div>
-      <div class="select-wrap" @click="dialogDrawer = true">
-        <span>{{dateText}}</span>
-        <el-icon size="12" class="el-icon--right"><arrow-down-bold /></el-icon>
+      <div class="select-wrap">
+        <div class="select">
+          <el-date-picker
+              size="small"
+              ref="datePicker"
+              v-model="dateText"
+              type="month"
+              :clearable="false"
+              :editable="false"
+              :placeholder="dateText"
+              @change="handleDateChange"
+          />
+        </div>
       </div>
     </div>
     <div class="flash-content">
@@ -53,26 +63,6 @@
           @current-change="handlePageChange"
       />
     </div>
-    <el-drawer
-        v-model="dialogDrawer"
-        title="选择月份"
-        direction="btt"
-        size="45%"
-        :before-close="handleClose"
-        :show-close="false"
-        @click="handleClose"
-        @opened="datePicker.handleOpen()">
-        <el-date-picker
-            size="small"
-            ref="datePicker"
-            v-model="selectedDate"
-            type="month"
-            popper-class="custom-picker"
-            :clearable="false"
-            :editable="false"
-            @change="handleDateChange"
-        />
-    </el-drawer>
   </div>
 </template>
 <script setup lang="ts">
@@ -81,7 +71,6 @@ import { useRouter, useRoute } from 'vue-router';
 import { getHeader } from "@/utils/storageUtils";
 import { formatDate } from "~/utils/configUtils";
 import GoBack from "@/composables/GoPageBack.vue";
-import { ArrowDownBold } from '@element-plus/icons-vue'
 import sol from '@@/public/images/sol.svg'
 import arrow from '@@/public/images/jiantou.svg'
 import btc from '@@/public/images/btc.svg'
@@ -169,15 +158,12 @@ const handleDateChange = (value: string) => {
   form.value.conditions.startTime = startTime;
   form.value.conditions.endTime = endTime;
   fetchData();
-  nextTick(() => {
-    handleClose(); // 关闭抽屉
-  });
 };
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .flash-title-wrap{
-  margin-top: 67px;
+  margin-top: 37px;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -188,19 +174,54 @@ const handleDateChange = (value: string) => {
     line-height: 34px;
   }
   .select-wrap{
-    overflow: hidden;
-    width: 92px;
-    height: 30px;
-    line-height: 30px;
-    border: 2px solid #C8DCE8;
-    border-radius: 8px;
-    text-align: center;
-    color: #0D0D0D;
-    font-size: 14px;
-    font-weight: bold;
-    /deep/ .el-dropdown{
+    display: flex;
+    width: 110px;
+    .select{
+      margin-right: 10px;
+      overflow: hidden;
+      height: 30px;
+      min-width: 100px;
       line-height: 30px;
+      border: 2px solid #C8DCE8;
+      border-radius: 8px;
+      text-align: center;
+      color: #0D0D0D;
+      font-size: 14px;
+      font-weight: bold;
+      :deep(.el-date-editor){
+        width: 110px;
+        position: relative;
+      }
+      :deep(.el-input__inner){
+        font-size: 14px;
+        color: #0D0D0D;
+      }
+      :deep(.el-input__prefix){
+        display: none;
+      }
+      :deep(.el-input__wrapper){
+        border:0;
+        box-shadow: none;
+      }
     }
+  }
+}
+.input_box{
+  :deep(.el-select__wrapper) {
+    height: 34px;
+    width: 100px;
+    border-radius: 8px;
+    border: 2px #C8DCE8 solid;
+    box-shadow: none;
+  }
+  :deep(.checkbox__label){
+    color: #dcdcdc !important;
+  }
+  :deep(.el-form-item__error){
+    padding-left: 14px;
+  }
+  :deep(.el-checkbox__label){
+    font-weight: normal !important;
   }
 }
 .flash-content{
@@ -262,29 +283,5 @@ const handleDateChange = (value: string) => {
   width: 20px;
   height: 20px;
   background: #F2F2F2;
-}
-.el-drawer__body{
-  .el-input.el-date-editor.el-date-editor--month{
-    overflow: hidden;
-    height: 0px;
-    .el-input__wrapper{
-      display: none;
-    }
-  }
-}
-.custom-picker {
-  box-shadow: none!important;
-  border:0!important;
-  .el-popper__arrow{
-    display: none !important;
-  }
-  .el-date-picker {
-    margin-top: -30px;
-    width: 100%;
-    .el-picker-panel__content {
-      width: 100%;
-      margin-left: 0;
-    }
-  }
 }
 </style>
