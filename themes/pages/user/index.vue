@@ -6,6 +6,7 @@
     <div>登录密码： <span><a href="javascript:;" @click="setPassBtn(3)">设置登录密码</a></span></div>
     <div>资金密码： <span><a href="javascript:;" @click="setPassBtn(2)">设置资金密码</a></span></div>
     <h1>三方授权</h1>
+
     <div class="content">
       <div class="status-item" v-for="item in statusList" :key="item.key">
         <span>{{ item.name }}</span>
