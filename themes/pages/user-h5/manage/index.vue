@@ -8,7 +8,7 @@
       <div class="table-list">
         <div class="title">管理设置</div>
         <div class="text"><el-image :src="shape" />账号信息</div>
-        <div class="text"><用户信息</div>
+        <div class="text">用户信息</div>
         <div class="text">申请/审批</div>
         <div class="text">地址管理</div>
         <div class="text">订单管理</div>
