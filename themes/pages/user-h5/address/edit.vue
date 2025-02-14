@@ -2,7 +2,7 @@
   <div class="address-index">
     <GoBack title="地址库" />
     <div class="title-wrap">修改地址</div>
-    <el-form :model="form" :rules="rules" class="custom-input" ref="formRef" @submit.prevent="handleSubmit">
+    <el-form :model="form" :rules="rules" class="custom-input" ref="formRef" @submit.prevent="checkDuplicate">
       <el-form-item prop="name" >
         <el-input v-model="form.name"  placeholder="请输入数量"  />
       </el-form-item>
@@ -59,8 +59,10 @@ const { userApi, systemApi } = useServer();
 const dialogCheckVisible = ref(false);
 const currencyChainList = ref([]);
 const formRef = ref(null);
-const activeStepId = ref(1)
-const type = ref(1)
+const activeStepId = ref(1);
+const type = ref(1);
+// 原用户地址
+let originalAddress = '';
 // 初始化数据
 const form = ref({
   id: '',
@@ -84,13 +86,41 @@ const query = ref({
   white: '',
   currencyChain: '',
 });
+// 验证地址是否存在
+const checkDuplicate = async () => {
+  type.value = 1;
+  const valid = await formRef.value.validate();
+  if (valid) {
+    try {
+      if(originalAddress == form.value.address){
+        dialogCheckVisible.value = true;
+      }else{
+        const res = await userApi.checkAddressDuplicate({address: form.value.address},  headers);
+        if (res.code == 200) {
+          if(res.data == 0){
+            dialogCheckVisible.value = true;
+          }else{
+            showErrorMessage(0, '用户地址已存在');
+          }
+        } else {
+          showErrorMessage(res.code, res.message);
+        }
+      }
+    } catch (error) {
+      showCatchErrorMessage();
+    }
+  } else {
+    showValidationErrorMessage();
+  }
+}
+
 
 // 更新父组件的 form 数据
 const updateForm = (newForm: Object) => {
   headerForm.value = newForm;
   if(headerForm.value.permissionStatus){
-    activeStepId.value = 2;
     dialogCheckVisible.value = false;
+    activeStepId.value = 2;
     if(type.value == 1){
       handleSubmit();
     }else{
@@ -120,16 +150,11 @@ const deleteAddress = async () => {
     }
 };
 
-// 提交转账
+// 提交地址
 const handleSubmit = async () => {
-  type.value = 1;
   const valid = await formRef.value.validate();
   if (valid) {
     try {
-      if(activeStepId.value == 1){
-        dialogCheckVisible.value = true;
-        return ;
-      }
       setHeadersAuth(headers, headerForm);
       const res = await userApi.getFrequentlyEdit(form.value,  headers);
       if (res.code === 200) {
@@ -155,6 +180,7 @@ const fetchData = async (id: number) => {
     ]);
     if (addressRes.code === 200) {
       form.value = addressRes.data.find(item => item.id == id);
+      originalAddress = form.value.address;
     } else {
       showErrorMessage(addressRes.code, addressRes.message);
     }

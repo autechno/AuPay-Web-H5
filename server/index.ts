@@ -100,6 +100,12 @@ class UserApi extends Http {
         return this.post('/aupay-user/address/edit/'+ params.optToken, params, headers)
     }
     /**
+     * 查询常用地址
+     */
+    public checkAddressDuplicate(params: any,  headers: any): Promise<any> {
+        return this.postFormData('/aupay-user/address/checkDuplicate', params, headers, 'post');
+    }
+    /**
      * 白名单地址状态切换
      */
     public getFrequentlyToggle(params: any, headers: any): Promise<any> {
