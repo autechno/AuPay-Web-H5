@@ -18,7 +18,7 @@ class UserApi extends Http {
      * 解绑google登录
      */
     public getUnbindGoogle(params: any, headers: any): Promise<any> {
-        return this.postFormData('/aupay-user/provider/unbinding', params, headers, 'post');
+        return this.postFormData('/aupay-user/provider/unbinding/'+params.optToken, params, headers, 'post');
     }
     /**
      * 绑定google登录

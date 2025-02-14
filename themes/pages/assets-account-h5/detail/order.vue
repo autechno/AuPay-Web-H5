@@ -4,16 +4,19 @@
     <div class="order-wrap">
       <div class="table-title-wrap">
         <div class="title">{{yearText}}年度闪兑单</div>
-        <div class="select-wrap">
-          <div class="select">
+        <div class="select-wrap input_box">
+<!--          <div class="select">-->
+<!--            <el-select v-model="form.conditions.tradeType" placeholder="订单类型">-->
+<!--              <el-option v-for="item in tradeTypeList" :key="item.code" :label="item.name" :value="item.code" />-->
+<!--            </el-select>-->
+<!--          </div>-->
+<!--          <div class="select">-->
+<!--            <span>{{dateText}}</span>-->
+<!--            <el-icon size="12" class="el-icon&#45;&#45;right"><arrow-down-bold /></el-icon>-->
+<!--          </div>-->
             <el-select v-model="form.conditions.tradeType" placeholder="订单类型">
               <el-option v-for="item in tradeTypeList" :key="item.code" :label="item.name" :value="item.code" />
             </el-select>
-          </div>
-          <div class="select">
-            <span>{{dateText}}</span>
-            <el-icon size="12" class="el-icon--right"><arrow-down-bold /></el-icon>
-          </div>
         </div>
       </div>
       <div class="table-list">
@@ -57,8 +60,8 @@ const buttonConfig = ref({
   type: 'default',
 })
 const tradeTypeList = ref([
-      { code: 1, name: "充值", title: "RECHARGE" },
-      { code: 2, name: "提款", title: "WITHDRAW" },
+      { code: 1,  name: "充值", title: "RECHARGE" },
+      { code: 2,  name: "提款", title: "WITHDRAW" },
       { code: 71, name: "兑入", title: "FAST_SWAP_IN" },
       { code: 72, name: "兑出", title: "FAST_SWAP_OUT" },
       { code: 81, name: "转入", title: "TRANSFER_IN" },
@@ -143,8 +146,8 @@ onMounted(() => {
 
 <style lang="less" scoped>
 *{
-  margin: 0;
-  padding: 0;
+  //margin: 0;
+  //padding: 0;
 }
 .page{
   position: relative;
@@ -185,6 +188,24 @@ onMounted(() => {
     }
   }
 }
+.input_box{
+  :deep(.el-select__wrapper) {
+    height: 30px;
+    width: 92px;
+    border-radius: 8px;
+    border: 3px #C8DCE8 solid;
+  }
+  :deep(.checkbox__label){
+    color: #dcdcdc !important;
+  }
+  :deep(.el-form-item__error){
+    padding-left: 14px;
+  }
+  :deep(.el-checkbox__label){
+    font-weight: normal !important;
+  }
+}
+
 .order-wrap{
   .table-list{
     padding-bottom: 28px;

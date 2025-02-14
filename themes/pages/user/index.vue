@@ -150,8 +150,8 @@ const bindLogin = async (key: string) => {
 const unBindLogin = async (key: string) => {
   let res;
   if(key == 'bindGoogleLogin'){
-    // TODO 接口要传 optken
-    res = await  userApi.getUnbindGoogle({providerType: 'google'}, headers);
+    setHeadersAuth(headers, form);
+    res = await  userApi.getUnbindGoogle({optToken: form.value.optToken, providerType: 'google'}, headers);
   }
   if(res.code == 200) {
     const userStore = UseUserStore();
