@@ -170,7 +170,7 @@ const handlePageChange = (page: number) => {
 
 // 初始化数据
 onMounted(() => {
-  // fetchData();
+  fetchData();
   incomeData()
 })
 </script>
