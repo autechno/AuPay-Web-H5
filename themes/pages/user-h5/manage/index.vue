@@ -19,6 +19,7 @@
         <div class="text"><span><el-image :src="settings" />服务条款</span><el-icon><ArrowRightBold /></el-icon></div>
       </div>
       <div class="footer">auPay @2025.001版</div>
+
     </div>
 
   </div>
