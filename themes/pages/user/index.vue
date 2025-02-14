@@ -12,8 +12,8 @@
         <el-icon :size="20" v-if="item.key">
           <component :is="item.status ? Check : Close" />
         </el-icon>
-        <span v-if="item.status" @click="checkBindAuth('unBindGoogleLogin', 102)">解绑</span>
-        <span v-else @click="checkBindAuth('bindGoogleLogin', 101)">绑定</span>
+        <span v-if="item.status" @click="checkBindAuth('unBindGoogleLogin', 16)">解绑</span>
+        <span v-else @click="checkBindAuth('bindGoogleLogin', 15)">绑定</span>
       </div>
     </div>
     <h1>验证器</h1>
