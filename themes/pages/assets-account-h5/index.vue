@@ -32,8 +32,8 @@
             <el-image :src="btc" />
           </div>
           <div class="right-column">
-            <p class="row"><span class="title">{{ item.currencyName }}</span> <span class="title">{{!isShowCurrency ? '******' : userInfo.currencySign + formatCurrency(item.totalBalanceUsdt)}}</span></p>
-            <p class="row"><span class="text">{{ item.currencyChainName }}</span> <span class="text">{{!isShowCurrency ? '******' : formatCurrency(item.balance) }}</span></p>
+            <p class="row"><span class="title">{{ item.currencyName }}</span> <span class="title">{{!isShowCurrency ? '******' : formatCurrency(item.balance) }}</span></p>
+            <p class="row"><span class="text">{{ item.currencyChainName }}</span> <span class="text">{{!isShowCurrency ? '******' : formatCurrency(item.totalBalanceUsdt) + ' ' +userInfo.currencyCode}}</span></p>
           </div>
         </div>
       </div>
@@ -116,29 +116,24 @@ const fetchData = async () => {
     let exchangeRate = rateRes.code == 200?rateRes.data:1;
     // 处理资产响应
     if (assetsRes.code == 200) {
-      const mergedData = {};
+      const mergedData = [];
       // 初始化总和变量
       let totalBalanceSum = 0;
       const dataList = assetsRes.data;
       if (dataList && dataList.length > 0) {
         dataList.forEach( item => {
           item['totalBalanceUsdt'] = item.totalBalanceUsdt * exchangeRate;
-          const { currencyId, currencyChain,  balance, totalBalanceUsdt, freezeBalance, totalBalance} = item;
-          let currencyName =  getDataInfo(currencyId, 'currencyChains')?.name;
-          let currencyChainName =  getDataInfo(currencyChain, 'chains')?.name;
-          let mergedStore  = { ...item, currencyName: currencyName, currencyChainName: currencyChainName };
-          if (!mergedData[currencyId]) {
-            mergedData[currencyId] = mergedStore;
-          }else{
-            mergedData[currencyId].balance += balance;
-            mergedData[currencyId].freezeBalance += freezeBalance;
-            mergedData[currencyId].totalBalance += totalBalance;
-            mergedData[currencyId].totalBalanceUsdt += totalBalanceUsdt;
-          }
+          item['totalBalanceUsdt'] = item.totalBalanceUsdt * exchangeRate;
+          const { currencyId, currencyChain, balance, totalBalanceUsdt, freezeBalance, totalBalance } = item;
+          let currencyName = getDataInfo(currencyId, 'currencyChains')?.name;
+          let currencyChainName = getDataInfo(currencyChain, 'chains')?.name;
+          let mergedStore = { ...item, currencyName, currencyChainName };
+          mergedData.push(mergedStore);
+          // 累加总余额
           totalBalanceSum += totalBalanceUsdt;
         });
         totalAssets.value = totalBalanceSum;
-        currencyMergedData.value = Object.values(mergedData);
+        currencyMergedData.value = mergedData;
       }
     } else {
       showErrorMessage(assetsRes.code, assetsRes.message)

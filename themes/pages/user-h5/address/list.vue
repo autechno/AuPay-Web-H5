@@ -59,7 +59,7 @@ const fetchData = async () => {
     let addressRes = await userApi.getFrequentlyList({}, headers);
     // 常用地址查询
     if (addressRes.code === 200) {
-      addressList.value = addressRes.data.filter(item => item.lock == false);
+      addressList.value = addressRes.data;
     } else {
       showErrorMessage(addressRes.code, addressRes.message)
     }

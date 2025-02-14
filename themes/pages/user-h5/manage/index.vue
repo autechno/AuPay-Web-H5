@@ -14,9 +14,9 @@
         <div class="text" @click="jumpPage('/assets-account-h5/detail/order', {})"><span><el-image :src="order" />订单管理</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text"><span><el-image :src="addressbook" />通讯录</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="title">关于auPay</div>
-        <div class="text"><span><el-image :src="settings" />关于我们</span><el-icon><ArrowRightBold /></el-icon></div>
-        <div class="text"><span><el-image :src="settings" />隐私条款</span><el-icon><ArrowRightBold /></el-icon></div>
-        <div class="text"><span><el-image :src="settings" />服务条款</span><el-icon><ArrowRightBold /></el-icon></div>
+        <div class="text"><span><el-image :src="logo2" />关于我们</span><el-icon><ArrowRightBold /></el-icon></div>
+        <div class="text"><span><el-image :src="safe" />隐私条款</span><el-icon><ArrowRightBold /></el-icon></div>
+        <div class="text"><span><el-image :src="server" />服务条款</span><el-icon><ArrowRightBold /></el-icon></div>
       </div>
       <div class="footer">auPay @2025.001版</div>
     </div>
@@ -57,7 +57,9 @@ import add from "@@/public/images/user/add.svg";
 import order from "@@/public/images/user/Order.svg";
 import addressbook from "@@/public/images/user/Addressbook.svg";
 import info from "@@/public/images/user/info.svg";
-import settings from "@@/public/images/user/Settings.svg";
+import logo2 from "@@/public/images/user/aupayLOGO2.svg";
+import safe from "@@/public/images/user/Safe.svg";
+import server from "@@/public/images/user/Serve.svg";
 import {ArrowRightBold} from "@element-plus/icons-vue";
 
 const headers = getHeader();

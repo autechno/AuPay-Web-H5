@@ -59,11 +59,6 @@ const selectAddress = (item: any) => {
   emit('select-address', item.address);
 };
 
-// 编辑地址
-const editAddress = (item: any) => {
-  router.push({ path: '/user-h5/address/edit', query: { id: item.id } });
-}
-
 // 获取资产数据
 const fetchData = async () => {
   try {
