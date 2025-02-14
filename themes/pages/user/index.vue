@@ -1,6 +1,7 @@
 
 <template>
   <div class="page">
+    <GoBack  />
     <h1>账户信息</h1>
     <div style="padding-bottom: 20px;">账户：{{ baseInfo.email }}</div>
     <div>登录密码： <span><a href="javascript:;" @click="setPassBtn(3)">设置登录密码</a></span></div>
@@ -77,6 +78,7 @@ import CheckPermissionDialog from '@/composables/CheckPermissionDialog.vue';
 import { useRouter, useRoute } from 'vue-router';
 import { rules } from "@/utils/validationRules";
 import {ElForm, ElMessage} from "element-plus";
+import GoBack from "~/composables/GoPageBack.vue";
 const headers = getHeader();
 const { systemApi, userApi } = useServer();
 const formRef: any = ref(null);
