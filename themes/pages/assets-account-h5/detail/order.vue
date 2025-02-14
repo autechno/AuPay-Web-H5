@@ -116,7 +116,7 @@ const incomeData = async () => {
     if (res.code !== 200) {
       showErrorMessage(res.code, res.message);
     }else{
-
+      showAmount.value = res.data
     }
   } catch (error) {
     showCatchErrorMessage()

@@ -65,7 +65,6 @@ import {ArrowRightBold} from "@element-plus/icons-vue";
 const headers = getHeader();
 const router = useRouter();
 const { assetsApi, systemApi } = useServer();
-const isShowCurrency = ref(false);
 
 // 跳转列表首页
 const jumpPage= (url: string, query: any) => {
