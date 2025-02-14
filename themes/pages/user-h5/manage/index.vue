@@ -5,6 +5,7 @@
         <span class="h1">用户中心</span>
         <el-icon><el-image :src="shape" /></el-icon>
       </div>
+    </div>
 <!--      <div class="row">-->
 <!--        <span class="h1">33</span>        <span class="h1">33</span>-->
 <!--      </div>-->
