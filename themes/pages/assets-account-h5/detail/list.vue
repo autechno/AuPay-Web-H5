@@ -96,7 +96,6 @@ onMounted(() => {
   fetchData();
 });
 </script>
-
 <style lang="less" scoped>
 *{
   margin: 0;
