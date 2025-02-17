@@ -218,6 +218,8 @@ onMounted(() => {
   flex-direction: column;
 }
 .right-column .row {
+  margin:0;
+  padding: 0;
   display: flex;
   justify-content: space-between;
   width: 100%;

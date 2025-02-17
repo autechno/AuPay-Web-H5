@@ -9,7 +9,19 @@
           <span class="sign">{{userInfo.sign}}</span>
         </p>
       </div>
-      <el-icon class="edit"><el-image :src="edit" /></el-icon>
+      <el-upload class="edit"><el-image :src="edit" /></el-upload>
+
+      <el-upload
+          class="avatar-uploader"
+          :show-file-list="false"
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload"
+          :headers="headers"
+          :action="`${API_HOST}/aupay-message/ticket/upload`"
+      >
+        <img :src="form.headPortrait" class="avatar" />
+      </el-upload>
+
     </div>
     <div class="table-list">
       <div class="title-wrap">用户信息（{{type}}）</div>
