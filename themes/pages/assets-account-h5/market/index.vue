@@ -22,7 +22,9 @@
           </el-select>
         </div>
       </div>
-      <div class="filter-wrap"></div>
+      <div class="filter-wrap">
+        排序
+      </div>
       <div class="table-list-wrap">
         <div class="item" v-for="(item, index) in currencyMergedData" :key="index" @click="jumpPage('./detail/category', {assetsId: item.id})">
           <div class="left-column">
