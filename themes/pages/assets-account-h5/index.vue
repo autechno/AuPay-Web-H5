@@ -71,16 +71,16 @@ import eye from "@@/public/images/see.svg";
 import scan from "@@/public/images/Scan.svg";
 import head from '@@/public/images/head.svg';
 import btc from '@@/public/images/btc.svg'
-
 import { useRouter, useRoute } from 'vue-router';
-
 import { formatCurrency, getDataInfo} from "@/utils/configUtils";
+
 const headers = getHeader();
 const router = useRouter();
 const { assetsApi, systemApi } = useServer();
 const currencyMergedData = ref([]);
 const totalAssets = ref(0);
 const isShowCurrency = ref(false);
+const searchText = ref('');
 const userInfo = ref({
   headPortrait: '',
   name: '',
@@ -159,10 +159,9 @@ onMounted(() => {
 
 </script>
 <style scoped>
-*{
-  margin:0;
-  padding: 0;
-  font-size: 12px;
+.page {
+  color: #0D0D0D;
+  padding-bottom: 100px;
 }
  .amount-input-wrap {
    border: none;
@@ -172,12 +171,6 @@ onMounted(() => {
    font-weight: bold;
    line-height: 49px;
  }
-.page {
-  padding-top: 28px;
-  position: relative;
-  color: #0D0D0D;
-  padding-bottom: 100px;
-}
 .assets-main{
   margin-top: 32px;
 }

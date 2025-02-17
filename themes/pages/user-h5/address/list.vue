@@ -1,6 +1,10 @@
 <template>
-  <div class="address-page">
+  <div class="page">
     <GoBack title="地址库" />
+    <div class="search-wrap">
+      <el-icon class="arrow" size="26"><Search /></el-icon>
+      <input v-model="searchText" placeholder="搜索" class="custom-input" />
+    </div>
     <div class="address-body">
       <div class="table-list" v-for="item in addressList" :key="item.id">
         <div class="item" @click="selectAddress(item)">
@@ -19,7 +23,7 @@
         </div>
       </div>
     </div>
-    <el-button class="custom-button custom-button-pos" @click="addAddress">新增地址</el-button>
+    <button class="custom-button custom-button-pos" @click="addAddress">新增地址</button>
   </div>
 </template>
 <script setup lang="ts">
@@ -31,12 +35,15 @@ import copy from '@@/public/images/copy2.svg'
 import edit from '@@/public/images/edit3.svg'
 import wlist from '@@/public/images/wlist.svg'
 import { getHeader } from "@/utils/storageUtils";
+import {Search} from "@element-plus/icons-vue";
 
 const route = useRoute();
 const router = useRouter();
 const headers = getHeader();
 const addressList = ref([]);
+const originalAddressList = ref([]);
 const { userApi } = useServer();
+const searchText = ref('');
 
 // 定义跳转函数
 const addAddress = () => {
@@ -60,6 +67,7 @@ const fetchData = async () => {
     // 常用地址查询
     if (addressRes.code === 200) {
       addressList.value = addressRes.data;
+      originalAddressList.value = addressRes.data;
     } else {
       showErrorMessage(addressRes.code, addressRes.message)
     }
@@ -67,6 +75,19 @@ const fetchData = async () => {
     showValidationErrorMessage();
   }
 };
+
+// 重置 addressList
+const resetAddressList = () => {
+  addressList.value = originalAddressList.value.filter(address => {
+    return address.name.toLowerCase().includes(searchText.value.toLowerCase());
+  });
+};
+
+// 监听
+watch(searchText, () => {
+  resetAddressList();
+});
+
 // 初始化数据
 onMounted(() => {
   fetchData();
@@ -74,14 +95,7 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-*{
-  margin: 0;
-  padding: 0;
-}
-.address-page{
-  position: relative;
-  padding-top: 28px;
-}
+
 .address-body{
   .table-list{
     position: relative;

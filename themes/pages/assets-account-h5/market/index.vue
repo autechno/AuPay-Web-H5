@@ -20,7 +20,6 @@
           <span @click="setActive('favorites')" :class="{ cur: activeTab === 'favorites' }">关注</span>
         </div>
       </div>
-
       <div class="filter-wrap">
         <el-col :span="12">
           <span @click="toggle('volume_24h')" class="filter-item">
@@ -56,6 +55,28 @@
         </div>
       </div>
     </div>
+    <el-row :gutter="20" class="menu-container" style="margin-left:0; margin-right: 0">
+      <el-col :span="6">
+        <router-link to="/user-h5" class="icon-text i1">
+          <i></i><span>首页</span>
+        </router-link>
+      </el-col>
+      <el-col :span="6">
+        <router-link to="/assets-account-h5/" class="icon-text i2">
+          <i></i><span>资产</span>
+        </router-link>
+      </el-col>
+      <el-col :span="6">
+        <p class="icon-text cur3">
+          <i></i><span>行情</span>
+        </p>
+      </el-col>
+      <el-col :span="6">
+        <router-link to="/user-h5/manage"  class="icon-text i4">
+          <i></i><span>用户</span>
+        </router-link>
+      </el-col>
+    </el-row>
   </div>
 </template>
 <script setup lang="ts">
@@ -72,7 +93,6 @@ const headers = getHeader();
 const router = useRouter();
 const { assetsApi } = useServer();
 const currencyList = ref([]);
-const currencyChainList = ref([]);
 const originalCurrencyList = ref([]);
 const searchText = ref('');
 const activeTab = ref('tokens'); // 默认激活的标签
@@ -113,7 +133,7 @@ const status = ref({
   market_cap: false,
   percent_change_24h: false,
 });
-const toggle = (key: any) => {
+const toggle = async (key: any) => {
   if(key != null){
     status.value[key] = !status.value[key];
   }
@@ -156,29 +176,13 @@ const handlePageChange = async () => {
   }
 };
 
-// 获取数据
-const fetchData = async () => {
-  try {
-    const res = await assetsApi.marketList(form.value, headers);
-    // 处理资产响应
-    if (res.code == 200) {
-      currencyList.value = res.data.records;
-      originalCurrencyList.value = res.data.records;
-    } else {
-      showErrorMessage(res.code, res.message)
-    }
-  } catch (error) {
-    showCatchErrorMessage()
-  }
-};
-
 // 监听
 watch(searchText, () => {
   resetCurrencyList();
 });
 
 // 初始化数据
-onMounted(() => {
+onMounted(async () => {
   const userStore = UseUserStore();
   userInfo.value.headPortrait = userStore.userInfo.headPortrait;
   userInfo.value.currencyCode = userStore.userInfo.currencyUnit;

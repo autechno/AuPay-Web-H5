@@ -154,22 +154,7 @@ onMounted(() => {
 
 </script>
 <style scoped>
-*{
-  margin:0;
-  padding: 0;
-  font-size: 12px;
-}
- .amount-input-wrap {
-   border: none;
-   outline: none;
-   width: 100%;
-   font-size: 36px;
-   font-weight: bold;
-   line-height: 49px;
- }
 .page {
-  padding-top: 28px;
-  position: relative;
   color: #0D0D0D;
   padding-bottom: 100px;
 }
