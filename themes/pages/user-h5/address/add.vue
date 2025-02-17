@@ -169,14 +169,12 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.address-index {
-  .title-wrap{
-    line-height: 24px;
-    height: 24px;
-    margin: 18px 0 ;
-    color: #0D0D0D;
-    font-size: 16px;
-  }
+.title-wrap{
+  line-height: 24px;
+  height: 24px;
+  margin: 18px 0 ;
+  color: #0D0D0D;
+  font-size: 16px;
 }
 
 .custom-input{
