@@ -153,7 +153,6 @@ const handleSubmit = async () => {
         sign: form.value.sign,
         headPortrait: form.value.headPortrait,
       };
-
       if (!isTransferQr.value) {
         params['transferQR'] = form.value.transferQR;
       }
