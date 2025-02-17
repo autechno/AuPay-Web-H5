@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="46px" height="46px" viewBox="0 0 46 46" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>vector</title>
+    <title>vector1</title>
     <g id="auPay" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
-        <g id="闪兑订单备份" transform="translate(-164, -138)" stroke="#FFFFFF" stroke-width="6.169591">
-            <g id="vectot" transform="translate(164, 138)">
-                <polyline id="Vector" points="14 22.9888939 20.8444376 29.833335 32.8222222 17"></polyline>
+        <g id="闪兑订单备份-2" transform="translate(-164, -138)" stroke="#FFFFFF" stroke-width="6.169591">
+            <g id="编组" transform="translate(164, 138)">
+                <g id="vector1" transform="translate(0, 0)">
+                    <polyline id="Vector" transform="translate(25.0414, 23.1838) rotate(45) translate(-25.0414, -23.1838)" points="16.6634365 19.0236441 25.0221355 27.3823431 33.4192657 18.9852129"></polyline>
+                </g>
             </g>
         </g>
     </g>

@@ -1,152 +1,92 @@
 <template>
-  <div class="page" style="padding-top: 50px;">
-    <div class="tabs-container">
-      <!-- 标签页切换 -->
-      <el-tabs v-model="activeTab" type="card" @tab-click="handleClick">
-        <el-tab-pane label="全部" name="1" />
-        <el-tab-pane label="关注" name="2" />
-      </el-tabs>
+  <div class="page">
+    <div class="avatar-header">
+      <span>
+        <el-icon class="avatar" style="float: left"><el-image :src="userInfo.headPortrait ? userInfo.headPortrait : head" /></el-icon>
+        <span class="name">{{userInfo.name}}</span>
+      </span>
+      <el-icon class="avatar">
+        <el-image :src="scan" />
+      </el-icon>
     </div>
-    <div>
-      <!-- 消息表格 -->
-      <el-table :data="marketList" style="width: 100%">
-        <el-table-column label="序号" width="60">
-          <template #default="scope">
-            {{scope.$index + 1 }}
-          </template>
-        </el-table-column>
-        <el-table-column sortable label="币种" width="120">
-          <template #default="scope">
-            <span>{{ scope.row.coinSymbol }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="totalSupply" sortable label="市值" width="120" />
-        <el-table-column prop="volume24h" sortable label="24h量" width="120" />
-        <el-table-column prop="volume24h" sortable label="24h额" width="120" />
-        <el-table-column prop="price" sortable label="价格" width="120" />
-        <el-table-column prop="percentChange24h" sortable label="涨跌" width="120" />
-        <el-table-column label="操作" width="100">
-          <template #default="scope">
-            <el-button @click="addToFavorites(scope.row.coinId, scope.row.focusId)">关注</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <!-- 分页组件 -->
-      <el-pagination
-          background
-          layout="prev, pager, next"
-          :total="totalMarket"
-          :page-size="form.pageSize"
-          :current-page="form.pageNo"
-          @current-change="handlePageChange"
-      />
+    <div class="sub-page">
+      <div class="search-wrap">
+        <el-icon class="arrow" size="26"><Search /></el-icon>
+        <input v-model="searchText" placeholder="搜索" class="custom-input" />
+      </div>
+      <div class="table-title-wrap">
+        <div class="title">我的代币</div>
+        <div class="select-wrap custom-input-shadow">
+          <el-select class="select" v-model="form.conditions.tradeType" placeholder="订单类型" @change="handlePageChange(1)">
+            <el-option v-for="item in currencyList" :key="item.code" :label="item.name" :value="item.code" />
+          </el-select>
+        </div>
+      </div>
     </div>
-    <el-row :gutter="20" class="menu-container" style="margin-left:0; margin-right: 0">
-      <el-col :span="6">
-        <router-link to="/user-h5" class="icon-text i1">
-          <i></i><span>首页</span>
-        </router-link>
-      </el-col>
-      <el-col :span="6">
-        <router-link to="/assets-account-h5/" class="icon-text i2">
-          <i></i><span>资产</span>
-        </router-link>
-      </el-col>
-      <el-col :span="6">
-        <p class="icon-text cur3">
-          <i></i><span>行情</span>
-        </p>
-      </el-col>
-      <el-col :span="6">
-        <router-link to="/user-h5/manage" class="icon-text i4">
-          <i></i><span>用户</span>
-        </router-link>
-      </el-col>
-    </el-row>
   </div>
 </template>
-
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { ElMessage } from 'element-plus';
-import type { TabsPaneContext } from 'element-plus';
+import {Search} from "@element-plus/icons-vue";
 import {getHeader} from "@/utils/storageUtils";
 const headers = getHeader();
-const {  assetsApi } = useServer()
-const activeTab = ref('1')
+import { useRoute, useRouter } from 'vue-router';
+import head from "@@/public/images/head.svg";
+import scan from "@@/public/images/Scan.svg";
 
-// 表单数据
+const userInfo = ref({
+  headPortrait: '',
+  name: '',
+  currencyCode: 'USD',
+  currencySign: '$'
+})
 const form = ref({
   pageNo: 1,
   pageSize: 10,
   conditions: {
-    focus: null
+    tradeType: ''
   }
-})
+});
+const router = useRouter();
+const { assetsApi } = useServer();
+const currencyList = ref([]);
+const searchText = ref('');
 
-// 数据列表
-const marketList = ref([]);
-const totalMarket = ref(0);
-
+// 获取数据
 const fetchData = async () => {
   try {
-    const res = await assetsApi.marketList(form.value, headers);
-    if (res.code === 200) {
-      marketList.value = res.data.records;
-      totalMarket.value = res.data.total;
+    let res = await assetsApi.accountAssets({}, headers);
+    if (res.code == 200) {
     } else {
-      ElMessage.error(res.message || '查询失败')
+      showErrorMessage(res.code, res.message)
     }
   } catch (error) {
-    ElMessage.error('请求失败，请重试')
-  } finally {
-  }
-}
-
-const handleClick = (tab: TabsPaneContext) => {
-  if(tab.index == 1){
-    form.value.conditions.focus = true
-  }else{
-    form.value.conditions = {}
-  }
-  form.value.pageNo = 1
-  fetchData();
-}
-
-const addToFavorites = async (coinId, focusId) => {
-  try {
-    const res = await assetsApi.marketFocus({coinId: coinId, focusId: focusId}, headers);
-    if (res.code === 200) {
-      ElMessage.success('关注成功')
-      fetchData();
-    } else {
-      ElMessage.error(res.message || '查询失败')
-    }
-  } catch (error) {
-    ElMessage.error('请求失败，请重试')
-  } finally {
+    showCatchErrorMessage()
   }
 };
-
-// 处理分页变化
-const handlePageChange = (page: number) => {
-  form.value.pageNo = page;
-  fetchData();
-}
-
 // 初始化数据
 onMounted(() => {
+  const userStore = UseUserStore();
+  userInfo.value.headPortrait = userStore.userInfo.headPortrait;
+  userInfo.value.currencyCode = userStore.userInfo.currencyUnit;
+  userInfo.value.name = userStore.userInfo.nickname;
   fetchData();
-})
+});
 </script>
 
-<style scoped>
-
-*{
-  margin: 0;
-  padding: 0;
-}
+<style lang="less" scoped>
 .page{
+  position: relative;
   height: calc(100vh - 28px);
 }
+.sub-page{
+  padding-top:20px;
+  padding-bottom: 20px;
+}
+.custom-input-shadow{
+  :deep(.el-select__wrapper) {
+    box-shadow: none;
+  }
+}
+
 </style>

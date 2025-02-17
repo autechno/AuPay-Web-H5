@@ -11,7 +11,7 @@
         <el-image class="arrow bottom-left" :src="arrow" />
         <el-image class="arrow bottom-right" :src="arrow" />
       </div>
-      <div class="text">请注意！此地址仅能接受 Ethereum （ETH，USTD，OZC，TOTO）</div>
+      <div class="text">仅支持在Ethereum上的 {{form.currencyName}} 充值</div>
     </div>
     <el-drawer v-model="drawerVisible"
                title="请注意！"

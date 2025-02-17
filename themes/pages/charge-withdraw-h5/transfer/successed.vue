@@ -37,8 +37,8 @@ const router = useRouter();
 const route = useRoute();
 const countdown = ref(3)
 const { assetsApi, userApi } = useServer();
-import s1 from '@@/public/images/s1.svg';
-import s2 from '@@/public/images/s2.svg';
+import s1 from '~~/public/images/s2.svg';
+import s2 from '~~/public/images/s1.svg';
 import s3 from '@@/public/images/s3.svg';
 import {showCatchErrorMessage} from "~/utils/messageUtils";
 

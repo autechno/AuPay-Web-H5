@@ -3,10 +3,13 @@ const timestamp = Date.now()
 export default defineNuxtConfig({
   devtools: { enabled: true },
   srcDir: 'themes',
+  target: 'static',
   devServer: {
     port: process.env.PORT
   },
-  ssr: true,
+  router: {
+    middleware: ['refresh']
+  },
   app: {
     head: {
       meta: [
@@ -20,8 +23,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      API_HOST: '/app/v1',
-      // API_HOST: process.env.BASE_URL,
+      API_HOST: process.env.BASE_URL,
       timestamp
     }
   },
@@ -34,18 +36,21 @@ export default defineNuxtConfig({
   pinia: {
     autoImports: ['defineStore', 'storeToRefs']
   },
-  css: ['element-plus/dist/index.css'],
+  elementPlus:{
+    defaultLocale:'zh-cn'
+  },
+  css: ['element-plus/dist/index.css', '@@/public/style/index.css'],
   nitro: {
     devProxy: {
       '/app/v1': {
-        target: 'http://192.168.1.253:9000',
+        target: 'http://192.168.1.131:9000',
         changeOrigin: true,
         prependPath: true
       }
     },
     routeRules: {
       '/app/v1/**': {
-        proxy: 'http://192.168.1.253:9000/**'
+        proxy: 'http://192.168.1.131:9000/**'
       }
     }
   },

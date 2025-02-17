@@ -1,6 +1,6 @@
 <template>
   <div class="page" style="padding-top: 28px;">
-    <GoBack  />
+    <GoBack go-back-to="./order" />
     <div :class="['tips', statusClass]">
       <span class="status"><el-image :src="statusImage" /></span>
       <p class="text">{{ getStatusText(assets.status, 'ACCOUNT') }}</p>
@@ -133,8 +133,8 @@ import GoBack from "@/composables/GoPageBack.vue";
 import {formatCurrency, formatDate, getDataInfo, getStatusText} from "~/utils/configUtils";
 import { getHeader } from "@/utils/storageUtils";
 import { useRoute } from 'vue-router';
-import s1 from '@@/public/images/s1.svg';
-import s2 from '@@/public/images/s2.svg';
+import s1 from '~~/public/images/s2.svg';
+import s2 from '~~/public/images/s1.svg';
 import s3 from '@@/public/images/s3.svg';
 import {showCatchErrorMessage} from "@/utils/messageUtils";
 import copy from '@@/public/images/copy2.svg';
@@ -145,9 +145,10 @@ import arrow from '@@/public/images/jiantou2.svg';
 const route = useRoute();
 const headers = getHeader();
 const { assetsApi } = useServer();
+const showStatus = ref(0);
 const statusMap = {
-  1: { percentage: 50, image: s2, class: 's1' },
-  2: { percentage: 100, image: s1, class: 's2' },
+  1: { percentage: 50, image: s1, class: 's1' },
+  2: { percentage: 100, image: s2, class: 's2' },
   3: { percentage: 100, image: s3, class: 's3' },
 };
 
@@ -160,6 +161,7 @@ const fetchData = async () => {
   try {
     const res = await assetsApi.accountAssetsDetail({recordId: recordId.value}, headers);
     if (res.code === 200) {
+      showStatus.value = res.data.status == 0?res.data.status + 1:res.data.status
       assets.value = res.data;
     } else {
       showErrorMessage(res.code, res.message);
@@ -171,17 +173,17 @@ const fetchData = async () => {
 
 // 计算交易进度
 const progressPercentage = computed(() => {
-  return statusMap[assets.value.status]?.percentage || 0;
+  return statusMap[showStatus.value]?.percentage || 0;
 });
 
 // 计算状态类
 const statusClass = computed(() => {
-  return statusMap[assets.value.status]?.class || '';
+  return statusMap[showStatus.value]?.class || '';
 });
 
 // 计算状态图标
 const statusImage = computed(() => {
-  return statusMap[assets.value.status]?.image || '';
+  return statusMap[showStatus.value]?.image || '';
 });
 
 // 初始化数据

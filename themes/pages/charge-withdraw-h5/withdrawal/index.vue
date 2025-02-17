@@ -5,7 +5,7 @@
     <div class="withdrawal-page">
       <div class="search-wrap">
         <input v-model="addressText" disabled class="custom-input" />
-        <div class="select-address" @click="resetBtn"><el-image :src="shape" />编辑</div>
+        <div class="select-address" @click="jumpPage('selected', { assetsId: form.id })"><el-image :src="shape" />编辑</div>
       </div>
       <div class="input-amount-wrap">
         <input :class="{ 'error-input': isAmountError }"  class="input-wrap" placeholder="请转入金额" type="number" v-model="form.amount" @input="validateInputAmount" />
@@ -19,7 +19,7 @@
       </div>
       <div class="row-text" v-if="form.fee">手续费：<span>{{ formatCurrency(form.fee) }}</span> </div>
     </div>
-    <el-button @click="dialogCheckVisible = true" class="custom-button custom-button-pos" :class="{ 'disabled-button': !form.amount || isAmountError}" :disabled="!form.amount || isAmountError" >确认</el-button>
+    <el-button @click="dialogCheckVisible = true" class="custom-button custom-button-pos" :class="{ 'disabled-button': !form.amount || isAmountError}" :disabled="!form.amount || isAmountError" >提现</el-button>
     <CheckPermissionDialog
         :form="form"
         @update:form="updateForm"
@@ -27,6 +27,23 @@
         :isDialogVisible="dialogCheckVisible"
         @close="dialogCheckVisible = false"
     />
+    <el-drawer
+        size="65%"
+        v-model="drawerVisible"
+        title=""
+        direction="btt"
+        :close-on-click-modal="false"
+        :show-close="false">
+        <div class="success-wrap">
+          <div class="arrow-wrap">
+            <div class="status"><el-image :src="s1" /></div>
+          </div>
+          <div class="text">提现发起完成！</div>
+          <div class="text" style="margin-top: 10px; text-align: left; text-indent: 32px;">您已成功发起提现，约15分钟内到账请及时关注账单变化，如长时间未到账请咨询客服</div>
+          <el-button class="custom-button custom-button-pos" @click="jumpPage('/assets-account-h5/detail/', {id: recordId})" >我知道了</el-button>
+        </div>
+    </el-drawer>
+
   </div>
 </template>
 <script setup lang="ts">
@@ -34,10 +51,13 @@ import { ref, onMounted } from 'vue';
 import GoBack from "@/composables/GoPageBack.vue";
 import {getHeader} from "@/utils/storageUtils";
 import shape from '@@/public/images/Shape.svg'
-import { formatCurrency, } from "~/utils/configUtils";
+import {formatCurrency, getStatusText,} from "~/utils/configUtils";
 import { useRoute, useRouter } from 'vue-router';
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
 import {goBackDelay, setHeadersAuth} from "@/utils/funcUtil";
+import s1 from '~~/public/images/s2.svg';
+
+const drawerVisible = ref(false);
 const { assetsApi, userApi } = useServer();
 const headers = getHeader();
 const router = useRouter();
@@ -46,8 +66,10 @@ const isAmountError = ref(false);
 const maxFee = ref(0);
 const addressText = ref('');
 const dialogCheckVisible = ref(false);
+const recordId = ref(0);
 
 const form = ref({
+  id: '',
   amount: '',
   fee: '',
   totalBalanceUsdt: '',
@@ -55,9 +77,7 @@ const form = ref({
   permissionStatus: '',
   toAddress:''
 })
-const resetBtn = () => {
-  router.push({ path: 'selected', query: { assetsId: form.value.id } });
-}
+
 // 更新父组件的 form 数据
 const updateForm = (newForm: Object) => {
   form.value = newForm;
@@ -66,6 +86,11 @@ const updateForm = (newForm: Object) => {
     handleSubmit();
   }
 };
+
+// 关闭并跳转到成功页面
+const jumpPage = (url: string, params) =>{
+   router.push({path: url, query: params});
+}
 
 // 验证白名单
 const checkWhiteList = async () => {
@@ -117,11 +142,11 @@ const handleSubmit = async () => {
   try{
       setHeadersAuth(headers,form);
       form.value['toAddress'] = addressText.value;
-      // TODO 白名单换去掉验证接口
       let res = await assetsApi.getWithdrawApply(form.value, headers);
       if (res.code == 200) {
-        showSuccessMessage(0, '提现成功')
-        goBackDelay(router, 'list');
+        recordId.value = res.data.id;
+        //TODO
+        drawerVisible.value = true;
       } else {
         showErrorMessage(res.code, res.message)
       }
@@ -194,6 +219,27 @@ onMounted(() => {
   margin: 0;
   padding: 0;
 }
+
+.success-wrap{
+  .arrow-wrap {
+    display: flex;
+    justify-content: center;
+    .status{
+      background: #5686E1;
+      display: block;
+      width: 46px;
+      height: 46px;
+      border-radius: 40%;
+    }
+  }
+  .text{
+    padding: 10px 40px;
+    font-size: 16px;
+    text-align: center;
+    color: #333333;
+  }
+}
+
 .tips{
   height: 22px;
   color: #0D0D0D;

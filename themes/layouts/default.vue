@@ -1,46 +1,45 @@
 <template>
-  <Header v-if="!isFilteredRoute"></Header>
-  <main class="container" style="min-height: calc(100vh - 365px); margin-top: 24px">
+<!--  <Header v-if="!isFilteredRoute"></Header>-->
+  <main>
     <slot></slot>
-    <div class="affix-container">
-      <el-affix target=".affix-container" :offset="80">
-        <router-link to="/work-order">
-          <el-button type="primary" class="break-text">客服中心</el-button>
-        </router-link>
-      </el-affix>
-    </div>
+<!--    <AffixContainer />-->
   </main>
 </template>
 
 <script setup lang="ts">
-import Header from "@/composables/Header.vue";
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
+import Header from '@/composables/Header.vue';
+import AffixContainer from '@/composables/AffixContainer.vue';
 import { useRoute } from 'vue-router';
 // 获取当前路由
 const route = useRoute();
 const isFilteredRoute = computed(() => {
-  const filteredRoutes = [ '/user/login', '/user/forgot-password', '/user/register', '/' ];
+  const filteredRoutes = [ '/', '/user/login', '/user/forgot-password', '/user/register', '/user/register/stepReg', '/user/register/stepBind', '/user/login/stepEmail'];
   return filteredRoutes.includes(route.path);
+});
+onMounted(() => {
+  document.body.className = isFilteredRoute.value ? 'default-body' : 'filtered-body';
 });
 </script>
 
-<style scoped>
-.affix-container {
-  position: fixed;
-  bottom: 100px;
-  width: 40px;
-  right: 0px;
-  text-align: center;
-  border-radius: 4px;
-  background: var(--el-color-primary-light-9);
-  z-index: 1000;
+<style lang="less">
+.default-body {
+  position: relative;
+  margin: 0 !important;
+  background: linear-gradient(to bottom, #EAF7FF, #FFFFFF);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+.filtered-body {
+  position: relative;
+  margin: 0 !important;
+  background: radial-gradient(circle at top left, #EAF7FF, #FFFFFF);
+  background-size: 90% 30%;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  height: auto;
+  overflow: auto;
 }
 
-.break-text {
-  white-space: pre-wrap;
-  word-break: break-all;
-  line-height: 1;
-  font-size: 16px;
-  height: 180px;
-}
+
 </style>

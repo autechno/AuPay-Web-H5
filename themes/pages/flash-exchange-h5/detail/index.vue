@@ -31,8 +31,8 @@ import GoBack from "@/composables/GoPageBack.vue";
 import { formatDate, getDataInfo, getStatusText } from "~/utils/configUtils";
 import { getHeader } from "@/utils/storageUtils";
 import { useRoute } from 'vue-router';
-import s1 from '@@/public/images/s1.svg';
-import s2 from '@@/public/images/s2.svg';
+import s1 from '~~/public/images/s2.svg';
+import s2 from '~~/public/images/s1.svg';
 import s3 from '@@/public/images/s3.svg';
 import {showCatchErrorMessage} from "~/utils/messageUtils";
 
