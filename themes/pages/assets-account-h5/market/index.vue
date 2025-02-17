@@ -47,6 +47,7 @@ const form = ref({
     tradeType: ''
   }
 });
+
 const router = useRouter();
 const { assetsApi } = useServer();
 const currencyList = ref([]);
