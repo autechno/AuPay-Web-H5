@@ -29,7 +29,7 @@
           </div>
         </div>
         <el-form-item>
-          <el-button class="custom-button custom-button-pos" native-type="submit">下一步</el-button>
+          <button class="custom-button custom-button-pos" native-type="submit">下一步</button>
         </el-form-item>
       </el-form>
     </div>

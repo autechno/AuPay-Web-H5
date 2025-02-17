@@ -41,7 +41,7 @@
       <span>费用：</span>
       <span>{{ cost.content }}</span>
     </div>
-    <el-button  @click="submitExchange" class="custom-button custom-button-pos" :class="{ 'disabled-button': isAmountError}" :disabled="!form.inputAmountTo || isAmountError || isAmountSame">确认</el-button>
+    <button  @click="submitExchange" class="custom-button custom-button-pos" :class="{ 'disabled-button': isAmountError}" :disabled="!form.inputAmountTo || isAmountError || isAmountSame">确认</button>
     <el-drawer class="custom-title" v-model="drawerSearch"
                :title="dialogTitle"
                :show-close="false"

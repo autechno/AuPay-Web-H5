@@ -26,7 +26,7 @@
       </div>
       <div class="row-text" v-if="form.fee">手续费：<span>{{ formatCurrency(form.fee) }} {{ form.currencyName }}</span> </div>
 
-      <el-button @click="dialogCheckVisible = true" class="custom-button custom-button-pos" :class="{ 'disabled-button': !form.amount || isAmountError}" :disabled="!form.amount || isAmountError" >确认</el-button>
+      <button @click="dialogCheckVisible = true" class="custom-button custom-button-pos" :class="{ 'disabled-button': !form.amount || isAmountError}" :disabled="!form.amount || isAmountError" >确认</button>
       <CheckPermissionDialog
           :form="form"
           @update:form="updateForm"

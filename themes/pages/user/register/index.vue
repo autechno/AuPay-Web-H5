@@ -10,7 +10,7 @@
         <el-checkbox v-model="isAgreement">我同意</el-checkbox><span style="color:#5686E1; font-weight: normal">《auPay用户协议》</span>
       </el-form-item>
       <el-form-item>
-        <el-button class="custom-button" native-type="submit">注册</el-button>
+        <button class="custom-button" native-type="submit">注册</button>
       </el-form-item>
     </el-form>
     <div class="href-text" @click="navigateToLogin">已有账户<span style="color: #5686E1">直接登录</span></div>

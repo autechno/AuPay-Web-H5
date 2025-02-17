@@ -22,12 +22,12 @@
         <p>本地址仅接受 {{form.currencyChainName}} 上的 {{form.currencyName}}</p>
         <p>请您在充值前仔细核对币种, 不支持币种的任何转账, 不可退还和取消。</p>
       </div>
-      <el-button class="custom-button custom-button-pos" @click="drawerVisible = false">我已知晓，会仔细核对充值币种</el-button>
+      <button class="custom-button custom-button-pos" @click="drawerVisible = false">我已知晓，会仔细核对充值币种</button>
     </el-drawer>
     <div class="address-bg-wrap" @click="copyText(form.walletAddress)">
       {{ formatAddressString(form.walletAddress, 16, 20) }} <el-image :src="copy" />
     </div>
-    <el-button class="custom-button custom-button-pos" @click="shareVisible = true">分享</el-button>
+    <button class="custom-button custom-button-pos" @click="shareVisible = true">分享</button>
     <Share
         v-if="shareVisible"
         :generateQR="form.walletAddress"

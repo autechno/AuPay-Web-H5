@@ -17,7 +17,7 @@
           <el-input v-model="form.confirmPassword" type="password" placeholder="再次输入登录密码" />
         </el-form-item>
         <el-form-item>
-          <el-button class="custom-button" native-type="submit">确认</el-button>
+          <button class="custom-button" native-type="submit">确认</button>
         </el-form-item>
       </el-form>
       <div class="href-text" @click="navigateToLogin">使用其它方式<span style="color: #5686E1">直接登录</span></div>

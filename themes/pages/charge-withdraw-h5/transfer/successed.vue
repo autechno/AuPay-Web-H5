@@ -21,7 +21,7 @@
         您已向<span style="color: #F36A35">{{account.accountName?account.accountName:account.accountNo}}</span>成功转账{{assets.transferAmount}} {{getDataInfo(assets.toCurrencyId, 'currencyChains')?.name}}请及时关注账户变动
       </div>
       <div style="font-size: 20px; text-align: center"> {{countdown}}秒回返回</div>
-      <el-button class="custom-button custom-button-pos" @click="jumpPage">确认</el-button>
+      <button class="custom-button custom-button-pos" @click="jumpPage">确认</button>
     </div>
   </div>
 </template>

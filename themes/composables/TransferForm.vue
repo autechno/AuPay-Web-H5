@@ -33,7 +33,7 @@
       <el-form-item prop="remark">
         <el-input placeholder="收款备注" v-model="form.remark"></el-input>
       </el-form-item>
-      <el-button class="custom-button custom-button-pos" native-type="submit">完成</el-button>
+      <button class="custom-button custom-button-pos" native-type="submit">完成</button>
     </el-form>
 </template>
 

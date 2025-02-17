@@ -22,7 +22,7 @@
         <el-button :class="['custom-button mb-20', { 'display': bindGoogleLogin }]">Google账户绑定</el-button>
       </div>
       <el-form-item>
-        <el-button class="custom-button" native-type="submit">{{ submitText }}</el-button>
+        <button class="custom-button" native-type="submit">{{ submitText }}</button>
       </el-form-item>
     </el-form>
 

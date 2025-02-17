@@ -19,7 +19,7 @@
       </div>
       <div class="row-text" v-if="form.fee">手续费：<span>{{ formatCurrency(form.fee) }}</span> </div>
     </div>
-    <el-button @click="dialogCheckVisible = true" class="custom-button custom-button-pos" :class="{ 'disabled-button': !form.amount || isAmountError}" :disabled="!form.amount || isAmountError" >提现</el-button>
+    <button @click="dialogCheckVisible = true" class="custom-button custom-button-pos" :class="{ 'disabled-button': !form.amount || isAmountError}" :disabled="!form.amount || isAmountError" >提现</button>
     <CheckPermissionDialog
         :form="form"
         @update:form="updateForm"
@@ -40,7 +40,7 @@
           </div>
           <div class="text">提现发起完成！</div>
           <div class="text" style="margin-top: 10px; text-align: left; text-indent: 32px;">您已成功发起提现，约15分钟内到账请及时关注账单变化，如长时间未到账请咨询客服</div>
-          <el-button class="custom-button custom-button-pos" @click="jumpPage('/assets-account-h5/detail/', {id: recordId})" >我知道了</el-button>
+          <button class="custom-button custom-button-pos" @click="jumpPage('/assets-account-h5/detail/', {id: recordId})" >我知道了</button>
         </div>
     </el-drawer>
 

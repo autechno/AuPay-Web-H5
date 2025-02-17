@@ -24,7 +24,7 @@
         </el-form-item>
       </div>
       <el-form-item>
-        <el-button class="custom-button" native-type="submit">确定</el-button>
+        <button class="custom-button" native-type="submit">确定</button>
       </el-form-item>
     </el-form>
   </div>

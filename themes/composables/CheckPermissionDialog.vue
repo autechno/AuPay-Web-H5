@@ -17,7 +17,7 @@
         <el-input v-model="checkForm.googleCode" type="password" placeholder="请输入google验证码" />
       </el-form-item>
       <div class="button-container" style="margin-top: 94px;">
-        <el-button class="custom-button-sm"  style="width: 190px;" native-type="submit">确 定</el-button>
+        <button class="custom-button-sm"  style="width: 190px;" native-type="submit">确 定</button>
       </div>
     </el-form>
   </el-dialog>

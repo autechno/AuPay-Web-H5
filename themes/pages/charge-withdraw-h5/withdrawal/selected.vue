@@ -13,7 +13,7 @@
         </div>
       </div>
     </div>
-    <el-button @click="nextTick()" class="custom-button custom-button-pos" >下一步</el-button>
+    <button @click="nextTick()" class="custom-button custom-button-pos" >下一步</button>
     <el-drawer class="custom-drawer" v-model="drawerVisible"
                title=""
                :show-close="false"

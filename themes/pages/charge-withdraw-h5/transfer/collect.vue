@@ -42,8 +42,8 @@
           @update:form="updateForm"
       />
     </el-drawer>
-    <el-button class="custom-button-down" @click="shareVisible = true">分享</el-button>
-    <el-button class="custom-button-down-default">下载</el-button>
+    <button class="custom-button-down" @click="shareVisible = true">分享</button>
+    <button class="custom-button-down-default">下载</button>
     <Share
         v-if="shareVisible"
         :generateQR="form.generateQR"

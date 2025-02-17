@@ -22,8 +22,8 @@
       </div>
     </div>
     <div class="footer-wrap">
-      <el-button @click="close" class="custom-button-down-default">取消</el-button>
-      <el-button class="custom-button-down">分享</el-button>
+      <button @click="close" class="custom-button-down-default">取消</button>
+      <button class="custom-button-down">分享</button>
     </div>
   </div>
 </template>
