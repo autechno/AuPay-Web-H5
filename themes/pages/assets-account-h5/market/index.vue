@@ -72,7 +72,6 @@ onMounted(() => {
   userInfo.value.name = userStore.userInfo.nickname;
   fetchData();
 });
-
 </script>
 
 <style lang="less" scoped>
