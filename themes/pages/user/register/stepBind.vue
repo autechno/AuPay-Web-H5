@@ -199,7 +199,7 @@ onMounted(async () => {
   background: url('@@/public/images/star3.png') 45% 14% no-repeat;
   background-size: 52%;
   position: relative;
-  padding: 0 10px;
+  padding: 0 30px;
 }
 .logo {
   width: 100px;

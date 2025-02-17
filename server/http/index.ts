@@ -21,7 +21,8 @@ const customFetch = async (url: string, options?: any, headers?: any) => {
             public: { API_HOST }
         } = useRuntimeConfig()
         // 接口地址
-        const reqUrl = API_HOST + url
+        // const reqUrl = API_HOST + url
+        const reqUrl = '/app/v1' + url
         // 设置请求头，允许在调用函数时传入其他自定义 headers
         const defaultHeaders = {
             'Content-Type': 'application/json',
@@ -56,5 +57,16 @@ export default class Http {
     }
     delete(url: string, body?: any, headers?: any) {
         return customFetch(url, { method: 'delete', body }, headers)
+    }
+    postFormData(url: string, body?: any, headers?: any, type?: any) {
+        const formBody = new URLSearchParams()
+        for (const key in body) {
+            formBody.append(key, body[key])
+        }
+        headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        return customFetch(url, {
+            method: type,
+            body: formBody.toString()
+        }, headers)
     }
 }

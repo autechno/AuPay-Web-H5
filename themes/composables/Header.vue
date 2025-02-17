@@ -2,23 +2,20 @@
   <div class="flex items-center justify-end" style="text-align: right;">
     <!-- 刷新链接 -->
     <span style="padding-right:16px;">
-      <router-link to="/flash-exchange">
+      <a href="/flash-exchange">
         <el-icon style="font-size: 20px; position: relative; top: 4px;"><Refresh /></el-icon>闪兑
-      </router-link>
+      </a>
     </span>
     <!-- 充值/提现链接 -->
     <span style="padding-right:16px;">
-      <router-link to="/charge-withdraw?typeId=0&stepId=1">
+      <a href="/charge-withdraw/transfer">
         <el-icon style="font-size: 20px; position: relative; top: 4px;"><Money /></el-icon>充值/提现
-      </router-link>
+      </a>
     </span>
     <!-- 消息通知图标 -->
-    <el-badge is-dot class="item" style="position: relative; top: -2px;">
-      <router-link to="/message">
-        <el-avatar :size="20" class="mr-3" :icon="Message" />
-      </router-link>
+    <el-badge :is-dot="isReadMessage" class="item" >
+      <a href="/message"><el-avatar :size="20" class="mr-3" :icon="Message" /></a>
     </el-badge>
-    <!-- 用户头像 -->
     <el-dropdown style="padding-right:16px; margin-top: 5px;" @command="handleCommand">
       <el-avatar :size="20" class="mr-3" :icon="User" />
       <template #dropdown>
@@ -77,17 +74,18 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { Message, Money, Refresh, User } from '@element-plus/icons-vue';
 import { getHeader } from '@/utils/storageUtils';
 import {ElMessage} from "element-plus";
 const headers = getHeader();
-const { userApi } = useServer();
+const { userApi, messageApi } = useServer();
 
 // 使用路由和路由实例
 const router = useRouter();
 const route = useRoute();
+const isReadMessage = ref(false);
 
 // 定义下拉菜单项
 const userItems = [
@@ -148,6 +146,10 @@ const breadcrumbs = computed(() => {
   const paths = route.path.split('/').filter(Boolean); // 移除空段
   const breadcrumbList = paths.map((path, index) => {
     const fullPath = '/' + paths.slice(0, index + 1).join('/');
+    // 过滤掉 charge-withdraw 路由
+    if (path === 'charge-withdraw') {
+      return null; // 返回 null 以在后续步骤中过滤
+    }
     // 在菜单项中查找对应的标签
     const menuItem = menuItems.find(item => item.path === fullPath) ||
         menuItems.reduce<MenuItem | null>((found, item) => found || (item.children ? item.children.find(child => child.path === fullPath) : null) || null, null);
@@ -155,7 +157,7 @@ const breadcrumbs = computed(() => {
       label: menuItem ? menuItem.label : path,
       path: fullPath,
     };
-  });
+  }).filter(Boolean);
   // 添加根面包屑
   return [{ label: 'auPay客户端', path: '/' }, ...breadcrumbList];
 });
@@ -175,10 +177,31 @@ const handleCommand = async (command: string) => {
     router.push(command);
   }
 };
+
+// 查询消息状态
+const fetchData = async () => {
+  try {
+    let res = await messageApi.messageCount({}, headers);
+    if (res.code == 200) {
+      isReadMessage.value = res.data > 0;
+    }
+  }catch(err) {
+    console.log(err.message);
+  }
+};
+onMounted(() => {
+  fetchData();
+  // const intervalId = setInterval(fetchData, 10000);
+  // onBeforeUnmount(() => {
+  //   clearInterval(intervalId);
+  // });
+});
+
 </script>
 
 <style scoped>
 .item {
+  position: relative; top: -2px;
   margin-top: 10px;
   margin-right: 30px; /* 设置间距 */
 }

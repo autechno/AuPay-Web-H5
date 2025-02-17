@@ -1,44 +1,46 @@
 <template>
-  <div class="tabs-container">
-    <!-- 标签页切换 -->
-    <el-tabs v-model="activeTab" type="card" @tab-click="handleClick">
-      <el-tab-pane label="全部" name="1" />
-      <el-tab-pane label="关注" name="2" />
-    </el-tabs>
-  </div>
-  <div>
-    <!-- 消息表格 -->
-    <el-table :data="marketList" style="width: 100%">
-      <el-table-column label="序号" width="60">
-        <template #default="scope">
-          {{scope.$index + 1 }}
-        </template>
-      </el-table-column>
-      <el-table-column sortable label="币种" width="120">
-        <template #default="scope">
-          <span>{{ scope.row.coinSymbol }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="totalSupply" sortable label="市值" width="120" />
-      <el-table-column prop="volume24h" sortable label="24h量" width="120" />
-      <el-table-column prop="volume24h" sortable label="24h额" width="120" />
-      <el-table-column prop="price" sortable label="价格" width="120" />
-      <el-table-column prop="percentChange24h" sortable label="涨跌" width="120" />
-      <el-table-column label="操作" width="100">
-        <template #default="scope">
-          <el-button @click="addToFavorites(scope.row.coinId, scope.row.focusId)">关注</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!-- 分页组件 -->
-    <el-pagination
-        background
-        layout="prev, pager, next"
-        :total="totalMarket"
-        :page-size="form.pageSize"
-        :current-page="form.pageNo"
-        @current-change="handlePageChange"
-    />
+  <div class="page">
+    <div class="tabs-container">
+      <!-- 标签页切换 -->
+      <el-tabs v-model="activeTab" type="card" @tab-click="handleClick">
+        <el-tab-pane label="全部" name="1" />
+        <el-tab-pane label="关注" name="2" />
+      </el-tabs>
+    </div>
+    <div>
+      <!-- 消息表格 -->
+      <el-table :data="marketList" style="width: 100%">
+        <el-table-column label="序号" width="60">
+          <template #default="scope">
+            {{scope.$index + 1 }}
+          </template>
+        </el-table-column>
+        <el-table-column sortable label="币种" width="120">
+          <template #default="scope">
+            <span>{{ scope.row.coinSymbol }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="totalSupply" sortable label="市值" width="120" />
+        <el-table-column prop="volume24h" sortable label="24h量" width="120" />
+        <el-table-column prop="volume24h" sortable label="24h额" width="120" />
+        <el-table-column prop="price" sortable label="价格" width="120" />
+        <el-table-column prop="percentChange24h" sortable label="涨跌" width="120" />
+        <el-table-column label="操作" width="100">
+          <template #default="scope">
+            <el-button @click="addToFavorites(scope.row.coinId, scope.row.focusId)">关注</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页组件 -->
+      <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="totalMarket"
+          :page-size="form.pageSize"
+          :current-page="form.pageNo"
+          @current-change="handlePageChange"
+      />
+    </div>
   </div>
 </template>
 

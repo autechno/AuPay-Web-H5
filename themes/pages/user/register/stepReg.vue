@@ -143,7 +143,7 @@ onMounted(() => {
 }
 .page {
   position: relative;
-  padding: 0 10px;
+  padding: 0 30px;
 }
 .logo {
   width: 179px;
