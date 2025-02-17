@@ -118,7 +118,51 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-
+.table-title-wrap{
+  padding-top: 2px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  .title{
+    font-size: 16px;
+    font-weight: bold;
+    color: #0D0D0D;
+    line-height: 34px;
+  }
+  .select-wrap{
+    display: flex;
+    .select{
+      overflow: hidden;
+      height: 30px;
+      width: 110px;
+      line-height: 30px;
+      border: 2px solid #C8DCE8;
+      border-radius: 8px;
+      text-align: center;
+      color: #0D0D0D;
+      font-size: 14px;
+      font-weight: bold;
+      :deep(.el-date-editor){
+        width: 110px;
+        position: relative;
+      }
+      :deep(.el-input__inner){
+        font-size: 14px;
+        color: #0D0D0D;
+      }
+      :deep(.el-input__prefix){
+        display: none;
+      }
+      :deep(.el-input__wrapper){
+        border:0;
+        box-shadow: none;
+      }
+    }
+    .select:last-child{
+      margin-left: 10px;
+    }
+  }
+}
 .page{
   position: relative;
   height: calc(100vh - 28px);
