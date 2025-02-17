@@ -14,12 +14,23 @@
         <el-icon class="arrow" size="26"><Search /></el-icon>
         <input v-model="searchText" placeholder="搜索" class="custom-input" />
       </div>
-      <div class="table-title-wrap">
+      <div class="table-title-wrap" style="margin-top: 10px">
         <div class="title">我的代币</div>
-        <div class="select-wrap custom-input-shadow">
-          <el-select class="select" v-model="form.conditions.tradeType" placeholder="订单类型" @change="handlePageChange(1)">
+        <div class="select-wrap custom-no-shadow">
+          <el-select class="select" v-model="form.conditions.tradeType" placeholder="订单类型" @change="handlePageChange">
             <el-option v-for="item in currencyList" :key="item.code" :label="item.name" :value="item.code" />
           </el-select>
+        </div>
+      </div>
+      <div class="table-list-wrap">
+        <div class="item" v-for="(item, index) in currencyMergedData" :key="index" @click="jumpPage('./detail/category', {assetsId: item.id})">
+          <div class="left-column">
+            <el-image :src="btc" />
+          </div>
+          <div class="right-column">
+            <p class="row"><span class="title">{{ item.currencyName }}</span> <span class="title">{{ formatCurrency(item.balance) }}</span></p>
+            <p class="row"><span class="text">{{ item.currencyChainName }}</span> <span class="text">{{ formatCurrency(item.totalBalanceUsdt) + ' ' +userInfo.currencyCode}}</span></p>
+          </div>
         </div>
       </div>
     </div>
@@ -33,6 +44,9 @@ const headers = getHeader();
 import { useRoute, useRouter } from 'vue-router';
 import head from "@@/public/images/head.svg";
 import scan from "@@/public/images/Scan.svg";
+import btc from "~~/public/images/btc.svg";
+import {formatCurrency, getDataInfo} from "~/utils/configUtils";
+const currencyMergedData = ref([]);
 
 const userInfo = ref({
   headPortrait: '',
@@ -53,13 +67,41 @@ const { assetsApi } = useServer();
 const currencyList = ref([]);
 const searchText = ref('');
 
+const jumpPage = (url: string, params: any) =>{
+
+}
 // 获取数据
 const fetchData = async () => {
   try {
-    let res = await assetsApi.accountAssets({}, headers);
-    if (res.code == 200) {
+    const [rateRes, assetsRes] = await Promise.all([
+      assetsApi.getRateU2Currency({ currency: userInfo.value.currencyCode }, headers),
+      assetsApi.accountAssets({}, headers)
+    ]);
+    // 处理汇率响应
+    let exchangeRate = rateRes.code == 200?rateRes.data:1;
+    // 处理资产响应
+    if (assetsRes.code == 200) {
+      const mergedData = [];
+      // 初始化总和变量
+      let totalBalanceSum = 0;
+      const dataList = assetsRes.data;
+      if (dataList && dataList.length > 0) {
+        dataList.forEach( item => {
+          item['totalBalanceUsdt'] = item.totalBalanceUsdt * exchangeRate;
+          item['totalBalanceUsdt'] = item.totalBalanceUsdt * exchangeRate;
+          const { currencyId, currencyChain, balance, totalBalanceUsdt, freezeBalance, totalBalance } = item;
+          let currencyName = getDataInfo(currencyId, 'currencyChains')?.name;
+          let currencyChainName = getDataInfo(currencyChain, 'chains')?.name;
+          let mergedStore = { ...item, currencyName, currencyChainName };
+          mergedData.push(mergedStore);
+          // 累加总余额
+          totalBalanceSum += totalBalanceUsdt;
+        });
+        currencyList.value = totalBalanceSum;
+        currencyMergedData.value = mergedData;
+      }
     } else {
-      showErrorMessage(res.code, res.message)
+      showErrorMessage(assetsRes.code, assetsRes.message)
     }
   } catch (error) {
     showCatchErrorMessage()
@@ -76,6 +118,7 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
+
 .page{
   position: relative;
   height: calc(100vh - 28px);
@@ -84,7 +127,7 @@ onMounted(() => {
   padding-top:20px;
   padding-bottom: 20px;
 }
-.custom-input-shadow{
+.custom-no-shadow{
   :deep(.el-select__wrapper) {
     box-shadow: none;
   }
