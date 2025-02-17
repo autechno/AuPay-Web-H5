@@ -1,10 +1,10 @@
 <template>
   <div class="page">
     <div class="avatar-header">
-      <span>
+      <div>
         <el-icon class="avatar" style="float: left"><el-image :src="userInfo.headPortrait ? userInfo.headPortrait : head" /></el-icon>
         <span class="name">{{userInfo.name}}</span>
-      </span>
+      </div>
       <el-icon class="avatar">
         <el-image :src="scan" />
       </el-icon>

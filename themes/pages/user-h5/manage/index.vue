@@ -1,14 +1,14 @@
 <template>
   <div class="page">
       <div class="user-title-wrap">
-        <div class="row">
-          <span class="h1">用户中心</span>
-          <el-icon size="20"><el-image :src="info" /></el-icon>
-        </div>
+      <div class="head">
+        <span class="h1">用户中心</span>
+        <el-icon size="20"><el-image :src="info" /></el-icon>
+      </div>
       <div class="table-list">
         <div class="title">管理设置</div>
         <div class="text" @click="jumpPage('/user', {})"><span><el-image :src="wallet" />账号信息</span><el-icon><ArrowRightBold /></el-icon></div>
-        <div class="text" @click="jumpPage('/user/info', {})"><span><el-image :src="peo" />用户信息</span><el-icon><ArrowRightBold /></el-icon></div>
+        <div class="text" @click="jumpPage('/user-h5/info', {})"><span><el-image :src="peo" />用户信息</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text"><span><el-image :src="editSquare" />申请/审批</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text" @click="jumpPage('/user-h5/address/list', {})"><span><el-image :src="add" />地址管理</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text" @click="jumpPage('/assets-account-h5/detail/order', {})"><span><el-image :src="order" />订单管理</span><el-icon><ArrowRightBold /></el-icon></div>
@@ -83,14 +83,13 @@ onMounted(() => {
   height: calc(100vh - 28px);
 }
 .user-title-wrap{
-  .row{
+  .head{
     color: #333333;
     display: flex;
     justify-content: space-between;
     .h1{
       font-size: 26px;
     }
-
   }
   .footer{
     text-align: center;
