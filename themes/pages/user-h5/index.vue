@@ -137,10 +137,7 @@ const fetchData = async () => {
     showCatchErrorMessage()
   }
 };
-// 显示隐藏
-const switchConfigShow = async () => {
-   isShowCurrency.value = !isShowCurrency.value;
-}
+
 // 初始化数据
 onMounted(() => {
   const userStore = UseUserStore();
