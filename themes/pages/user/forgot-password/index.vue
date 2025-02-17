@@ -17,10 +17,12 @@
       </el-form-item>
       <div v-if="activeStepId == 3">
         <el-form-item prop="password">
-          <el-input v-model="form.password" type="password" placeholder="请输入密码" />
+          <el-input v-model="form.password" placeholder="请输入密码" :type="passwordVisible ? 'text' : 'password'" />
+          <i @click.stop="passwordVisible = !passwordVisible" :class="passwordVisible ? 'icon-eye' : 'icon-eye-no'"></i>
         </el-form-item>
         <el-form-item prop="confirmPassword">
-          <el-input v-model="form.confirmPassword" type="password" placeholder="请输入确认密码" />
+          <el-input v-model="form.confirmPassword" placeholder="请输入确认密码" :type="passwordVisible2 ? 'text' : 'password'" />
+          <i @click.stop="passwordVisible2 = !passwordVisible2" :class="passwordVisible2 ? 'icon-eye' : 'icon-eye-no'"></i>
         </el-form-item>
       </div>
       <el-form-item>
@@ -45,6 +47,8 @@ const headers = getHeader();
 const emailText = ref('发送验证');
 const tips = ref('找回密码');
 const countdown = ref(0);
+const passwordVisible = ref(false);
+const passwordVisible2 = ref(false);
 
 // 在次发送email验证码
 const resetBtn = () =>{

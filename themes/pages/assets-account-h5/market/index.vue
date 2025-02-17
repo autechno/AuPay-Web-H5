@@ -49,7 +49,8 @@
             <p class="row">
               <span class="text" style="font-size: 12px;">${{ item.volume24h?item.volume24h:0.00 }}</span>
               <span class="text" :style="{ color: item.percentChange24h > 0 ? '#0F9A50' : '#F36A35' }">
-                {{ item.percentChange24h > 0 ? `+${item.percentChange24h}` :  `-${item.percentChange24h}` }}</span>
+                {{ item.percentChange24h > 0 ? `+${item.percentChange24h}` : `-${Math.abs(item.percentChange24h)}` }}%
+              </span>
             </p>
           </div>
         </div>

@@ -67,7 +67,7 @@
 import { ref, onMounted } from 'vue';
 import banner from '@@/public/images/banner.png';
 import { getHeader } from "@/utils/storageUtils";
-import eye from "@@/public/images/eye3x.svg";
+import eye from "@@/public/images/see.svg";
 import scan from "@@/public/images/Scan.svg";
 import head from '@@/public/images/head.svg';
 import btc from '@@/public/images/btc.svg'

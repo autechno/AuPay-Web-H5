@@ -11,10 +11,12 @@
           <div class="emailCode" @click="resetBtn">{{ emailText }}</div>
         </el-form-item>
         <el-form-item label="" prop="password">
-          <el-input v-model="form.password" type="password" placeholder="设置登录密码" />
+          <el-input v-model="form.password" placeholder="设置登录密码" :type="passwordVisible ? 'text' : 'password'" />
+          <i @click.stop="passwordVisible = !passwordVisible" :class="passwordVisible ? 'icon-eye' : 'icon-eye-no'"></i>
         </el-form-item>
         <el-form-item label="" prop="confirmPassword">
-          <el-input v-model="form.confirmPassword" type="password" placeholder="再次输入登录密码" />
+          <el-input v-model="form.confirmPassword" placeholder="再次输入登录密码" :type="passwordVisible2 ? 'text' : 'password'" />
+          <i @click.stop="passwordVisible2 = !passwordVisible2" :class="passwordVisible2 ? 'icon-eye' : 'icon-eye-no'"></i>
         </el-form-item>
         <el-form-item>
           <button class="custom-button" native-type="submit">确认</button>
@@ -35,7 +37,8 @@ const formRef: any = ref(null);
 let timer: NodeJS.Timeout | null = null;
 const router = useRouter();
 const route = useRoute();
-
+const passwordVisible = ref(false);
+const passwordVisible2 = ref(false);
 const email = ref(route.query.email || '');
 const emailText = ref('发送验证');
 const countdown = ref(60);

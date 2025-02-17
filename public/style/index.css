@@ -358,6 +358,14 @@
     right: 10px;
     width: 44px;
     height: 44px;
-    background: url(@@/public/images/eye3x.svg)  no-repeat center center;
+    background: url(@@/public/images/see.svg)  no-repeat center center;
+    background-size: 45%;
+}
+.icon-eye-no{
+    position: absolute;
+    right: 10px;
+    width: 44px;
+    height: 44px;
+    background: url(@@/public/images/seeno.svg)  no-repeat center center;
     background-size: 45%;
 }

@@ -3,7 +3,8 @@
      <div class="custom-dialog-wrap"> {{title}}</div>
     <el-form :model="checkForm" class="customer-input" :rules="rules" ref="formRef" @submit.prevent="handleSubmit">
       <el-form-item  v-if="activeStepId == 1" prop="checkAssetsPassword">
-        <el-input v-model="checkForm.checkAssetsPassword" type="password" placeholder="请转入资金密码" />
+        <el-input v-model="checkForm.checkAssetsPassword" placeholder="请转入资金密码" :type="passwordVisible ? 'text' : 'password'" placeholder="密码"/>
+        <i @click.stop="passwordVisible = !passwordVisible" :class="passwordVisible ? 'icon-eye' : 'icon-eye-no'"></i>
       </el-form-item>
       <div v-if="activeStepId == 2">
         <el-form-item >
@@ -14,7 +15,8 @@
         </el-form-item>
       </div>
       <el-form-item v-if="activeStepId == 3"  prop="googleCode" >
-        <el-input v-model="checkForm.googleCode" type="password" placeholder="请输入google验证码" />
+        <el-input v-model="checkForm.googleCode"  placeholder="请输入google验证码" :type="passwordVisible2 ? 'text' : 'password'" placeholder="密码"/>
+        <i @click.stop="passwordVisible2 = !passwordVisible2" :class="passwordVisible2 ? 'icon-eye' : 'icon-eye-no'"></i>
       </el-form-item>
       <div class="button-container" style="margin-top: 94px;">
         <button class="custom-button-sm"  style="width: 190px;" native-type="submit">确 定</button>
@@ -32,6 +34,8 @@ const headers = getHeader();
 const activeStepId = ref(0);
 const title = ref('资金密码');
 const isSelfDialogVisible = ref(false);
+const passwordVisible = ref(false);
+const passwordVisible2 = ref(false);
 const props = defineProps({
   isDialogVisible: Boolean,
   form: Object,

@@ -9,10 +9,9 @@
       <el-form-item label="" prop="password">
         <el-input
             v-model="form.password"
-            :type="passwordVisible ? 'text' : 'password'"
-            placeholder="密码"
+            :type="passwordVisible ? 'text' : 'password'" placeholder="密码"
         />
-        <i @click.stop="togglePasswordVisibility" class="icon-eye"></i>
+        <i @click.stop="passwordVisible = !passwordVisible" :class="passwordVisible ? 'icon-eye' : 'icon-eye-no'"></i>
       </el-form-item>
       <div class="href-text" >
         <a href="/user/register">注册新账号</a>
@@ -51,13 +50,12 @@ import logo from '@@/public/images/LOGO.svg';
 import { rules } from "@/utils/validationRules";
 import {ElForm, ElMessage} from "element-plus";
 import { ref, onMounted} from "vue";
-import { Hide, View } from '@element-plus/icons-vue'; // 导入图标
 import { useRouter, useRoute } from "vue-router";
 import google from '@@/public/images/Google.svg';
 import apple from '@@/public/images/apple.svg';
 import telegram from '@@/public/images/telegram.svg';
-const passwordVisible = ref(false);
 
+const passwordVisible = ref(false);
 const { userApi  } = useServer();
 const formRef: any = ref(null);
 const router = useRouter();
@@ -70,13 +68,6 @@ const form = ref({
   email: '',
   password: '',
 });
-/**
- * 切换密码可见性
- */
-const togglePasswordVisibility = () => {
-  console.log(passwordVisible.value);
-  passwordVisible.value = !passwordVisible.value;
-};
 
 /**
  * 表单提交

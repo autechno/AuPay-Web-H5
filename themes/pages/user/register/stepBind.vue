@@ -15,7 +15,8 @@
 
     <el-form :model="form" :rules="rules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
       <el-form-item v-if="activeStepId == 1"  prop="assetsPassword">
-        <el-input v-model="form.assetsPassword" type="password" placeholder="设置资金密码" />
+        <el-input v-model="form.assetsPassword" placeholder="设置资金密码" :type="passwordVisible ? 'text' : 'password'" />
+        <i @click.stop="passwordVisible = !passwordVisible" :class="passwordVisible ? 'icon-eye' : 'icon-eye-no'"></i>
       </el-form-item>
       <div v-else class="mt-30"></div>
       <div v-if="activeStepId == 3" @click="googleBind">
@@ -61,8 +62,7 @@ const route = useRoute();
 const submitText = ref('确 定')
 const activeStepId = ref(route.query.stepId || 1);
 const userStore = UseUserStore();
-
-// 验证码相关数据
+const passwordVisible = ref(false);
 const isDialogVisible = ref(false);
 const googleForm = ref({
   googleCode: '',
