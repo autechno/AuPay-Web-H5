@@ -16,15 +16,11 @@
       </div>
       <div class="table-title-wrap" >
         <div class="title">
-          <span @click="setActive('tokens')" :class="{ cur: activeTab === 'tokens' }">我的代币</span>
-          <span @click="setActive('favorites')" :class="{ cur: activeTab === 'favorites' }">我的关注</span>
-        </div>
-        <div class="select-wrap custom-no-shadow">
-          <el-select class="select" v-model="form.conditions.tradeType" placeholder="订单类型" @change="handlePageChange">
-            <el-option v-for="item in currencyChainList" :key="item.currencyChain" :label="item.currencyChainName" :value="item.currencyChain" />
-          </el-select>
+          <span @click="setActive('tokens')" :class="{ cur: activeTab === 'tokens' }">全部</span>
+          <span @click="setActive('favorites')" :class="{ cur: activeTab === 'favorites' }">关注</span>
         </div>
       </div>
+
       <div class="filter-wrap">
         <el-col :span="12">
           <span @click="toggle('volume_24h')" class="filter-item">
@@ -38,7 +34,7 @@
           <span @click="toggle('price')" class="filter-item" >
             价格<i :class="status.price ? 'el-icon-arrow-up' : 'el-icon-arrow-down'"></i>
           </span>
-          <span @click="toggle('change')" class="filter-item">
+          <span @click="toggle('percent_change_24h')" class="filter-item">
             涨跌幅<i :class="status.percent_change_24h ? 'el-icon-arrow-up' : 'el-icon-arrow-down'"></i>
           </span>
         </el-col>
@@ -49,8 +45,12 @@
             <el-image :src="btc" />
           </div>
           <div class="right-column">
-            <p class="row"><span class="title">{{ item.currencyName }}</span> <span class="title">${{ formatCurrency(item.price?item.price:0.00) }}</span></p>
-            <p class="row"><span class="text">${{ item.volume_24h?item.volume_24h:0.00 }}</span> <span class="text">${{ formatCurrency(item.percent_change_24h?item.percent_change_24h:0.00)}}</span></p>
+            <p class="row"><span class="title">{{ item.coinSymbol }}</span> <span class="title">${{ formatCurrency(item.price?item.price:0.00) }}</span></p>
+            <p class="row">
+              <span class="text" style="font-size: 12px;">${{ item.volume24h?item.volume24h:0.00 }}</span>
+              <span class="text" :style="{ color: item.percentChange24h > 0 ? '#0F9A50' : '#F36A35' }">
+                {{ item.percentChange24h > 0 ? `+${item.percentChange24h}` :  `-${item.percentChange24h}` }}</span>
+            </p>
           </div>
         </div>
       </div>
@@ -78,10 +78,11 @@ const activeTab = ref('tokens'); // 默认激活的标签
 const setActive = (tab: 'tokens' | 'favorites') => {
   activeTab.value = tab;
   if(tab == 'tokens'){
-    form.value.conditions.focus = true;
+    form.value.conditions = {};
   }else{
-    form.value.conditions.focus = null;
+    form.value.conditions.focus = true;
   }
+  handlePageChange();
 };
 
 const userInfo = ref({
@@ -91,12 +92,12 @@ const userInfo = ref({
   currencySign: '$'
 })
 
+// 暂时一页显示
 const form = ref({
   pageNo: 1,
-  pageSize: 10,
+  pageSize: 100,
   conditions: {
     focus: null,
-    tradeType: ''
   },
   descs:[
   ],
@@ -112,7 +113,9 @@ const status = ref({
   percent_change_24h: false,
 });
 const toggle = (key: any) => {
-  status.value[key] = !status.value[key];
+  if(key != null){
+    status.value[key] = !status.value[key];
+  }
   form.value.ascs = [];
   form.value.descs = [];
   for (const [k, v] of Object.entries(status.value)) {
@@ -133,29 +136,17 @@ const jumpPage= (url: string, query: any) => {
 // 重置 currencyList
 const resetCurrencyList = () => {
   currencyList.value = originalCurrencyList.value.filter(currency => {
-    return currency.currencyName.toLowerCase().includes(searchText.value.toLowerCase());
+    return currency.coinSymbol.toLowerCase().includes(searchText.value.toLowerCase());
   });
 };
 
 const handlePageChange = async () => {
   try {
-    const res = await assetsApi.accountAssets(form.value, headers);
+    const res = await assetsApi.marketList(form.value, headers);
     // 处理资产响应
     if (res.code == 200) {
-      const currencyData = [];
-      // 初始化总和变量
-      const dataList = res.data;
-      if (dataList && dataList.length > 0) {
-        dataList.forEach( item => {
-          const { currencyId, currencyChain } = item;
-          let currencyName = getDataInfo(currencyId, 'currencyChains')?.name;
-          let currencyChainName = getDataInfo(currencyChain, 'chains')?.name;
-          let mergedStore = { ...item, currencyName, currencyChainName };
-          currencyData.push(mergedStore);
-        });
-        currencyList.value = currencyData;
-        originalCurrencyList.value = currencyData;
-      }
+        currencyList.value = res.data.records;
+        originalCurrencyList.value = res.data.records;
     } else {
       showErrorMessage(res.code, res.message)
     }
@@ -167,37 +158,13 @@ const handlePageChange = async () => {
 // 获取数据
 const fetchData = async () => {
   try {
-    const [rateRes, assetsRes] = await Promise.all([
-      assetsApi.getRateU2Currency({ currency: userInfo.value.currencyCode }, headers),
-      assetsApi.accountAssets(form.value, headers)
-    ]);
-    // 处理汇率响应
-    let exchangeRate = rateRes.code == 200?rateRes.data:1;
+    const res = await assetsApi.marketList(form.value, headers);
     // 处理资产响应
-    if (assetsRes.code == 200) {
-      const currencyData = [];
-      const currencyChainData =  [];
-      const seenChains = new Set();
-      // 初始化总和变量
-      const dataList = assetsRes.data;
-      if (dataList && dataList.length > 0) {
-        dataList.forEach( item => {
-          const { currencyId, currencyChain} = item;
-          let currencyName = getDataInfo(currencyId, 'currencyChains')?.name;
-          let currencyChainName = getDataInfo(currencyChain, 'chains')?.name;
-          let mergedStore = { ...item, currencyName, currencyChainName };
-          currencyData.push(mergedStore);
-          if (!seenChains.has(currencyChain)) {
-            seenChains.add(currencyChain);
-            currencyChainData.push({ currencyChainName, currencyChain });
-          }
-        });
-        currencyChainList.value = currencyChainData;
-        originalCurrencyList.value = currencyData;
-        currencyList.value = currencyData;
-      }
+    if (res.code == 200) {
+      currencyList.value = res.data.records;
+      originalCurrencyList.value = res.data.records;
     } else {
-      showErrorMessage(assetsRes.code, assetsRes.message)
+      showErrorMessage(res.code, res.message)
     }
   } catch (error) {
     showCatchErrorMessage()
@@ -215,7 +182,7 @@ onMounted(() => {
   userInfo.value.headPortrait = userStore.userInfo.headPortrait;
   userInfo.value.currencyCode = userStore.userInfo.currencyUnit;
   userInfo.value.name = userStore.userInfo.nickname;
-  fetchData();
+  toggle();
 });
 </script>
 <style lang="less" scoped>
