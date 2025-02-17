@@ -60,9 +60,6 @@
     border: 0;
     border-radius: 16px;
 }
-.el-button+.el-button{
-    margin:0;
-}
 .custom-dialog{
     position: relative;
     width: 70%!important;

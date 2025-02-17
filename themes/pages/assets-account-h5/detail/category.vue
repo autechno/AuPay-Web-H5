@@ -125,13 +125,8 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-*{
-  margin: 0;
-  padding: 0;
-}
+
 .page{
-  position: relative;
-  padding-top: 28px;
   height: calc(100vh - 28px);
 }
 .category-wrap{

@@ -215,11 +215,6 @@ onMounted(() => {
   }
 }
 
-*{
-  margin: 0;
-  padding: 0;
-}
-
 .success-wrap{
   .arrow-wrap {
     display: flex;

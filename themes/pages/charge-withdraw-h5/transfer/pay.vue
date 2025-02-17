@@ -91,17 +91,6 @@ const validateTransferQR = () => {
     errorMessage.value = "请输入auPay收款码";
     return;
   }
-  // 检查长度范围
-  // if (length < 7 || length > 20) {
-  //   errorMessage.value = "auPay收款码长度必须在7到20个字符之间";
-  //   return;
-  // }
-  // 检查字符类型
-  // const pattern = /^[A-Za-z0-9]{7,20}$/;
-  // if (!pattern.test(form.value.transferQR)) {
-  //   errorMessage.value = "收款码只能包含数字和大小写字母";
-  //   return;
-  // }
   errorMessage.value = '';
 };
 
@@ -137,10 +126,6 @@ onMounted(async() => {
 </script>
 
 <style lang="less" scoped>
-*{
-  margin: 0;
-  padding: 0;
-}
 .copy-list{
   padding-top: 10px;
   padding-bottom: 20px;

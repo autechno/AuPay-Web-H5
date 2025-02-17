@@ -103,10 +103,6 @@ onMounted(() => {
   height: 250px;
   margin: 35px auto;
 }
-*{
-  margin: 0;
-  padding: 0;
-}
 .box-wrap{
   background: #F9F9FA;
   margin-top:18px;

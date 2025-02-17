@@ -254,10 +254,6 @@ onMounted(() => {
 .error-input {
   color: red!important;
 }
-*{
-  margin: 0;
-  padding: 0;
-}
 .input-amount-wrap{
   height: 49px;
   margin-top: 49px;

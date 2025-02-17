@@ -16,14 +16,14 @@
       <div class="website-code-wrap">
         <div class="website">
           <el-image :src="LOGO"/>
-          <p>{{website}}</p>
+          <div>{{website}}</div>
         </div>
         <div class="code"><QCcode :value="website" :size="72" /></div>
       </div>
     </div>
     <div class="footer-wrap">
-      <button @click="close" class="custom-button-down-default">取消</button>
-      <button class="custom-button-down">分享</button>
+      <button @click="close" class="custom-button-down-default" style="margin: 0 5px 0 10px;">取消</button>
+      <button class="custom-button-down" style="margin: 0 5px 0 10px;">分享</button>
     </div>
   </div>
 </template>
@@ -47,10 +47,6 @@ const close = () => {
 </script>
 
 <style lang="less" scoped>
-*{
-  margin: 0;
-  padding: 0;
-}
 .ad-wrap {
   background: rgba(0, 0, 0, 0.5);
   width: 100vw;

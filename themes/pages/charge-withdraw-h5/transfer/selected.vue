@@ -128,10 +128,6 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-*{
-  margin: 0;
-  padding: 0;
-}
 .title-box-wrap {
   position: relative;
   .title-wrap{

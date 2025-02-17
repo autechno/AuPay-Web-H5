@@ -194,10 +194,6 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-*{
-  padding: 0;
-  margin: 0;
-}
 
 .box-wrap{
   margin-bottom: 5px;

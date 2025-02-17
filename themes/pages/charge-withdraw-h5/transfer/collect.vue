@@ -105,10 +105,6 @@ onMounted(() => {
 });
 </script>
 <style lang="less" scoped>
-*{
-  margin: 0;
-  padding: 0;
-}
 .code-wrap{
   width: 250px;
   height: 250px;
