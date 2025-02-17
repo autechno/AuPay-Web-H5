@@ -181,6 +181,8 @@ onMounted(() => {
     top:0;
   }
   .row {
+    margin:0;
+    padding: 0;
     display: flex;
     width: 40%;
     overflow: hidden;

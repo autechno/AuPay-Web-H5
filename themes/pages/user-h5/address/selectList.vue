@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page" style="padding:0;">
     <GoBack title="地址库" />
     <div class="address-body">
       <div class="table-list" v-for="item in addressList" :key="item.id">
@@ -18,7 +18,7 @@
         </div>
       </div>
     </div>
-    <el-button class="custom-button custom-button-pos" @click="addAddress">新增地址</el-button>
+    <button class="custom-button custom-button-pos" @click="addAddress">新增地址</button>
   </div>
 </template>
 <script setup lang="ts">
