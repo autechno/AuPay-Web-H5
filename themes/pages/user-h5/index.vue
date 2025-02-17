@@ -155,34 +155,7 @@ onMounted(() => {
   color: #0D0D0D;
   padding-bottom: 100px;
 }
-.avatar-header{
-  width: 100%;
-  height: 46px;
-  display: flex;
-  justify-content: space-between;
-  .name{
-    font-size: 18px;
-    font-weight: bold;
-    line-height: 46px;
-    padding-left: 5px;
-  }
-  .avatar{
-    Width: 46px;
-    Height: 46px;
-    background: #F4F4F4;
-    overflow: hidden;
-    border-radius: 50%;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .avatar-header .scan {
-    object-fit: cover;
-    width: 24px;
-    height: 24px;
-  }
-}
+
 .page-main{
   margin-top: 32px;
 }
