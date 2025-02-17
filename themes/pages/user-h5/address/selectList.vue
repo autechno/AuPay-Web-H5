@@ -1,5 +1,5 @@
 <template>
-  <div class="address-page">
+  <div class="page">
     <GoBack title="地址库" />
     <div class="address-body">
       <div class="table-list" v-for="item in addressList" :key="item.id">
@@ -80,13 +80,7 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-*{
-  margin: 0;
-  padding: 0;
-}
-.address-page{
-  position: relative;
-}
+
 .address-body{
   .table-list{
     position: relative;

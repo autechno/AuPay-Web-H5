@@ -85,6 +85,7 @@ onMounted(() => {
   }
 }
 .table-list{
+  padding-top: 10px;
   div{
     display: flex;
     justify-content: space-between;

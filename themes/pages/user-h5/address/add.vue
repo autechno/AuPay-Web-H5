@@ -1,5 +1,5 @@
 <template>
-  <div class="address-index">
+  <div class="page">
     <GoBack title="地址库" />
     <div class="title-wrap">新增地址</div>
     <el-form :model="form" :rules="rules" class="custom-input" ref="formRef" @submit.prevent="checkDuplicate">
@@ -170,7 +170,6 @@ onMounted(() => {
 
 <style scoped>
 .address-index {
-  padding-top: 28px;
   .title-wrap{
     line-height: 24px;
     height: 24px;
