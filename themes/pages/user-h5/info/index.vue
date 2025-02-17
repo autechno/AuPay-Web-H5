@@ -3,8 +3,8 @@
     <div class="avatar-header">
       <span>
         <el-icon class="avatar" style="float: left"><el-image :src="userInfo.headPortrait ? userInfo.headPortrait : head" /></el-icon>
-        <span class="name">{{userInfo.email}}</span>
-        <span class="name">{{userInfo.email}}</span>
+        <p class="name">{{userInfo.nickname?userInfo.nickname:userInfo.email}}</p>
+        <p class="sign">{{userInfo.sign}}</p>
       </span>
     </div>
 
@@ -63,6 +63,7 @@ onMounted(() => {
   .sign{
     color: #999999;
     font-size: 14px;
+    padding-left: 5px;
   }
 }
 </style>
