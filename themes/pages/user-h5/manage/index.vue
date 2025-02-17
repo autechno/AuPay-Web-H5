@@ -1,5 +1,5 @@
 <template>
-  <div class="page" style="padding-top: 28px;">
+  <div class="page">
       <div class="user-title-wrap">
         <div class="row">
           <span class="h1">用户中心</span>
@@ -79,10 +79,6 @@ onMounted(() => {
 
 </script>
 <style scoped>
-* {
-  margin: 0;
-  padding: 0;
-}
 .page{
   height: calc(100vh - 28px);
 }
