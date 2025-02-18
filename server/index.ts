@@ -26,6 +26,19 @@ class UserApi extends Http {
         return this.post('/aupay-user/transferQrcode/queryAccountContact', params, headers);
     }
     /**
+     * 删除通讯录
+     */
+    public removeAccountContact(params: any, headers: any): Promise<any> {
+        return this.postFormData('/aupay-user/transferQrcode/removeAccountContact', params, headers, 'post');
+    }
+    /**
+     * 添加通讯录
+     */
+    public addAccountContact(params: any, headers: any): Promise<any> {
+        return this.postFormData('/aupay-user/transferQrcode/addAccountContact', params, headers, 'post');
+    }
+    /**
+    /**
      * 绑定google登录
      */
     public setBindGoogle(params: any, headers: any): Promise<any> {

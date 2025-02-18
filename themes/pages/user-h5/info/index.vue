@@ -74,7 +74,7 @@
         <el-form-item label=""  prop="transferQR" v-if="currentField === 'transferQR'" >
           <el-input  v-model="userInfo.transferQR" placeholder="auPay收款码" />
         </el-form-item>
-        <button class="custom-button custom-button-pos" native-type="submit">保存地址</button>
+        <button class="custom-button custom-button-pos" native-type="submit">保存</button>
       </el-form>
     </el-drawer>
   </div>

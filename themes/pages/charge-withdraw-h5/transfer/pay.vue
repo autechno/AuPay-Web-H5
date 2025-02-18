@@ -54,7 +54,7 @@ const route = useRoute();
 const errorMessage = ref('');
 const copyList = ref([]);
 // 通讯录列表
-const contactList = ref([{email: 'yoney.zhang@autech.one', accountLogo: '', nickname: 'yoney.zhang', transferQrcode: '0KVMONDOBWqJ3tGigOzbsjj1oYTluiLF'}]);
+const contactList = ref([]);
 const form = ref({
   transferQR: "",
 })
@@ -144,6 +144,8 @@ onMounted(async() => {
   if (hasContent) {
     await readClipboard();
   }
+
+
   fetchData();
 });
 </script>

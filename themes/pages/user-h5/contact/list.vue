@@ -102,9 +102,6 @@ const fetchData = async () => {
 
 // 初始化数据
 onMounted(() => {
-  if(route.query.isPage){
-    isPage.value = 1;
-  }
   fetchData();
 });
 </script>

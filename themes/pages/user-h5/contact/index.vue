@@ -5,19 +5,17 @@
       <div style="display: flex; ">
         <el-icon class="avatar"><el-image :src="accountInfo.accountLogo ? accountInfo.accountLogo : head" /></el-icon>
         <div style="margin-top: 8px;">
-          <p class="name" style="margin-top: 0;">{{accountInfo.nickname}}</p>
-          <p ><span>auPay ID: </span>{{formatAddressString(accountInfo.qrCode, 8, 10)}}</p>
+          <p >{{accountInfo.nickname}}</p>
+          <p v-if="accountInfo.qrCode"><span>auPay ID: </span>{{formatAddressString(accountInfo.qrCode, 8, 10)}}</p>
           <p >{{formatEmailString(accountInfo.email)}}</p>
           <p >{{accountInfo.sign}}</p>
         </div>
       </div>
     </div>
-    <div class="btn-wrap" v-if="isPage == 0">
-      <button class="custom-button-down-default">删除</button>
-      <button class="custom-button-down">付款给他</button>
-    </div>
-    <div v-else class="btn-wrap" >
-      <button class="custom-button-down">删除</button>
+    <div class="btn-wrap">
+      <button v-if="isSave" class="custom-button-down-default" @click="deleteContact">删除</button>
+      <button v-else class="custom-button-down" style="margin-right: 15px;" @click="addContact">添加</button>
+      <button class="custom-button-down"  style="margin-left: 15px;" @click="jumpPage('/charge-withdraw-h5/transfer/pay', {qr: originQr})">付款给他</button>
     </div>
   </div>
 </template>
@@ -35,27 +33,29 @@ const { public: { API_HOST } } = useRuntimeConfig();
 const title = ref("");
 const route = useRoute();
 const router = useRouter();
-const headers = getHeader();
-const isPage = ref(0);
+const isSave = ref(false);
+const originQr = ref('');
 const { userApi, systemApi } = useServer();
 const accountInfo = ref({
-  accountId: 'fadsfa',
-  accountName: 'afasfa',
-  accountNo: 'af@au.com',
+  id: '',
+  accountId: '',
+  accountName: '',
+  accountNo: '',
   accountLogo: '',
-  sign: "232323",
-  email: 'yoney.zhang@autech.one',
-  nickname: 'fasf',
+  sign: "",
+  email: '',
+  nickname: '',
   qrCode: ''
 });
 
-// 初始化
-const fetchData = async (qr: string) => {
+// 添加
+const addContact = async () => {
   try {
-    const res = await userApi.getCheckTransferCode({ qrCode: qr }, headers);
+    const headers = getHeader();
+    const res = await userApi.addAccountContact({ qrcode: accountInfo.value.qrCode }, headers);
     if(res.code == 200){
-      // accountInfo.value = res.data;
-      accountInfo.value.qrCode = decodeURIComponent(qr);
+      showSuccessMessage(0, '删除成功');
+      goBackDelay(router, "list");
     }else{
       showErrorMessage(res.code, res.message)
     }
@@ -64,10 +64,64 @@ const fetchData = async (qr: string) => {
   }
 };
 
+// 跳转
+const jumpPage = (url: string, params: any) =>{
+  router.push({path: url, query: params});
+}
+
+// 删除
+const deleteContact = async () => {
+  try {
+    const headers = getHeader();
+    const res = await userApi.removeAccountContact({ id: accountInfo.value.id }, headers);
+    if(res.code == 200){
+      showSuccessMessage(0, '删除成功');
+      goBackDelay(router, "list");
+    }else{
+      showErrorMessage(res.code, res.message)
+    }
+  } catch (error) {
+    showCatchErrorMessage()
+  }
+};
+
+// 初始化
+const fetchData = async (qr: string) => {
+  try {
+    const headers = getHeader();
+    const [transferCodeRes, accountContactRes] = await Promise.all([
+      userApi.getCheckTransferCode({ qrCode: qr }, headers),
+      userApi.queryAccountContact({
+        pageNo: 1,
+        pageSize: 100,
+        conditions: {
+          qrCode: qr
+        }
+      }, headers)
+    ]);
+    if(accountContactRes.code == 200){
+      if( accountContactRes.data.records.length > 0){
+        isSave.value = true;
+        accountInfo.value.id = accountContactRes.data.records[0].id;
+      }
+    }else{
+      showErrorMessage(accountContactRes.code, accountContactRes.message)
+    }
+    if(transferCodeRes.code == 200){
+      accountInfo.value = transferCodeRes.data;
+      accountInfo.value.qrCode = qr;
+    }else{
+      showErrorMessage(transferCodeRes.code, transferCodeRes.message)
+    }
+  } catch (error) {
+    showCatchErrorMessage()
+  }
+};
+
 // 初始化数据
 onMounted(() => {
-  isPage.value = route.query.isPage;
-  fetchData(route.query.qrCode);
+  originQr.value = route.query.qrCode
+  fetchData(decodeURIComponent(route.query.qrCode));
 })
 
 </script>
@@ -75,11 +129,8 @@ onMounted(() => {
 .page {
 }
 .btn-wrap{
-  margin-top: 20px;
+  margin-top: 30px;
   display: flex;
-  .custom-button-down {
-    margin-left: 10px;
-  }
 }
 
 .avatar-header-wrap{

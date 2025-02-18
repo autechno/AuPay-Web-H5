@@ -136,6 +136,8 @@ onMounted(() => {
       }
     }
     .row {
+      margin: 0;
+      padding: 0;
       width: calc(100vw - 140px);
       .title {
         font-weight: bold;
