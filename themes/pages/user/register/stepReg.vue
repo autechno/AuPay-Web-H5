@@ -2,7 +2,7 @@
   <div class="page">
     <img class="logo" :src="logo" alt="logo" />
     <div class="regTips">注册auPayID</div>
-      <el-form :model="form" :rules="formRules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
+      <el-form :model="form" :rules="formRules" ref="formRef" class="custom-input"  @submit.prevent="handleSubmit">
         <el-form-item prop="email" >
           <el-input v-model="form.email" disabled placeholder="请输入邮箱"  />
         </el-form-item>
@@ -161,7 +161,7 @@ onMounted(() => {
   padding-bottom: 28px;
 }
 
-.input_box{
+.custom-input{
   :deep(.el-input){
     width: 100%;
     height: 56px;
@@ -193,7 +193,6 @@ onMounted(() => {
 }
 
 .href-text{
-
   text-align: center;
 }
 

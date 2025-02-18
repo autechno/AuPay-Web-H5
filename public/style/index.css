@@ -74,6 +74,13 @@
         margin-top: 9px;
         margin-bottom: 28px;
     }
+    .tips-wrap{
+        font-size: 12px;
+        color: #FD6B2E;
+        padding: 5px 10px;
+        background: #FFEEEE;
+        border-radius: 8px;
+    }
 }
 .custom-drawer{
     position: relative;

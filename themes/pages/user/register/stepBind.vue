@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div class="logo">
+    <div class="logo-wrap">
       <img :src="vector"  />
     </div>
     <div class="regTips">您已注册成功</div>
@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <el-form :model="form" :rules="rules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
+    <el-form :model="form" :rules="rules" ref="formRef" class="custom-input" @submit.prevent="handleSubmit">
       <el-form-item v-if="activeStepId == 1"  prop="assetsPassword">
         <el-input v-model="form.assetsPassword" placeholder="设置资金密码" :type="passwordVisible ? 'text' : 'password'" />
         <i @click.stop="passwordVisible = !passwordVisible" :class="passwordVisible ? 'icon-eye' : 'icon-eye-no'"></i>
@@ -28,21 +28,24 @@
       </el-form-item>
     </el-form>
 
-    <div class="href-text" v-if="activeStepId != 3" @click="nextTick">“暂不设置”下一步</div>
+    <div class="next-text" v-if="activeStepId != 3" @click="nextTick">“暂不设置”下一步</div>
     <!-- Google 验证码弹出窗口 -->
-    <el-dialog v-model="isDialogVisible" title="设置Google验证码" width="90%">
-      <div style="text-align: center;">
-        <img :src="googleForm.qrCode" alt="Google QR Code" style="width: 150px; height: 150px;" />
-        <div>{{googleForm.googleSecret}}</div> <button >复制</button>
-        <el-form :model="googleForm" label-position="top" style="margin-top: 20px;">
-          <el-form-item label="" prop="googleCode">
+    <el-dialog class="custom-dialog" v-model="isDialogVisible" title="设置Google验证码" width="90%">
+      <div class="custom-dialog-wrap">关联验证器</div>
+      <div class="tips-wrap">一旦遗失本方不负责找回，请截图保存 二维码或字符可以在任意设备恢复您的谷歌验证器</div>
+      <div class="google-wrap">
+        <el-image :src="googleForm.qrCode" style="width: 250px; height: 250px;" />
+        <div class="text-wrap" @click="copyText(googleForm.googleSecret)">{{formatAddressString(googleForm.googleSecret, 10, 15)}} <el-image :src="copy" /></div>
+        <div class="text-wrap" style="color:#999999;">如您无法扫描二维码，请在APP中手动输入这串</div>
+        <el-form :model="googleForm" :rules="rules" ref="formRef" class="custom-input">
+          <el-form-item prop="googleCode">
             <el-input v-model="googleForm.googleCode" placeholder="请输入Google验证码" />
           </el-form-item>
         </el-form>
       </div>
-      <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="confirmGoogleAuth(2)">确认</el-button>
-        </span>
+      <div class="btn-wrap">
+          <button class="custom-button" @click="confirmGoogleAuth(2)">确认</button>
+        </div>
     </el-dialog>
   </div>
 </template>
@@ -55,12 +58,15 @@ import { ref, onMounted} from "vue";
 import { useRouter, useRoute } from "vue-router";
 import {getHeader} from "@/utils/storageUtils";
 import {Select, CloseBold} from "@element-plus/icons-vue";
+import copy from '@@/public/images/copy2.svg';
+
+
 const { userApi, systemApi } = useServer();
 const { public: { API_HOST } } = useRuntimeConfig();
 const formRef: any = ref(null);
 const bindGoogleLogin = ref(true);
 const route = useRoute();
-const submitText = ref('确 定')
+const submitText = ref('确定')
 const activeStepId = ref(route.query.stepId || 1);
 const userStore = UseUserStore();
 const passwordVisible = ref(false);
@@ -193,46 +199,64 @@ onMounted(async () => {
 *{
   font-size: 14px;
 }
-.display{
-  background: #dcdcdc !important;
+.google-wrap{
+  text-align: center;
+  .text-wrap{
+    line-height: 22px;
+    font-size: 12px;
+    color: #666666;
+    .el-image{
+      margin-left: 5px;
+      width: 16px;
+      height: 17px;
+    }
+    display: inline-flex;
+  }
 }
 .page {
   background: url('@@/public/images/star3.png') 45% 14% no-repeat;
   background-size: 52%;
   position: relative;
-  padding: 0 30px;
-}
-.logo {
-  width: 100px;
-  height: 100px;
-  margin: 100px auto 18px auto;
-  background: #5686E1;
-  border-radius: 45px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.logo img{
-  width: 36px;
-}
+  padding-left: 30px;
+  padding-right: 30px;
 
-.regTips {
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 28px;
-  text-align: center;
+  .logo-wrap {
+    width: 100px;
+    height: 100px;
+    margin: 100px auto 18px auto;
+    background: #5686E1;
+    border-radius: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img{
+      width: 36px;
+    }
+  }
+  .register-status{
+    color: #657087;
+    margin-top: 20px;
+    padding-bottom: 10px;
+  }
+  .regTips {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+    text-align: center;
+  }
+  .next-text{
+    text-align: center;
+    color: #657087
+  }
+}
+.btn-wrap{
+  margin-top: 35px;
 }
 .mb-20{
   margin-bottom: 20px;
 }
 .mt-30{
   margin-top: 32px;
-}
-
-.register-status{
-  color: #657087;
-  margin-top: 20px;
-  padding-bottom: 10px;
 }
 .status-item{
   position: relative;
@@ -241,37 +265,28 @@ onMounted(async () => {
   width: 100%;
   border-radius: 8px;
   display: flex;
-}
-.status-item .title{
- color: #333333;
-  font-weight: bold;
-}
-.status-item .el-icon{
-  width: 20px;
-  height: 20px;
-  position: absolute;
-  right: 0px;
-  top:5px;
-  background: #5686E1;
-  border-radius: 8px;
-  color: #ffffff;
-}
-.status-item .el-icon{
-  width: 20px;
-  height: 20px;
-  position: absolute;
-  font-weight: bold;
-  right: 0px;
-  top:7px;
-  background: #5686E1;
-  border-radius: 8px;
-  color: #ffffff;
-}
-.status-item .error{
- background: #FDC92E;
+  .title{
+    color: #333333;
+    font-weight: bold;
+  }
+  .el-icon{
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    font-weight: bold;
+    right: 0px;
+    top:7px;
+    background: #5686E1;
+    border-radius: 8px;
+    color: #ffffff;
+  }
+  .error{
+    background: #FDC92E;
+  }
 }
 
-.input_box{
+.custom-input{
+  margin-top: 10px;
   :deep(.el-input){
     width: 100%;
     height: 56px;
@@ -294,10 +309,5 @@ onMounted(async () => {
   }
 }
 
-
-.href-text{
-  text-align: center;
-  color: #657087
-}
 
 </style>

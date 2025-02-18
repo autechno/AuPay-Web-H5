@@ -2,7 +2,7 @@
   <div class="page">
     <img class="logo" :src="logo" alt="logo" />
     <div class="regTips">请输入{{email}}收到的验证码</div>
-    <el-form :model="form" :rules="rules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
+    <el-form :model="form" :rules="rules" ref="formRef" class="custom-input"  @submit.prevent="handleSubmit">
       <el-form-item label="" prop="emailCode" style="position: relative;">
         <el-input v-model="form.emailCode" type="emailCode" placeholder="验证码" />
         <div class="emailCode" @click="resetBtn">{{ emailText }}</div>
@@ -132,7 +132,7 @@ onMounted(() => {
   padding-bottom: 28px;
 }
 
-.input_box{
+.custom-input{
   :deep(.el-input){
     width: 100%;
     height: 56px;

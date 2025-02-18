@@ -2,7 +2,7 @@
   <div class="page">
     <img class="logo" :src="logo" alt="logo" />
     <div class="regTips">{{tips}}</div>
-    <el-form :model="form" :rules="formRules" ref="formRef" class="input_box"  @submit.prevent="handleSubmit">
+    <el-form :model="form" :rules="formRules" ref="formRef" class="custom-input"  @submit.prevent="handleSubmit">
       <div v-if="activeStepId == 1">
         <el-form-item prop="email" >
           <el-input v-model="form.email" placeholder="请输入邮箱"  />
@@ -197,7 +197,7 @@ const sendEamil = async () => {
   padding-bottom: 28px;
 }
 
-.input_box{
+.custom-input{
   :deep(.el-input){
     width: 100%;
     height: 56px;
