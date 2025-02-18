@@ -4,6 +4,7 @@
       <img :src="vector"  />
     </div>
     <div class="regTips">您已注册成功</div>
+    <div style="padding: 10px;">接下来需要您花费几分钟设定以下辅助选项，您也可以暂时跳过，在使用中随时完善</div>
     <div class="register-status">
       <div class="status-item" v-for="item in statusList" :key="item.key">
         <span :class="!item.key?'title':''">{{ item.name }}</span>
@@ -230,7 +231,7 @@ onMounted(async () => {
 
 .register-status{
   color: #657087;
-  margin-top: 47px;
+  margin-top: 20px;
   padding-bottom: 10px;
 }
 .status-item{
