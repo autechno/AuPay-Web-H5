@@ -16,8 +16,10 @@
         <el-input v-model="form.googleCode" placeholder="请输入6位验证码" />
       </el-form-item>
       <div v-if="activeStepId == 3">
+        <!-- 使用 PasswordStrength 组件 -->
+        <PasswordStrength :password="form.password" :isVisible="passwordLevelVisible" />
         <el-form-item prop="password">
-          <el-input v-model="form.password" placeholder="请输入密码" :type="passwordVisible ? 'text' : 'password'" />
+          <el-input v-model="form.password" placeholder="请输入密码"  @focus="passwordLevelVisible = true" @blur="passwordLevelVisible = false" :type="passwordVisible ? 'text' : 'password'" />
           <i @click.stop="passwordVisible = !passwordVisible" :class="passwordVisible ? 'icon-eye' : 'icon-eye-no'"></i>
         </el-form-item>
         <el-form-item prop="confirmPassword">
@@ -38,6 +40,7 @@ import logo from '@@/public/images/LOGO.svg';
 import { rules } from "@/utils/validationRules";
 import {ElForm, ElMessage} from "element-plus";
 import {getHeader} from "@/utils/storageUtils";
+import PasswordStrength from "~/composables/PasswordStrength.vue";
 const { userApi, systemApi } = useServer();
 const formRef: any = ref(null);
 let timer: NodeJS.Timeout | null = null;
@@ -49,6 +52,7 @@ const tips = ref('找回密码');
 const countdown = ref(0);
 const passwordVisible = ref(false);
 const passwordVisible2 = ref(false);
+const passwordLevelVisible = ref(false);
 
 // 在次发送email验证码
 const resetBtn = () =>{

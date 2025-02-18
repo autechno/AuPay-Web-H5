@@ -364,3 +364,90 @@
     background: url(@@/public/images/seeno.svg)  no-repeat center center;
     background-size: 45%;
 }
+
+.password-level-wrap{
+    position: relative;
+    background: #F7F7F7;
+    border-radius: 16px;
+    padding: 10px 10px;
+    min-height: 70px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    p{
+        margin: 0;
+        padding: 0;
+    }
+    .triangle-arrow {
+        position: absolute;
+        bottom: -10px;
+        left: 20px;
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 12px solid #F7F7F7;
+    }
+    .title{
+        color: #666666;
+        height: 16px;
+        line-height: 16px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        span{
+            margin-right: 10px
+        }
+        i{
+            display: inline-block;
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            margin-left: 4px;
+            background: #EBEBEB;
+        }
+    }
+    .content{
+        span{
+            display: flex;
+            justify-content: space-between;
+            padding-top: 5px;
+        }
+    }
+    .title.l1 i:nth-of-type(1) {
+        background: #F36A35;
+    }
+    .title.l2 {
+        i:nth-of-type(1) {
+            background: #F36A35;
+        }
+        i:nth-of-type(2) {
+            background: #FDC92E;
+        }
+    }
+    .title.l3 {
+        i:nth-of-type(1) {
+            background: #F36A35;
+        }
+        i:nth-of-type(2) {
+            background: #FDC92E;
+        }
+        i:nth-of-type(3) {
+            background: #3ED283;
+        }
+    }
+    .title.l4 {
+        i:nth-of-type(1) {
+            background: #F36A35;
+        }
+        i:nth-of-type(2) {
+            background: #FDC92E;
+        }
+        i:nth-of-type(3) {
+            background: #3ED283;
+        }
+        i:last-of-type {
+            background: #18A95C;
+        }
+    }
+}

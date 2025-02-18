@@ -39,8 +39,10 @@
     <el-dialog class="custom-dialog"  v-model="isPassDialogVisible" :show-close="false" :close-on-click-modal="false">
       <div class="custom-dialog-wrap"> 设置密码 </div>
       <el-form :model="form" :rules="formRules" ref="formRef" class="custom-input" @submit.prevent="handleSubmit">
+        <!-- 使用 PasswordStrength 组件 -->
+        <PasswordStrength :password="form.password" :isVisible="passwordLevelVisible" />
         <el-form-item label="" prop="password">
-          <el-input v-model="form.password" placeholder="请输入密码" :type="passwordVisible ? 'text' : 'password'"  />
+          <el-input v-model="form.password"  @focus="passwordLevelVisible = true" @blur="passwordLevelVisible = false" placeholder="请输入密码" :type="passwordVisible ? 'text' : 'password'"  />
           <i @click.stop="passwordVisible = !passwordVisible" :class="passwordVisible ? 'icon-eye' : 'icon-eye-no'"></i>
         </el-form-item>
         <el-form-item label="" prop="confirmPassword">
@@ -83,6 +85,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { rules } from "@/utils/validationRules";
 import {ElForm, ElMessage} from "element-plus";
 import GoBack from "~/composables/GoPageBack.vue";
+import PasswordStrength from "~/composables/PasswordStrength.vue";
 const headers = getHeader();
 const { systemApi, userApi } = useServer();
 const formRef: any = ref(null);
@@ -96,6 +99,7 @@ const { public: { API_HOST } } = useRuntimeConfig();
 const tmpForm = ref('')
 const passwordVisible = ref(false);
 const passwordVisible2 = ref(false);
+const passwordLevelVisible = ref(false);
 
 /**
  * 基础数据

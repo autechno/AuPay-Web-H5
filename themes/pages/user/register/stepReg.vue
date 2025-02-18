@@ -10,8 +10,10 @@
           <el-input v-model="form.emailCode" placeholder="邮箱验证码" />
           <div class="emailCode" @click="resetBtn">{{ emailText }}</div>
         </el-form-item>
+        <!-- 使用 PasswordStrength 组件 -->
+        <PasswordStrength :password="form.password" :isVisible="passwordLevelVisible" />
         <el-form-item label="" prop="password">
-          <el-input v-model="form.password" placeholder="设置登录密码" :type="passwordVisible ? 'text' : 'password'" />
+          <el-input v-model="form.password"  @focus="passwordLevelVisible = true" @blur="passwordLevelVisible = false" placeholder="设置登录密码" :type="passwordVisible ? 'text' : 'password'" />
           <i @click.stop="passwordVisible = !passwordVisible" :class="passwordVisible ? 'icon-eye' : 'icon-eye-no'"></i>
         </el-form-item>
         <el-form-item label="" prop="confirmPassword">
@@ -32,6 +34,8 @@ import { rules } from "@/utils/validationRules";
 import {ElForm, ElMessage} from "element-plus";
 import { ref, onMounted} from "vue";
 import { useRouter, useRoute } from "vue-router";
+import PasswordStrength from '@/composables//PasswordStrength.vue'; // 引入新组件
+
 const { userApi, systemApi } = useServer();
 const formRef: any = ref(null);
 let timer: NodeJS.Timeout | null = null;
@@ -39,9 +43,19 @@ const router = useRouter();
 const route = useRoute();
 const passwordVisible = ref(false);
 const passwordVisible2 = ref(false);
+const passwordLevelVisible = ref(false);
 const email = ref(route.query.email || '');
 const emailText = ref('发送验证');
 const countdown = ref(60);
+
+// 表单数据
+const form = ref({
+  email: email.value,
+  password: '',
+  assetsPassword: '',
+  confirmPassword: '',
+  emailCode: '',
+});
 
 // 自定义验证器：确认密码
 const validateConfirmPassword = (rule: any, value: string, callback: any) => {
@@ -50,6 +64,14 @@ const validateConfirmPassword = (rule: any, value: string, callback: any) => {
   } else {
     callback();
   }
+};
+const formRules = {
+  ...rules,
+  confirmPassword: [
+    { required: true, message: '确认密码不能为空', trigger: 'blur' },
+    { min: 8, message: '确认密码长度至少为8位', trigger: 'blur' },
+    { validator: validateConfirmPassword, trigger: 'blur' }
+  ],
 };
 
 // 在次发送email验证码
@@ -60,15 +82,6 @@ const resetBtn = () =>{
   }
 }
 
-// 表单验证规则
-const formRules = {
-  ...rules,
-  confirmPassword: [
-    { required: true, message: '确认密码不能为空', trigger: 'blur' },
-    { min: 8, message: '确认密码长度至少为8位', trigger: 'blur' },
-    { validator: validateConfirmPassword, trigger: 'blur' }
-  ],
-};
 // 开始倒计时
 const startCountdown = () => {
   countdown.value = 60;
@@ -86,17 +99,6 @@ const startCountdown = () => {
   }, 1000);
 };
 
-
-// 表单数据
-const form = ref({
-  email: email.value,
-  password: '',
-  assetsPassword: '',
-  confirmPassword: '',
-  emailCode: '',
-});
-
-
 /**
  * 表单提交
  */
@@ -108,8 +110,9 @@ const handleSubmit = async () => {
       const userStore = UseUserStore();
       userStore.setTokenState(res.data);
       router.push('/user/register/stepBind');
+
     } else {
-      ElMessage.error(res.message || '注册失败');
+      showErrorMessage(res.code, res.message)
     }
   }
 }
@@ -120,10 +123,10 @@ const handleSubmit = async () => {
 const sendEamil = async () => {
   let res = await systemApi.sendRegEmail({email: form.value.email}, {});
   if (res.code === 200) {
-    ElMessage.success('email发送成功');
+    showSuccessMessage(0, 'email发送成功');
     startCountdown();
   } else {
-    ElMessage.error(res.message);
+    showErrorMessage(res.code, res.message);
   }
 }
 
@@ -131,7 +134,7 @@ const sendEamil = async () => {
  * 导航到登录页面
  */
 const navigateToLogin = () => {
-  router.push('/user/login'); // 跳转到 /user/login
+  router.push('/user/login');
 };
 
 onMounted(() => {
@@ -141,9 +144,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-*{
-  font-size: 14px;
-}
 .page {
   position: relative;
   padding: 0 30px;
