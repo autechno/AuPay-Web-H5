@@ -1,20 +1,33 @@
 <template>
   <div class="page">
-    <GoBack title="地址库" />
+    <GoBack title="通讯录" />
     <div class="search-wrap">
       <el-icon class="arrow" size="26"><Search /></el-icon>
-      <input v-model="searchText" placeholder="搜索昵称/auPay ID" class="custom-input" />
+      <input v-model="searchText" placeholder="搜索昵称/auPay ID" @input="searchContact" class="custom-input" />
     </div>
     <div class="table-list">
       <div class="item" v-for="(item, index) in contactList" >
         <el-icon><el-image :src="item.accountLogo ? item.accountLogo : head" /></el-icon>
         <div class="column">
           <div class="title">{{item.nickname}}</div>
-          <div class="text"><span>{{item.email}}</span><span>{{item.transferQrcode}}</span></div>
+          <div class="text"><span>{{item.email}}</span><span>auPay ID: {{item.transferQrcode}}</span></div>
         </div>
       </div>
     </div>
-    <button class="custom-button custom-button-pos" @click="addContact">新增</button>
+    <button class="custom-button custom-button-pos" @click="drawerVisible = true">新增</button>
+    <el-drawer class="custom-drawer" v-model="drawerVisible"
+               title=""
+               :show-close="false"
+               @close="drawerVisible = false"
+               direction="rtl"
+               size="100%">
+        <GoClose :title="title" @close="drawerVisible = false" />
+        <div class="search-wrap">
+          <input v-model="transferQr" placeholder="auPay ID" class="custom-input" />
+          <el-icon class="edit"><el-image :src="scan" /></el-icon>
+        </div>
+        <button class="custom-button custom-button-pos" native-type="submit" @click="getAccountInfo">确定</button>
+    </el-drawer>
   </div>
 </template>
 <script setup lang="ts">
@@ -24,37 +37,60 @@ import { useRoute, useRouter } from 'vue-router';
 import { getHeader } from "@/utils/storageUtils";
 import {Search} from "@element-plus/icons-vue";
 import head from "@@/public/images/head.svg";
+import GoClose from "@/composables/GoPageClose.vue";
+import scan from "@@/public/images/Scan3.svg";
 
+const title = '新增通讯录好友';
 const route = useRoute();
 const router = useRouter();
 const headers = getHeader();
+const drawerVisible = ref(false);
+const isPage = ref(0);
 const contactList = ref([]);
-const originalContactList = ref([]);
+const transferQr = ref('0KVMONDOBWqJ3tGigOzbsjj1oYTluiLF');
 const { userApi } = useServer();
 const searchText = ref('');
-const contactForm = ref({
+const form = ref({
   pageNo: 1,
-  pageSize: 10,
+  pageSize: 100,
   conditions: {
   }
 })
-// 定义跳转函数
-const addContact = () => {
-  console.log('addressList')
-  router.push({ path: '/user-h5/address/add', query: { } });
-};
+
+// 搜索
+const searchContact = () => {
+  if(searchText.value){
+    form.value.conditions['searchStr'] = searchText.value;
+  }else{
+    form.value.conditions = {};
+  }
+  fetchData();
+}
 
 // 选择地址
 const selectContact = (id: number) => {
-
 }
 
+// 确认按钮的处理
+const getAccountInfo = async () => {
+  try{
+    const res = await userApi.getCheckTransferCode({ qrCode: transferQr.value }, headers);
+    if(res.code == 200){
+      router.push({ path: './', query: { isPage: isPage.value, qrCode: encodeURIComponent(transferQr.value) } });
+    }else{
+      showErrorMessage(res.code, res.message)
+    }
+  } catch (error) {
+    showCatchErrorMessage()
+  }
+};
 
 // 获取资产数据
 const fetchData = async () => {
   try {
-    let res = await userApi.queryAccountContact(contactForm.value, headers);
+    let res = await userApi.queryAccountContact(form.value, headers);
     if (res.code == 200) {
+      //通讯录只查一页
       contactList.value = res.data.records;
     } else {
       showErrorMessage(res.code, res.message)
@@ -64,20 +100,11 @@ const fetchData = async () => {
   }
 };
 
-// 重置 addressList
-const resetAddressList = () => {
-  addressList.value = originalAddressList.value.filter(address => {
-    return address.name.toLowerCase().includes(searchText.value.toLowerCase());
-  });
-};
-
-// 监听
-watch(searchText, () => {
-  resetAddressList();
-});
-
 // 初始化数据
 onMounted(() => {
+  if(route.query.isPage){
+    isPage.value = 1;
+  }
   fetchData();
 });
 </script>
@@ -154,5 +181,34 @@ onMounted(() => {
   }
 }
 
-
+.table-list{
+  .item{
+    margin-top: 20px;
+    height: 40px;
+    display: flex;
+    .column{
+      width: 100%;
+      .title{
+        line-height: 20px;
+        color: #333333;
+        height: 20px;
+      }
+      .text{
+        display: flex;
+        justify-content: space-between;
+        line-height: 16px;
+        color: #999999;
+        font-size: 12px;
+        height: 16px;
+        overflow: hidden;
+      }
+    }
+  }
+  .el-icon{
+    margin-top:2px;
+    height: 34px;
+    width: 34px;
+    margin-right: 5px;
+  }
+}
 </style>

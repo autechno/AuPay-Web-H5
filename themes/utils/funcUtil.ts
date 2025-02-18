@@ -55,6 +55,7 @@ export const getQueryParams = () => {
     };
 };
 
+// 格式化文字
 export const formatAddressString = (input: string, endNumber: number, count: number) => {
     if(input && input.length){
         if (input.length > count) {
@@ -65,7 +66,24 @@ export const formatAddressString = (input: string, endNumber: number, count: num
         return input;
     }
 }
-
+// 格式化email
+export const formatEmailString = (email: string) => {
+    if (email && email.length) {
+        const atIndex = email.indexOf('@');
+        if (atIndex !== -1) {
+            const namePart = email.substring(0, atIndex);
+            const domainPart = email.substring(atIndex);
+            if (namePart.length > 4) {
+                const start = namePart.substring(0, 4);
+                const end = namePart.substring(namePart.length - 2);
+                return `${start}...${end}${domainPart}`;
+            }
+            return email;
+        }
+        return email;
+    }
+    return '';
+}
 // 延迟跳转URL
 export const goBackDelay = (router: any, address?: string, delay: number = 1000) => {
     setTimeout(() => {

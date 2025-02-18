@@ -91,7 +91,6 @@ const fetchData = async () => {
   }
 };
 
-
 // 监听
 watch(searchText, () => {
   resetCurrencyList();

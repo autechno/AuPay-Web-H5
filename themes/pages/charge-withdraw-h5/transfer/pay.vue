@@ -19,11 +19,11 @@
         <div v-if="contactList.length">
           <div class="table-title"><span>最近转账用户</span> <div class="more"><el-image :src="addressbook" />通讯录</div></div>
           <div class="table-list">
-            <div class="item" v-for="(item, index) in contactList" @click="copyToAddress(item.qrCode)">
+            <div class="item" v-for="(item, index) in contactList" @click="copyToAddress(item.transferQrcode)">
                 <el-icon><el-image :src="item.accountLogo ? item.accountLogo : head" /></el-icon>
                 <div class="column">
-                  <div class="title">{{item.accountName}}</div>
-                  <div class="text"><span>{{item.accountNo}}</span><span>{{item.qrCode}}</span></div>
+                  <div class="title">{{item.nickname}}</div>
+                  <div class="text"><span>{{item.email}}</span><span>{{item.transferQrcode}}</span></div>
                 </div>
               </div>
           </div>
@@ -54,7 +54,7 @@ const route = useRoute();
 const errorMessage = ref('');
 const copyList = ref([]);
 // 通讯录列表
-const contactList = ref([{accountNo: 'yoney.zhang@autech.one', accountLogo: '', accountName: 'yoney.zhang', qrCode: '1234132415', sign: 'a like fash'}]);
+const contactList = ref([{email: 'yoney.zhang@autech.one', accountLogo: '', nickname: 'yoney.zhang', transferQrcode: '0KVMONDOBWqJ3tGigOzbsjj1oYTluiLF'}]);
 const form = ref({
   transferQR: "",
 })

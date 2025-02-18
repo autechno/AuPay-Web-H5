@@ -258,35 +258,37 @@
 }
 .search-wrap{
     margin-bottom: 20px;
-    height: 40px;
-    padding-right: 10px;
+    height: 50px;
+    padding: 0 10px;
     background: #ffffff;
     border: #C8DCE8 solid 3px;
     border-radius: 16px;
     position: relative;
     display: flex!important;
+    align-items: center;
     .arrow{
         height: 23px;
         width: 28px;
-        margin-top: 8px;
-        margin-left: 10px;
         margin-right:5px;
         color: #E3E3E3;
+    }
+    .edit{
+        height: 23px;
+        width: 28px;
+        margin-left: 8px;
     }
     .custom-input::placeholder {
         color: #E3E3E3;
     }
     .custom-input{
         border: 1px #ffffff solid;
-        height: 30px;
-        line-height: 32px;
-        margin-top: 4px;
+        height: 34px;
+        line-height: 34px;
         font-size: 18px;
         overflow: hidden;
         width: 100%;
     }
 }
-
 .table-list-wrap{
     position: relative;
     margin-top: 10px;

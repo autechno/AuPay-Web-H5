@@ -101,7 +101,6 @@ const goList = () => {
   height: 34px;
   border-radius: 17px;
   background-color: #f4f4f4;
-  margin-top: 8px;
 }
 
 .middle-text {

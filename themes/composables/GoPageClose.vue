@@ -15,7 +15,6 @@
 import { ArrowLeftBold } from "@element-plus/icons-vue";
 import {defineProps} from "vue";
 
-
 const props = defineProps({
   title: {
     type: String,
@@ -62,7 +61,6 @@ const closeDrawer = () => {
   height: 34px;
   border-radius: 17px;
   background-color: #f4f4f4;
-  margin-top: 8px;
 }
 
 .middle-text {
