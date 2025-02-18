@@ -199,20 +199,7 @@ onMounted(async () => {
 *{
   font-size: 14px;
 }
-.google-wrap{
-  text-align: center;
-  .text-wrap{
-    line-height: 22px;
-    font-size: 12px;
-    color: #666666;
-    .el-image{
-      margin-left: 5px;
-      width: 16px;
-      height: 17px;
-    }
-    display: inline-flex;
-  }
-}
+
 .page {
   background: url('@@/public/images/star3.png') 45% 14% no-repeat;
   background-size: 52%;

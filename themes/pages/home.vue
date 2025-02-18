@@ -58,18 +58,17 @@
     <!-- 设置Google密码对话框 -->
     <el-dialog class="custom-dialog"  v-model="isGoogleDialogVisible" :show-close="false" :close-on-click-modal="false">
       <div class="custom-dialog-wrap"> 设置Google验证码 </div>
-      <div class="tips-wrap">一旦遗失本方不负责找回，请截图保存 二维码或字符可以在任意设备恢复您的谷歌验证器</div>
-      <div class="google-wrap">
-        <el-image :src="googleForm.qrCode" style="width: 250px; height: 250px;" />
-        <div class="text-wrap" @click="copyText(googleForm.googleSecret)">{{formatAddressString(googleForm.googleSecret, 10, 15)}} <el-image :src="copy" /></div>
-        <div class="text-wrap" style="color:#999999;">如您无法扫描二维码，请在APP中手动输入这串</div>
-        <el-form :model="googleForm" :rules="rules" ref="formRef" class="custom-input">
-          <el-form-item prop="googleCode">
+      <div style="text-align: center;">
+        <img :src="googleForm.qrCode" alt="Google QR Code" style="width: 150px; height: 150px;" />
+        <div>{{googleForm.googleSecret}}</div>
+        <el-button size="small" @click="copyText(googleForm.googleSecret)">复制</el-button>
+        <el-form :model="googleForm" class="custom-input" :rules="formRules" ref="formRef"  style="margin-top: 20px;">
+          <el-form-item label="" prop="googleCode">
             <el-input v-model="googleForm.googleCode" placeholder="请输入Google验证码" />
           </el-form-item>
         </el-form>
       </div>
-      <div style="margin-top: 35px;">
+      <div class="btn-wrap">
         <button class="custom-button" @click="bingGoogleAuth(2)">确认</button>
       </div>
     </el-dialog>
@@ -87,7 +86,6 @@ import { rules } from "@/utils/validationRules";
 import {ElForm, ElMessage} from "element-plus";
 import GoBack from "@/composables/GoPageBack.vue";
 import PasswordStrength from "@/composables/PasswordStrength.vue";
-import copy from "~~/public/images/copy2.svg";
 const headers = getHeader();
 const { systemApi, userApi } = useServer();
 const formRef: any = ref(null);
@@ -360,7 +358,7 @@ onMounted(async () => {
   margin: 10px 0;
 }
 .btn-wrap{
-  margin-top: 35px;
+  margin-top: 40px;
 }
 .custom-input{
   :deep(.el-input){

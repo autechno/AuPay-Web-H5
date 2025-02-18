@@ -17,6 +17,8 @@
       <el-form-item prop="address" >
         <el-input v-model="form.address" placeholder="地址"  />
       </el-form-item>
+      <div class="password-level-wrap"><p class="text">此地址即将被设置为<span class="strong">“白名单”</span>，为确保您的资金安全，白名单地址将被<span class="strong">锁定24小时</span> （白名单地址为您默认的“安全地址”进行提现操作无安全验证，请谨慎设置您的白名单 ）</p> <div class="triangle-arrow"></div>
+      </div>
       <el-form-item label="是否加入白名单" prop="white">
         <el-radio-group v-model="form.white">
           <el-radio :value="true">是</el-radio>
@@ -46,7 +48,7 @@ import { getHeader } from "@/utils/storageUtils";
 import { rules } from "@/utils/validationRules";
 import GoBack from "@/composables/GoPageBack.vue";
 import CheckPermissionDialog from "@/composables/CheckPermissionDialog.vue";
-import {goBackDelay, setHeadersAuth} from "@/utils/funcUtil";
+import {goBackDelay, jumpPage, setHeadersAuth} from "@/utils/funcUtil";
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
@@ -125,12 +127,10 @@ const handleSubmit = async () => {
       const res = await userApi.getFrequentlyEdit(form.value,  headers);
       if (res.code === 200) {
         showSuccessMessage(res.code,'创建地址成功');
-        if(!config.value.id){
+        if(!config.value.id && !route.query.type){
           goBackDelay(router, 'list')
         }else{
-          if(config.value.type == 'withdrawal'){
-            router.push({path:'/charge-withdraw-h5/withdrawal/selected', query: {assetsId: config.value.id, address: encodeURIComponent(form.value.address)} });
-          }
+          goBackDelay(router);
         }
       } else {
         showErrorMessage(res.code, res.message)
@@ -160,7 +160,7 @@ const fetchData = async () => {
 
 // 初始化数据
 onMounted(() => {
-  if(route.query.id){
+  if(route.query.id || route.query.type){
     config.value.id = route.query.id;
     config.value.type = route.query.type;
   }

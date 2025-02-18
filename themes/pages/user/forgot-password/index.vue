@@ -40,7 +40,7 @@ import logo from '@@/public/images/LOGO.svg';
 import { rules } from "@/utils/validationRules";
 import {ElForm, ElMessage} from "element-plus";
 import {getHeader} from "@/utils/storageUtils";
-import PasswordStrength from "~/composables/PasswordStrength.vue";
+import PasswordStrength from "@/composables/PasswordStrength.vue";
 const { userApi, systemApi } = useServer();
 const formRef: any = ref(null);
 let timer: NodeJS.Timeout | null = null;

@@ -2,7 +2,7 @@
   <div class="page">
     <GoBack title="地址库" />
     <div class="title-wrap">修改地址</div>
-    <el-form :model="form" :rules="rules" class="custom-input" ref="formRef" @submit.prevent="checkDuplicate">
+    <el-form :model="form" :rules="rules" class="custom-input" ref="formRef" @submit.prevent="handleSubmit(1)">
       <el-form-item prop="name" >
         <el-input v-model="form.name"  placeholder="请输入数量"  />
       </el-form-item>
@@ -27,7 +27,7 @@
         <el-input v-model="form.remark" placeholder="请输入描述"  />
       </el-form-item>
       <div class="footer-wrap">
-        <button class="custom-button-down-default" @click="deleteAddress">删除</button>
+        <button class="custom-button-down-default" type="button" @click.stop="handleSubmit(2)">删除</button>
         <button class="custom-button-down" native-type="submit">保存</button>
       </div>
     </el-form>
@@ -85,9 +85,20 @@ const query = ref({
   white: '',
   currencyChain: '',
 });
+
+
+// 准备删除地址
+const handleSubmit = (status: number) => {
+  type.value = status;
+  if(status == 1){
+    checkDuplicate();
+  }else{
+    dialogCheckVisible.value = true;
+  }
+};
+
 // 验证地址是否存在
 const checkDuplicate = async () => {
-  type.value = 1;
   const valid = await formRef.value.validate();
   if (valid) {
     try {
@@ -114,7 +125,6 @@ const checkDuplicate = async () => {
   }
 }
 
-
 // 更新父组件的 form 数据
 const updateForm = (newForm: Object) => {
   headerForm.value = newForm;
@@ -122,7 +132,7 @@ const updateForm = (newForm: Object) => {
     dialogCheckVisible.value = false;
     activeStepId.value = 2;
     if(type.value == 1){
-      handleSubmit();
+      editAddress();
     }else{
       deleteAddress();
     }
@@ -131,12 +141,7 @@ const updateForm = (newForm: Object) => {
 
 // 删除地址
 const deleteAddress = async () => {
-    type.value = 2;
     try {
-      if(activeStepId.value == 1){
-        dialogCheckVisible.value = true;
-        return ;
-      }
       const headers = getHeader();
       setHeadersAuth(headers, form);
       const res = await userApi.getFrequentlyDelete(form.value, headers);
@@ -151,8 +156,8 @@ const deleteAddress = async () => {
     }
 };
 
-// 提交地址
-const handleSubmit = async () => {
+// 编辑地址
+const editAddress = async () => {
   const valid = await formRef.value.validate();
   if (valid) {
     try {
@@ -173,7 +178,7 @@ const handleSubmit = async () => {
   }
 };
 
-// 获取资产数据
+// 获取数据
 const fetchData = async (id: number) => {
   try {
     const headers = getHeader();
@@ -226,11 +231,11 @@ onMounted(() => {
   border-top-right-radius: 16px;
   display: flex;
   align-items: center;
-  .el-button {
+  button {
     flex: 1;
     margin-left: 30px;
   }
-  .el-button:last-child {
+  button:last-child {
     margin-right: 30px;
   }
 }

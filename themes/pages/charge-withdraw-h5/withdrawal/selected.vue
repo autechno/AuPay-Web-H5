@@ -5,7 +5,7 @@
     <div class="sub-page">
       <div class="search-wrap">
         <input v-model="addressText" placeholder="请填写地址" class="custom-input" />
-        <div class="select-address" @click="drawerVisible = true"><el-icon class="icon" size="10" ><CloseBold /></el-icon> 选地址</div>
+        <div class="select-address" @click="jumpPage"><el-icon class="icon" size="10" ><CloseBold /></el-icon> 选地址</div>
       </div>
       <div class="copy-list">
         <div class="item" v-for="item in copyList" :key="item" @click="copyToAddress(item)">
@@ -14,14 +14,6 @@
       </div>
     </div>
     <button @click="nextTick()" class="custom-button custom-button-pos" >下一步</button>
-    <el-drawer class="custom-drawer" v-model="drawerVisible"
-               title=""
-               :show-close="false"
-               @close="drawerVisible = false"
-               direction="rtl"
-               size="100%">
-      <Address @select-address="setAddress" :id="assetsId" type="withdrawal" />
-    </el-drawer>
   </div>
 </template>
 <script setup lang="ts">
@@ -43,6 +35,11 @@ const drawerVisible = ref(false);
 const { assetsApi } = useServer();
 const headers = getHeader();
 
+// 跳转选择地址
+const jumpPage = () =>{
+  router.push({ path: '/user-h5/address/selectList', query: { id: assetsId.value, type: 'withdrawal' } });
+}
+
 // 读取剪贴板内容并添加到 copyList
 const readClipboard = async () => {
   try {
@@ -55,11 +52,7 @@ const readClipboard = async () => {
     showErrorMessage(0, '请确保您已允许访问剪贴板')
   }
 };
-// 设置地址
-const setAddress = (address) => {
-  addressText.value = address;
-  drawerVisible.value = false;
-};
+
 // 检查剪贴板是否有内容
 const checkClipboardContent = async () => {
   try {

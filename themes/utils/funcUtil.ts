@@ -1,4 +1,5 @@
 import { ElNotification } from 'element-plus';
+import { useRouter } from 'vue-router';
 
 // 复制文本
 export const copyText = async (text: string) => {
@@ -95,3 +96,5 @@ export const goBackDelay = (router: any, address?: string, delay: number = 1000)
         }
     }, delay);
 };
+
+

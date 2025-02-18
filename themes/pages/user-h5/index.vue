@@ -53,7 +53,7 @@
         </router-link>
       </el-col>
       <el-col :span="6">
-        <router-link to="/user-h5/manage"  class="icon-text i4">
+        <router-link to="/user-h5/manage/"  class="icon-text i4">
           <i></i><span>用户</span>
         </router-link>
       </el-col>

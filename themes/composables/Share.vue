@@ -105,11 +105,11 @@ const close = () => {
   border-top-right-radius: 16px;
   display: flex;
   align-items: center;
-  .el-button {
+  button {
     flex: 1;
     margin-left: 30px;
   }
-  .el-button:last-child {
+  button:last-child {
     margin-right: 30px;
   }
 }
