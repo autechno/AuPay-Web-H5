@@ -6,11 +6,11 @@
       <input v-model="searchText" placeholder="搜索昵称/auPay ID" @input="searchContact" class="custom-input" />
     </div>
     <div class="table-list">
-      <div class="item" v-for="(item, index) in contactList" >
+      <div class="item" v-for="(item, index) in contactList" @click="selectContact(item.transferQrcode)">
         <el-icon><el-image :src="item.accountLogo ? item.accountLogo : head" /></el-icon>
         <div class="column">
           <div class="title">{{item.nickname}}</div>
-          <div class="text"><span>{{item.email}}</span><span>auPay ID: {{item.transferQrcode}}</span></div>
+          <div class="text"><span>{{formatEmailString(item.email)}}</span><span>auPay ID: {{formatAddressString(item.transferQrcode, 7, 15)}}</span></div>
         </div>
       </div>
     </div>
@@ -39,6 +39,7 @@ import {Search} from "@element-plus/icons-vue";
 import head from "@@/public/images/head.svg";
 import GoClose from "@/composables/GoPageClose.vue";
 import scan from "@@/public/images/Scan3.svg";
+import {formatAddressString, formatEmailString} from "~/utils/funcUtil";
 
 const title = '新增通讯录好友';
 const route = useRoute();
@@ -47,7 +48,7 @@ const headers = getHeader();
 const drawerVisible = ref(false);
 const isPage = ref(0);
 const contactList = ref([]);
-const transferQr = ref('0KVMONDOBWqJ3tGigOzbsjj1oYTluiLF');
+const transferQr = ref('');
 const { userApi } = useServer();
 const searchText = ref('');
 const form = ref({
@@ -68,7 +69,8 @@ const searchContact = () => {
 }
 
 // 选择地址
-const selectContact = (id: number) => {
+const selectContact = (qr: string) => {
+  router.push({ path: './', query: { qrCode: encodeURIComponent(qr) } });
 }
 
 // 确认按钮的处理
@@ -76,7 +78,7 @@ const getAccountInfo = async () => {
   try{
     const res = await userApi.getCheckTransferCode({ qrCode: transferQr.value }, headers);
     if(res.code == 200){
-      router.push({ path: './', query: { isPage: isPage.value, qrCode: encodeURIComponent(transferQr.value) } });
+      router.push({ path: './', query: {qrCode: encodeURIComponent(transferQr.value) } });
     }else{
       showErrorMessage(res.code, res.message)
     }

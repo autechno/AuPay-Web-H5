@@ -23,7 +23,7 @@
                 <el-icon><el-image :src="item.accountLogo ? item.accountLogo : head" /></el-icon>
                 <div class="column">
                   <div class="title">{{item.nickname}}</div>
-                  <div class="text"><span>{{item.email}}</span><span>{{item.transferQrcode}}</span></div>
+                  <div class="text"><span>{{formatEmailString(item.email)}}</span><span>auPay ID: {{formatAddressString(item.transferQrcode, 7, 15)}}</span></div>
                 </div>
               </div>
           </div>
@@ -46,6 +46,7 @@ import addressbook from "@@/public/images/addressbook.svg";
 import {ElMessage} from "element-plus";
 import {showCatchErrorMessage} from "~/utils/messageUtils";
 import {getDataInfo} from "~/utils/configUtils";
+import {formatAddressString, formatEmailString} from "~/utils/funcUtil";
 
 const { userApi } = useServer();
 const headers = getHeader();
@@ -144,8 +145,9 @@ onMounted(async() => {
   if (hasContent) {
     await readClipboard();
   }
-
-
+  if(route.query.qrCode){
+    form.value.transferQR = decodeURIComponent(route.query.qrCode);
+  }
   fetchData();
 });
 </script>

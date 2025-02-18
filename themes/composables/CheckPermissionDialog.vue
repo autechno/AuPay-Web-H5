@@ -194,15 +194,7 @@ watch(() => props.isDialogVisible, (newVal) => {
 </script>
 
 <style lang="less" scoped>
-.custom-dialog-wrap {
-  color: #0D0D0D;
-  font-size: 18px;
-  height: 24px;
-  line-height: 24px;
-  text-align: center;
-  margin-top: 9px;
-  margin-bottom: 28px;
-}
+
 
 .customer-input {
   padding: 0 10%;

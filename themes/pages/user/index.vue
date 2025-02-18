@@ -27,7 +27,6 @@
       </div>
     </div>
 
-
     <!-- 密码验证对话框 -->
     <CheckPermissionDialog
         :form="form"
@@ -37,34 +36,39 @@
         @close="dialogCheckVisible = false"
     />
     <!-- 设置密码对话框 -->
-    <el-dialog title="设置密码" v-model="isPassDialogVisible">
-      <el-form :model="form" :rules="formRules" ref="formRef" @submit.prevent="handleSubmit">
+    <el-dialog class="custom-dialog"  v-model="isPassDialogVisible" :show-close="false" :close-on-click-modal="false">
+      <div class="custom-dialog-wrap"> 设置密码 </div>
+      <el-form :model="form" :rules="formRules" ref="formRef" class="custom-input" @submit.prevent="handleSubmit">
         <el-form-item label="" prop="password">
-          <el-input v-model="form.password" type="password" placeholder="请输入密码" />
+          <el-input v-model="form.password" placeholder="请输入密码" :type="passwordVisible ? 'text' : 'password'"  />
+          <i @click.stop="passwordVisible = !passwordVisible" :class="passwordVisible ? 'icon-eye' : 'icon-eye-no'"></i>
         </el-form-item>
         <el-form-item label="" prop="confirmPassword">
-          <el-input v-model="form.confirmPassword" type="password" placeholder="请输入确认密码" />
+          <el-input v-model="form.confirmPassword" placeholder="请输入确认密码" :type="passwordVisible2 ? 'text' : 'password'"  />
+          <i @click.stop="passwordVisible2 = !passwordVisible2" :class="passwordVisible2 ? 'icon-eye' : 'icon-eye-no'"></i>
         </el-form-item>
-        <div class="social-login">
-          <el-button type="primary" class="social-btn" native-type="submit">确认</el-button>
+        <div class="btn-wrap">
+          <button class="custom-button"  native-type="submit">确认</button>
         </div>
       </el-form>
     </el-dialog>
+
     <!-- 设置Google密码对话框 -->
-    <el-dialog v-model="isGoogleDialogVisible" title="设置Google验证码">
+    <el-dialog class="custom-dialog"  v-model="isGoogleDialogVisible" :show-close="false" :close-on-click-modal="false">
+      <div class="custom-dialog-wrap"> 设置Google验证码 </div>
       <div style="text-align: center;">
         <img :src="googleForm.qrCode" alt="Google QR Code" style="width: 150px; height: 150px;" />
         <div>{{googleForm.googleSecret}}</div>
         <el-button size="small" @click="copyText(googleForm.googleSecret)">复制</el-button>
-        <el-form :model="googleForm" :rules="formRules" ref="formRef" label-position="top" style="margin-top: 20px;">
+        <el-form :model="googleForm" class="custom-input" :rules="formRules" ref="formRef"  style="margin-top: 20px;">
           <el-form-item label="" prop="googleCode">
             <el-input v-model="googleForm.googleCode" placeholder="请输入Google验证码" />
           </el-form-item>
         </el-form>
       </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="bingGoogleAuth(2)">确认</el-button>
-      </span>
+      <div class="btn-wrap">
+        <button class="custom-button" @click="bingGoogleAuth(2)">确认</button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -90,6 +94,8 @@ const router = useRouter();
 const route = useRoute();
 const { public: { API_HOST } } = useRuntimeConfig();
 const tmpForm = ref('')
+const passwordVisible = ref(false);
+const passwordVisible2 = ref(false);
 
 /**
  * 基础数据
@@ -346,5 +352,30 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   margin: 10px 0;
+}
+.btn-wrap{
+  margin-top: 40px;
+}
+.custom-input{
+  :deep(.el-input){
+    width: 100%;
+    height: 56px;
+    border-radius: 16px;
+    font-size: 16px;
+    border: 0;
+  }
+  :deep(.el-input__wrapper) {
+    border-radius: 16px;
+    border: 3px #C8DCE8 solid;
+  }
+  :deep(.checkbox__label){
+    color: #dcdcdc !important;
+  }
+  :deep(.el-form-item__error){
+    padding-left: 14px;
+  }
+  :deep(.el-checkbox__label){
+    font-weight: normal !important;
+  }
 }
 </style>

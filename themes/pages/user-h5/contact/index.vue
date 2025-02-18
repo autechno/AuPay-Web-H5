@@ -15,7 +15,7 @@
     <div class="btn-wrap">
       <button v-if="isSave" class="custom-button-down-default" @click="deleteContact">删除</button>
       <button v-else class="custom-button-down" style="margin-right: 15px;" @click="addContact">添加</button>
-      <button class="custom-button-down"  style="margin-left: 15px;" @click="jumpPage('/charge-withdraw-h5/transfer/pay', {qr: originQr})">付款给他</button>
+      <button class="custom-button-down"  style="margin-left: 15px;" @click="jumpPage('/charge-withdraw-h5/transfer/pay', {qrCode: originQr})">付款给他</button>
     </div>
   </div>
 </template>
@@ -36,6 +36,7 @@ const router = useRouter();
 const isSave = ref(false);
 const originQr = ref('');
 const { userApi, systemApi } = useServer();
+const accountId = ref(0);
 const accountInfo = ref({
   id: '',
   accountId: '',
@@ -73,7 +74,7 @@ const jumpPage = (url: string, params: any) =>{
 const deleteContact = async () => {
   try {
     const headers = getHeader();
-    const res = await userApi.removeAccountContact({ id: accountInfo.value.id }, headers);
+    const res = await userApi.removeAccountContact({ id: accountId.value }, headers);
     if(res.code == 200){
       showSuccessMessage(0, '删除成功');
       goBackDelay(router, "list");
@@ -102,7 +103,7 @@ const fetchData = async (qr: string) => {
     if(accountContactRes.code == 200){
       if( accountContactRes.data.records.length > 0){
         isSave.value = true;
-        accountInfo.value.id = accountContactRes.data.records[0].id;
+        accountId.value = accountContactRes.data.records[0].id;
       }
     }else{
       showErrorMessage(accountContactRes.code, accountContactRes.message)
