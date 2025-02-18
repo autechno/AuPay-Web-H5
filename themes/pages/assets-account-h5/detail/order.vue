@@ -108,7 +108,7 @@ const incomeData = async () => {
     const headers = getHeader();
     let startTime = form.value.conditions.startTime;
     let endTime = form.value.conditions.endTime;
-    let query = {startTime: '2025-01-01T00:00:00', endTime: '2025-12-30T23:59:59'};
+    let query = {startTime: '2025-01-01 00:00:00', endTime: '2025-12-30 23:59:59'};
     if(startTime && endTime){
       query = { startTime: startTime, endTime: endTime}
     }

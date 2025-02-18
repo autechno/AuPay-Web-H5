@@ -27,8 +27,8 @@
         <el-input v-model="form.remark" placeholder="请输入描述"  />
       </el-form-item>
       <div class="footer-wrap">
-        <el-button class="custom-button-down-default" @click="deleteAddress">删除</el-button>
-        <el-button class="custom-button-down" native-type="submit">保存</el-button>
+        <button class="custom-button-down-default" @click="deleteAddress">删除</button>
+        <button class="custom-button-down" native-type="submit">保存</button>
       </div>
     </el-form>
     <!-- 密码验证对话框 -->

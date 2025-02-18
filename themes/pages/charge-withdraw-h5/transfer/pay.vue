@@ -16,10 +16,10 @@
             <el-image :src="clip" /><span class="text">{{ formatAddressString(item, 28, 35) }}</span>
           </div>
         </div>
-        <div v-if="historyLog.length">
+        <div v-if="contactList.length">
           <div class="table-title"><span>最近转账用户</span> <div class="more"><el-image :src="addressbook" />通讯录</div></div>
           <div class="table-list">
-            <div class="item" v-for="(item, index) in historyLog" @click="copyToAddress(item.qrCode)">
+            <div class="item" v-for="(item, index) in contactList" @click="copyToAddress(item.qrCode)">
                 <el-icon><el-image :src="item.accountLogo ? item.accountLogo : head" /></el-icon>
                 <div class="column">
                   <div class="title">{{item.accountName}}</div>
@@ -45,6 +45,7 @@ import clip from "@@/public/images/ClipBoard.svg";
 import addressbook from "@@/public/images/addressbook.svg";
 import {ElMessage} from "element-plus";
 import {showCatchErrorMessage} from "~/utils/messageUtils";
+import {getDataInfo} from "~/utils/configUtils";
 
 const { userApi } = useServer();
 const headers = getHeader();
@@ -53,9 +54,15 @@ const route = useRoute();
 const errorMessage = ref('');
 const copyList = ref([]);
 // 通讯录列表
-const historyLog = ref([{accountNo: 'yoney.zhang@autech.one', accountLogo: '', accountName: 'yoney.zhang', qrCode: '1234132415', sign: 'a like fash'}]);
+const contactList = ref([{accountNo: 'yoney.zhang@autech.one', accountLogo: '', accountName: 'yoney.zhang', qrCode: '1234132415', sign: 'a like fash'}]);
 const form = ref({
   transferQR: "",
+})
+const contactForm = ref({
+  pageNo: 1,
+  pageSize: 10,
+  conditions: {
+  }
 })
 // 读取剪贴板内容并添加到 copyList
 const readClipboard = async () => {
@@ -93,7 +100,6 @@ const validateTransferQR = () => {
   }
   errorMessage.value = '';
 };
-
 // 确认按钮的处理
 const handleSubmit = async () => {
   validateTransferQR();
@@ -116,12 +122,29 @@ const buttonConfig = ref({
   btnName: '收款',
   type: 'collect',
 })
+
+
+// 获取数据
+const fetchData = async () => {
+  try {
+    let res = await userApi.queryAccountContact(contactForm.value, headers);
+    if (res.code == 200) {
+      contactList.value = res.data.records;
+    } else {
+      showErrorMessage(res.code, res.message)
+    }
+  } catch (error) {
+    showCatchErrorMessage()
+  }
+};
+
 // 初始化数据
 onMounted(async() => {
   const hasContent = await checkClipboardContent();
   if (hasContent) {
     await readClipboard();
   }
+  fetchData();
 });
 </script>
 
@@ -230,18 +253,22 @@ onMounted(async() => {
     margin-top: 20px;
     height: 40px;
     display: flex;
-    .title{
-      line-height: 20px;
-      color: #333333;
-      height: 20px;
-    }
-    .text{
-      display: flex;
-      line-height: 16px;
-      color: #999999;
-      font-size: 12px;
-      height: 16px;
-      overflow: hidden;
+    .column{
+      width: 100%;
+      .title{
+        line-height: 20px;
+        color: #333333;
+        height: 20px;
+      }
+      .text{
+        display: flex;
+        justify-content: space-between;
+        line-height: 16px;
+        color: #999999;
+        font-size: 12px;
+        height: 16px;
+        overflow: hidden;
+      }
     }
   }
   .el-icon{
@@ -250,7 +277,5 @@ onMounted(async() => {
     width: 34px;
     margin-right: 5px;
   }
-
-
 }
 </style>

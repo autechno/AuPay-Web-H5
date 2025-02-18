@@ -1,7 +1,6 @@
 import Http from './http/index'
 // @ts-ignore
 class UserApi extends Http {
-
     /**
      * 登录
      */
@@ -19,6 +18,12 @@ class UserApi extends Http {
      */
     public getUnbindGoogle(params: any, headers: any): Promise<any> {
         return this.postFormData('/aupay-user/provider/unbinding/'+params.optToken, params, headers, 'post');
+    }
+    /**
+     * 查询通讯录
+     */
+    public queryAccountContact(params: any, headers: any): Promise<any> {
+        return this.post('/aupay-user/transferQrcode/queryAccountContact', params, headers);
     }
     /**
      * 绑定google登录
@@ -186,7 +191,6 @@ class MessageApi extends Http {
 }
 
 class SystemApi extends Http {
-
 
     /**
      * 发送修改邮箱验证码

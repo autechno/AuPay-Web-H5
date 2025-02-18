@@ -26,7 +26,7 @@
       <el-form-item  >
         <el-input v-model="form.remark" placeholder="描述"  />
       </el-form-item>
-      <el-button class="custom-button custom-button-pos" native-type="submit">保存地址</el-button>
+      <button class="custom-button custom-button-pos" native-type="submit">保存地址</button>
     </el-form>
     <!-- 密码验证对话框 -->
     <CheckPermissionDialog
