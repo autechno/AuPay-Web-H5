@@ -4,7 +4,7 @@
       <span>
         <el-icon class="avatar" style="float: left"><el-image :src="userInfo.headPortrait ? userInfo.headPortrait : head" /></el-icon>
         <span class="name">{{userInfo.name}}</span>
-        <span class="sign">{{userInfo.name}}</span>
+        <span class="sign">{{userInfo.sign}}</span>
       </span>
       <el-icon class="avatar">
         <el-image :src="scan" />

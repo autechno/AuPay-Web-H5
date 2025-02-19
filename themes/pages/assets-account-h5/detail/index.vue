@@ -133,8 +133,8 @@ import GoBack from "@/composables/GoPageBack.vue";
 import {formatCurrency, formatDate, getDataInfo, getStatusText} from "~/utils/configUtils";
 import { getHeader } from "@/utils/storageUtils";
 import { useRoute } from 'vue-router';
-import s1 from '~~/public/images/s2.svg';
-import s2 from '~~/public/images/s1.svg';
+import s1 from '@@/public/images/s2.svg';
+import s2 from '@@/public/images/s1.svg';
 import s3 from '@@/public/images/s3.svg';
 import {showCatchErrorMessage} from "@/utils/messageUtils";
 import copy from '@@/public/images/copy2.svg';
@@ -202,14 +202,20 @@ onMounted(() => {
   padding: 15px 16px;
   line-height: 20px;
   .font-t1{
+    margin: 0;
+    padding: 0;
     color: #0D0D0D;
     font-size: 14px;
   }
   .font-t2{
+    margin: 0;
+    padding: 0;
     color: #333333;
     font-size: 12px;
   }
   .font-t3{
+    margin: 0;
+    padding: 0;
     color: #999999;
     font-size: 12px;
   }
@@ -233,6 +239,7 @@ onMounted(() => {
     .left {
       width: 40px;
       .el-image{
+        border-radius: 50%;
         width: 30px;
         height: 30px;
       }
