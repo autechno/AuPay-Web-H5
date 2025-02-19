@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <GoPageBack />
+    <GoPageBack go-back-to="/user-h5/manage/" />
     <div class="table-list">
       <div class="title-wrap">账号信息</div>
       <div class="text-wrap"><span class="title">账号</span><span>{{form.email}}</span></div>
@@ -227,6 +227,7 @@ onMounted(async () => {
       res = await userApi.setBindGoogle({providerType: 'google', providerId: providerId, optToken: jsonForm.value.optToken}, headers);
       if(res.code == 200 && res.data) {
         refreshCurrentPage(10);
+        goBackDelay(router, '/user-h5/manage/account', 10);
       }else{
         showErrorMessage(res.code, res.message);
       }
