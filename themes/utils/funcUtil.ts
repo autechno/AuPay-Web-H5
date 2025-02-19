@@ -85,6 +85,7 @@ export const formatEmailString = (email: string) => {
     }
     return '';
 }
+
 // 延迟跳转URL
 export const goBackDelay = (router: any, address?: string, delay: number = 1000) => {
     setTimeout(() => {
@@ -97,4 +98,9 @@ export const goBackDelay = (router: any, address?: string, delay: number = 1000)
     }, delay);
 };
 
-
+// 刷新当前页面
+export const refreshCurrentPage = (delay: number = 1000) => {
+    setTimeout(() => {
+        window.location.reload(); // 刷新当前页面
+    }, delay);
+};

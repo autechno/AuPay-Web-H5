@@ -145,7 +145,6 @@ const handleSubmit = async () => {
       let res = await assetsApi.getWithdrawApply(form.value, headers);
       if (res.code == 200) {
         recordId.value = res.data.id;
-        //TODO
         drawerVisible.value = true;
       } else {
         showErrorMessage(res.code, res.message)
