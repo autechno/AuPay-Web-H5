@@ -226,7 +226,6 @@ onMounted(async () => {
       setHeadersAuth(headers, jsonForm);
       res = await userApi.setBindGoogle({providerType: 'google', providerId: providerId, optToken: jsonForm.value.optToken}, headers);
       if(res.code == 200 && res.data) {
-        refreshCurrentPage(10);
         goBackDelay(router, '/user-h5/manage/account', 10);
       }else{
         showErrorMessage(res.code, res.message);
