@@ -6,13 +6,17 @@ const DEFAULT_VALIDATION_MESSAGE = '表单验证失败';
 // 显示成功消息的函数
 export const showSuccessMessage = (code: number, message: string): void => {
     // TODO 后期处理CODE
+    console.log('Info Code:', code);
+    console.log('Info Message:', message);
     ElMessage.success(message);
 };
 
 // 显示错误消息的函数
 export const showErrorMessage = (code: number, message: string): void => {
     // TODO 后期处理CODE
-    ElMessage.error(message);
+    console.log('Error Code:', code);
+    console.log('Error Message:', message);
+    ElMessage.error(message || DEFAULT_ERROR_MESSAGE);
 };
 
 // 显示异常错误消息的函数

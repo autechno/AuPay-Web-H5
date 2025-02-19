@@ -12,7 +12,7 @@
         <div class="text"><span><el-image :src="editSquare" />申请/审批</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text" @click="jumpPage('/user-h5/address/list', {})"><span><el-image :src="add" />地址管理</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text" @click="jumpPage('/assets-account-h5/detail/order', {})"><span><el-image :src="order" />订单管理</span><el-icon><ArrowRightBold /></el-icon></div>
-        <div class="text"><span><el-image :src="addressbook" />通讯录</span><el-icon><ArrowRightBold /></el-icon></div>
+        <div class="text" @click="jumpPage('/user-h5/contact/list', {})"><span><el-image :src="addressbook" />通讯录</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="title">关于auPay</div>
         <div class="text"><span><el-image :src="logo2" />关于我们</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text"><span><el-image :src="safe" />隐私条款</span><el-icon><ArrowRightBold /></el-icon></div>
