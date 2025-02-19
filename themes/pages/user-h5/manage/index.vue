@@ -7,7 +7,7 @@
       </div>
       <div class="table-list">
         <div class="title">管理设置</div>
-        <div class="text" @click="jumpPage('account', {})"><span><el-image :src="wallet" />账号信息1</span><el-icon><ArrowRightBold /></el-icon></div>
+        <div class="text" @click="jumpPage('account', {})"><span><el-image :src="wallet" />账号信息</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text" @click="jumpPage('/user-h5/info', {})"><span><el-image :src="peo" />用户信息</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text"><span><el-image :src="editSquare" />申请/审批</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text" @click="jumpPage('/user-h5/address/list', {})"><span><el-image :src="add" />地址管理</span><el-icon><ArrowRightBold /></el-icon></div>
