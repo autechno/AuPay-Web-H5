@@ -40,7 +40,7 @@
     </div>
     <el-row :gutter="20" class="menu-container" style="margin-left:0; margin-right: 0">
       <el-col :span="6">
-        <router-link to="/user-h5" class="icon-text i1">
+        <router-link to="/user" class="icon-text i1">
           <i></i><span>首页</span>
         </router-link>
       </el-col>
@@ -55,7 +55,7 @@
         </router-link>
       </el-col>
       <el-col :span="6">
-        <router-link to="/user-h5/manage/"  class="icon-text i4">
+        <router-link to="/user/manage/"  class="icon-text i4">
           <i></i><span>用户</span>
         </router-link>
       </el-col>

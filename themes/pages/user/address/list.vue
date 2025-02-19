@@ -48,7 +48,7 @@ const searchText = ref('');
 // 定义跳转函数
 const addAddress = () => {
   console.log('addressList')
-  router.push({ path: '/user-h5/address/add', query: { } });
+  router.push({ path: '/user/address/add', query: { } });
 };
 
 // 选择地址
@@ -57,7 +57,7 @@ const selectAddress = (id: number) => {
 }
 // 编辑地址
 const editAddress = (item: any) => {
-  router.push({ path: '/user-h5/address/edit', query: { id: item.id } });
+  router.push({ path: '/user/address/edit', query: { id: item.id } });
 }
 
 // 获取资产数据

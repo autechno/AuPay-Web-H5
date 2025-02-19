@@ -8,11 +8,11 @@
       <div class="table-list">
         <div class="title">管理设置</div>
         <div class="text" @click="jumpPage('account', {})"><span><el-image :src="wallet" />账号信息</span><el-icon><ArrowRightBold /></el-icon></div>
-        <div class="text" @click="jumpPage('/user-h5/info', {})"><span><el-image :src="peo" />用户信息</span><el-icon><ArrowRightBold /></el-icon></div>
+        <div class="text" @click="jumpPage('/user/info', {})"><span><el-image :src="peo" />用户信息</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text"><span><el-image :src="editSquare" />申请/审批</span><el-icon><ArrowRightBold /></el-icon></div>
-        <div class="text" @click="jumpPage('/user-h5/address/list', {})"><span><el-image :src="add" />地址管理</span><el-icon><ArrowRightBold /></el-icon></div>
+        <div class="text" @click="jumpPage('/user/address/list', {})"><span><el-image :src="add" />地址管理</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text" @click="jumpPage('/assets-account-h5/detail/order', {})"><span><el-image :src="order" />订单管理</span><el-icon><ArrowRightBold /></el-icon></div>
-        <div class="text" @click="jumpPage('/user-h5/contact/list', {})"><span><el-image :src="addressbook" />通讯录</span><el-icon><ArrowRightBold /></el-icon></div>
+        <div class="text" @click="jumpPage('/user/contact/list', {})"><span><el-image :src="addressbook" />通讯录</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="title">关于auPay</div>
         <div class="text"><span><el-image :src="logo2" />关于我们</span><el-icon><ArrowRightBold /></el-icon></div>
         <div class="text"><span><el-image :src="safe" />隐私条款</span><el-icon><ArrowRightBold /></el-icon></div>
@@ -22,7 +22,7 @@
     </div>
     <el-row :gutter="20" class="menu-container" style="margin-left:0; margin-right: 0">
       <el-col :span="6">
-        <router-link to="/user-h5" class="icon-text i1">
+        <router-link to="/user" class="icon-text i1">
           <i></i><span>首页</span>
         </router-link>
       </el-col>

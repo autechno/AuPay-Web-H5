@@ -22,8 +22,6 @@ import GoBack from "@/composables/GoPageBack.vue";
 import clip from '@@/public/images/ClipBoard.svg';
 import { CloseBold } from "@element-plus/icons-vue";
 import { useRoute, useRouter } from 'vue-router';
-import {ElMessage} from "element-plus";
-import Address from "../../user-h5/address/selectList.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -31,13 +29,12 @@ const assetsId = ref<string>('');
 const titleBar = ref();
 const addressText = ref('');
 const copyList = ref([]);
-const drawerVisible = ref(false);
 const { assetsApi } = useServer();
 const headers = getHeader();
 
 // 跳转选择地址
 const jumpPage = () =>{
-  router.push({ path: '/user-h5/address/selectList', query: { id: assetsId.value, type: 'withdrawal' } });
+  router.push({ path: '/user/address/selectList', query: { id: assetsId.value, type: 'withdrawal' } });
 }
 
 // 读取剪贴板内容并添加到 copyList
