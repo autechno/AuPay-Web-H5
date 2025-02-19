@@ -14,8 +14,8 @@
         <i @click.stop="passwordVisible = !passwordVisible" :class="passwordVisible ? 'icon-eye' : 'icon-eye-no'"></i>
       </el-form-item>
       <div class="href-text" >
-        <a href="/user/register">注册新账号</a>
-        <a href="/user/forgot-password">忘记密码?</a>
+        <a href="/user-h5/register">注册新账号</a>
+        <a href="/user-h5/forgot-password">忘记密码?</a>
       </div>
       <el-form-item>
         <button class="custom-button" native-type="submit">账户密码登录</button>
@@ -86,7 +86,7 @@ const handleSubmit = async () => {
         str = str + '&firstLogin=1'
       }
       setTimeout(() => {
-        router.push('/user/login/stepEmail' + str);
+        router.push('/user-h5/login/stepEmail' + str);
       }, 300);
     } else {
       ElMessage.error(res.message || '登录失败');

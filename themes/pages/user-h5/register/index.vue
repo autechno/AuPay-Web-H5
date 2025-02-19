@@ -71,7 +71,7 @@ const handleSubmit = async () => {
       if (res.code === 200) {
         ElMessage.success('email发送成功');
         setTimeout(() => {
-          router.push('/user/register/stepReg?email='+ form.value.email);
+          router.push('/user-h5/register/stepReg?email='+ form.value.email);
           }, 300);
       } else {
         ElMessage.error(res.message);
@@ -90,7 +90,7 @@ const googleBind = async () => {
  * 导航到登录页面
  */
 const navigateToLogin = () => {
-  router.push('/user/login');
+  router.push('/user-h5/login');
 };
 
 </script>

@@ -109,7 +109,7 @@ const handleSubmit = async () => {
     if (res.code === 200) {
       const userStore = UseUserStore();
       userStore.setTokenState(res.data);
-      router.push('/user/register/stepBind');
+      router.push('/user-h5/register/stepBind');
 
     } else {
       showErrorMessage(res.code, res.message)
@@ -134,7 +134,7 @@ const sendEamil = async () => {
  * 导航到登录页面
  */
 const navigateToLogin = () => {
-  router.push('/user/login');
+  router.push('/user-h5/login');
 };
 
 onMounted(() => {

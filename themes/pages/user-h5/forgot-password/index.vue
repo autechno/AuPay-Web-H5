@@ -154,7 +154,7 @@ const handleSubmit = async () => {
       if (res.code === 200) {
         ElMessage.success('重置密码成功，请重新登录');
         setTimeout(() => {
-          window.location.href = '/user/login';
+          window.location.href = '/user-h5/login';
         }, 500);
       } else {
         ElMessage.error(res.message);

@@ -113,7 +113,7 @@ const handleSubmit = async () => {
     } else if(activeStepId.value === 2) {
        confirmGoogleAuth(1);
     }else {
-        window.location.href = '/user/login?firstLogin=1';
+        window.location.href = '/user-h5/login?firstLogin=1';
     }
   }
 }
